@@ -1,0 +1,14 @@
+# cat hello.txt | grep (1 + 2) | filter $ @condition_func
+PIPELINE begin
+PUSH_STR "hello.txt"
+PUSH_STR "cat"
+EXEC 1
+PIPELINE next
+PUSH_STR "grep"
+PUSH_INT 2
+PUSH_INT 1
+BINOP add
+EXEC 1
+PIPELINE close
+PRINT
+# DEBUG_ONLY assert_stack_empty
