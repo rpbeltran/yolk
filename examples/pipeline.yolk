@@ -9,6 +9,6 @@ PUSH_INT 2
 PUSH_INT 1
 BINOP add
 EXEC 1
-PIPELINE close
+PIPELINE end
 PRINT
 # DEBUG_ONLY assert_stack_empty

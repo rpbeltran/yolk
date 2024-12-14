@@ -11,12 +11,19 @@ type Instruction_EXEC struct {
 }
 
 func (instruction *Instruction_EXEC) Parse(args *string) error {
-	if arg_count, err := strconv.ParseUint(*args, 10, 8); err == nil {
+	if arg_count, err := strconv.ParseUint(*args, 10, 64); err == nil {
 		instruction.arg_count = arg_count
 	} else {
-		return err
+		if len(*args) == 0 {
+			return fmt.Errorf("EXEC instruction needs argument count")
+		}
+		return fmt.Errorf("EXEC instruction has invalid argument count %q", *args)
 	}
 	return nil
+}
+
+func (instruction *Instruction_EXEC) String() string {
+	return fmt.Sprintf("EXEC %d", instruction.arg_count)
 }
 
 func (instruction *Instruction_EXEC) Perform(machine *vm.VirtualMachine) error {

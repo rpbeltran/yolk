@@ -8,6 +8,7 @@ import (
 
 type Instruction interface {
 	Parse(args *string) error
+	String() string
 	Perform(machine *vm.VirtualMachine) error
 }
 
@@ -24,38 +25,42 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 	switch operator {
 	case "EXEC":
 		var instruction Instruction_EXEC
-		if err := instruction.Parse(&args); err == nil {
-			return &instruction, nil
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
 		}
+		return &instruction, nil
 	case "PIPELINE":
 		var instruction Instruction_PIPELINE
-		if err := instruction.Parse(&args); err == nil {
-			return &instruction, nil
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
 		}
+		return &instruction, nil
 	case "PUSH_STR":
 		var instruction Instruction_PUSH_STR
-		if err := instruction.Parse(&args); err == nil {
-			return &instruction, nil
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
 		}
+		return &instruction, nil
 	case "PUSH_INT":
 		var instruction Instruction_PUSH_INT
-		if err := instruction.Parse(&args); err == nil {
-			return &instruction, nil
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
 		}
+		return &instruction, nil
 	case "PRINT":
 		var instruction Instruction_PRINT
-		if err := instruction.Parse(&args); err == nil {
-			return &instruction, nil
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
 		}
+		return &instruction, nil
 	case "BINOP":
-		var instruction Instruction_PRINT
-		if err := instruction.Parse(&args); err == nil {
-			return &instruction, nil
+		var instruction Instruction_BINOP
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
 		}
-	default:
-		return nil, fmt.Errorf("Unknown operator: %s", operator)
+		return &instruction, nil
 	}
 
-	return nil, nil
+	return nil, fmt.Errorf("Unknown operator: %s", operator)
 
 }

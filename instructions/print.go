@@ -14,6 +14,10 @@ func (instruction *Instruction_PRINT) Parse(args *string) error {
 	return nil
 }
 
+func (instruction *Instruction_PRINT) String() string {
+	return "PRINT"
+}
+
 func (instruction *Instruction_PRINT) Perform(machine *vm.VirtualMachine) error {
 	fmt.Println("//TODO: Implement PRINT instruction")
 	return nil
