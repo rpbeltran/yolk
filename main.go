@@ -12,7 +12,6 @@ import (
 var runFlag = flag.String("run", "", ".yolk file to exec")
 
 func execute_yolk(path string) error {
-
 	var machine vm.VirtualMachine
 
 	file, err := os.Open(path)
@@ -39,7 +38,6 @@ func execute_yolk(path string) error {
 }
 
 func main() {
-
 	flag.Parse()
 
 	if len(*runFlag) == 0 {
