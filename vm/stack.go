@@ -36,7 +36,7 @@ func (stack *Stack[T]) PopUnsafe() (T, error) {
 	l := len(stack.data)
 	if l == 0 {
 		var nothing T
-		return nothing, errors.New("Attempted to pop from empty stack")
+		return nothing, errors.New("attempted to pop from empty stack")
 	}
 
 	res := stack.data[l-1]
