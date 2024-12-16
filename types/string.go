@@ -9,6 +9,10 @@ type PrimitiveStr struct {
 	value string
 }
 
+func MakeString(value string) *PrimitiveStr {
+	return &PrimitiveStr{value}
+}
+
 func (str *PrimitiveStr) Display() string {
 	return str.value
 }

@@ -40,8 +40,8 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
-	case "PUSH_INT":
-		var instruction Instruction_PUSH_INT
+	case "PUSH_NUM":
+		var instruction Instruction_PUSH_NUM
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}

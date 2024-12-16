@@ -9,6 +9,18 @@ type PrimitiveNum struct {
 	value big.Rat
 }
 
+func MakeNumber(value string) (*PrimitiveNum, error) {
+	var num big.Rat
+	if _, success := num.SetString(value); !success {
+		return nil, fmt.Errorf("cannot parse %q into a rational number", value)
+	}
+	return &PrimitiveNum{num}, nil
+}
+
+func AsPrimitiveNumber(value *big.Rat) *PrimitiveNum {
+	return &PrimitiveNum{value: *value}
+}
+
 func (num *PrimitiveNum) Display() string {
 	as_float, _ := num.value.Float64()
 	return fmt.Sprintf("%v", as_float)
