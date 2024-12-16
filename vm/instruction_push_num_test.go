@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestPushIntParsing(t *testing.T) {
+func TestPushNumParsing(t *testing.T) {
 	expected_type := "*vm.Instruction_PUSH_NUM"
 
 	ExpectParse(t, "PUSH_NUM 123", expected_type, "PUSH_NUM 123")
@@ -18,7 +18,7 @@ func TestPushIntParsing(t *testing.T) {
 	ExpectParseFailure(t, "PUSH_NUM foo", `invalid value "foo"`)
 }
 
-func TestPushIntPerform(t *testing.T) {
+func TestPushNumPerform(t *testing.T) {
 	vm := VirtualMachine{}
 
 	for i := range 10 {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 	"yolk/types"
+	"yolk/utils"
 )
 
 type Instruction_PUSH_NUM struct {
@@ -21,8 +22,7 @@ func (instruction *Instruction_PUSH_NUM) Parse(args *string) error {
 }
 
 func (instruction *Instruction_PUSH_NUM) String() string {
-	as_float, _ := instruction.value.Float64()
-	return fmt.Sprintf("PUSH_NUM %v", as_float)
+	return fmt.Sprintf("PUSH_NUM %v", utils.EncodeNum(&instruction.value))
 }
 
 func (instruction *Instruction_PUSH_NUM) Perform(vm *VirtualMachine) error {

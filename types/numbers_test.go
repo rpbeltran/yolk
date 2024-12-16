@@ -1,6 +1,7 @@
 package types
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -13,11 +14,17 @@ func makeNumOrFail(value string, t *testing.T) *PrimitiveNum {
 }
 
 func TestNumDisplay(t *testing.T) {
-	test_cases := []string{"123", "0", "-123", "0.12345", "-0.102", "1.23e+123"}
-	for _, tc := range test_cases {
+	basic_test_cases := []string{"123", "0", "-123", "0.12345", "-0.102"}
+	for _, tc := range basic_test_cases {
 		if actual := makeNumOrFail(tc, t).Display(); actual != tc {
 			t.Fatalf("makePrimitiveNumber(%q).Display() returned %q, expected %q", tc, actual, tc)
 		}
+	}
+
+	big_input := "1.23e+123"
+	equivalent := "123" + strings.Repeat("0", 121)
+	if actual := makeNumOrFail(big_input, t).Display(); actual != equivalent {
+		t.Fatalf("makePrimitiveNumber(%q).Display() returned %q, expected %q", big_input, actual, equivalent)
 	}
 }
 

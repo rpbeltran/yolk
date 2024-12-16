@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"math/big"
+	"yolk/utils"
 )
 
 type PrimitiveNum struct {
@@ -22,8 +23,7 @@ func AsPrimitiveNumber(value *big.Rat) *PrimitiveNum {
 }
 
 func (num *PrimitiveNum) Display() string {
-	as_float, _ := num.value.Float64()
-	return fmt.Sprintf("%v", as_float)
+	return utils.EncodeNum(&num.value)
 }
 
 // Operators
