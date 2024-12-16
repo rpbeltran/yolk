@@ -1,9 +1,12 @@
 package vm
 
-import "yolk/types"
+import (
+	"yolk/types"
+	"yolk/utils"
+)
 
 type VirtualMachine struct {
 	instructions        []Instruction
 	instruction_pointer int
-	stack               Stack[types.Primitive]
+	stack               utils.Stack[types.Primitive]
 }
