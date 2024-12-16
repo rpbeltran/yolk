@@ -1,11 +1,11 @@
-package instructions
+package vm
 
 import (
 	"testing"
 )
 
 func TestPushStrParsing(t *testing.T) {
-	expected_type := "*instructions.Instruction_PUSH_STR"
+	expected_type := "*vm.Instruction_PUSH_STR"
 
 	ExpectParse(t, `PUSH_STR "FOO"`, expected_type, `PUSH_STR "FOO"`)
 	ExpectParse(t, `PUSH_STR "123"`, expected_type, `PUSH_STR "123"`)

@@ -1,15 +1,14 @@
-package instructions
+package vm
 
 import (
 	"fmt"
 	"strings"
-	"yolk/vm"
 )
 
 type Instruction interface {
 	Parse(args *string) error
 	String() string
-	Perform(machine *vm.VirtualMachine) error
+	Perform(machine *VirtualMachine) error
 }
 
 func ParseInstruction(yolk_line string) (Instruction, error) {

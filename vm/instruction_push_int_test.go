@@ -1,11 +1,11 @@
-package instructions
+package vm
 
 import (
 	"testing"
 )
 
 func TestPushIntParsing(t *testing.T) {
-	expected_type := "*instructions.Instruction_PUSH_INT"
+	expected_type := "*vm.Instruction_PUSH_INT"
 
 	ExpectParse(t, "PUSH_INT 123", expected_type, "PUSH_INT 123")
 	ExpectParse(t, "PUSH_INT -123", expected_type, "PUSH_INT -123")

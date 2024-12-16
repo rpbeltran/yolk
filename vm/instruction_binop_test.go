@@ -1,11 +1,11 @@
-package instructions
+package vm
 
 import (
 	"testing"
 )
 
 func TestBinopParsing(t *testing.T) {
-	expected_type := "*instructions.Instruction_BINOP"
+	expected_type := "*vm.Instruction_BINOP"
 
 	ExpectParse(t, "BINOP add", expected_type, "BINOP add")
 	ExpectParse(t, "BINOP   add", expected_type, "BINOP add")

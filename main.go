@@ -5,7 +5,6 @@ import (
 	"flag"
 	"log"
 	"os"
-	"yolk/instructions"
 	"yolk/vm"
 )
 
@@ -22,7 +21,7 @@ func execute_yolk(path string) error {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		if instruction, err := instructions.ParseInstruction(scanner.Text()); err != nil {
+		if instruction, err := vm.ParseInstruction(scanner.Text()); err != nil {
 			return err
 		} else if instruction != nil {
 			if err := instruction.Perform(&machine); err != nil {

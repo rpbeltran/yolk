@@ -1,9 +1,8 @@
-package instructions
+package vm
 
 import (
 	"fmt"
 	"strconv"
-	"yolk/vm"
 )
 
 type Instruction_PUSH_STR struct {
@@ -26,7 +25,7 @@ func (instruction *Instruction_PUSH_STR) String() string {
 	return fmt.Sprintf("PUSH_STR %q", instruction.value)
 }
 
-func (instruction *Instruction_PUSH_STR) Perform(machine *vm.VirtualMachine) error {
+func (instruction *Instruction_PUSH_STR) Perform(machine *VirtualMachine) error {
 	fmt.Printf("//TODO: Implement PUSH_STR (called with value %q)\n", instruction.value)
 	return nil
 }

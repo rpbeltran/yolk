@@ -1,11 +1,11 @@
-package instructions
+package vm
 
 import (
 	"testing"
 )
 
 func TestExecParsing(t *testing.T) {
-	expected_type := "*instructions.Instruction_EXEC"
+	expected_type := "*vm.Instruction_EXEC"
 
 	ExpectParse(t, "EXEC 123", expected_type, "EXEC 123")
 	ExpectParse(t, "EXEC   1", expected_type, "EXEC 1")

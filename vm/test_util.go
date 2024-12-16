@@ -1,4 +1,4 @@
-package instructions
+package vm
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ func ExpectParse(t *testing.T, input string, expected_type string, expected_stri
 		t.Fatalf("ParseInstruction(%q) has unexpected error: %v", input, err)
 	} else if instruction_type := fmt.Sprintf("%T", instruction); instruction_type != expected_type {
 		t.Fatalf("ParseInstruction(%q) expected type %q, actual type %q", input, expected_type, instruction_type)
-	} else if fmt.Sprintf("%s", instruction) != expected_string {
+	} else if instruction.String() != expected_string {
 		t.Fatalf("ParseInstruction(%q).String() expected %q, actual %q", input, expected_string, instruction)
 	}
 }

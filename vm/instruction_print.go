@@ -1,8 +1,7 @@
-package instructions
+package vm
 
 import (
 	"fmt"
-	"yolk/vm"
 )
 
 type Instruction_PRINT struct{}
@@ -18,7 +17,7 @@ func (instruction *Instruction_PRINT) String() string {
 	return "PRINT"
 }
 
-func (instruction *Instruction_PRINT) Perform(machine *vm.VirtualMachine) error {
+func (instruction *Instruction_PRINT) Perform(machine *VirtualMachine) error {
 	fmt.Println("//TODO: Implement PRINT instruction")
 	return nil
 }

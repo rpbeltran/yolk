@@ -18,7 +18,7 @@ func TestLIFO(t *testing.T) {
 		}
 	}
 
-	expected_error := "Attempted to pop from empty stack"
+	expected_error := "attempted to pop from empty stack"
 	if value, err := stack.Pop(); err == nil {
 		t.Fatalf("stack.Pop() expected error %q, instead succeeded and returned %d", expected_error, value)
 	} else if err.Error() != expected_error {

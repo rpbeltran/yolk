@@ -1,8 +1,7 @@
-package instructions
+package vm
 
 import (
 	"fmt"
-	"yolk/vm"
 )
 
 type binop uint8
@@ -37,7 +36,7 @@ func (instruction *Instruction_BINOP) String() string {
 	}
 }
 
-func (instruction *Instruction_BINOP) Perform(machine *vm.VirtualMachine) error {
+func (instruction *Instruction_BINOP) Perform(machine *VirtualMachine) error {
 	switch instruction.binop {
 	case binop_add:
 		fmt.Println("//TODO: implement `BINOP add`")

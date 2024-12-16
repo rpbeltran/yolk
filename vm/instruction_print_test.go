@@ -1,11 +1,11 @@
-package instructions
+package vm
 
 import (
 	"testing"
 )
 
 func TestPrintParsing(t *testing.T) {
-	expected_type := "*instructions.Instruction_PRINT"
+	expected_type := "*vm.Instruction_PRINT"
 	expected_string := "PRINT"
 
 	ExpectParse(t, "PRINT", expected_type, expected_string)

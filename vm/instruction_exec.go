@@ -1,9 +1,8 @@
-package instructions
+package vm
 
 import (
 	"fmt"
 	"strconv"
-	"yolk/vm"
 )
 
 type Instruction_EXEC struct {
@@ -26,7 +25,7 @@ func (instruction *Instruction_EXEC) String() string {
 	return fmt.Sprintf("EXEC %d", instruction.arg_count)
 }
 
-func (instruction *Instruction_EXEC) Perform(machine *vm.VirtualMachine) error {
+func (instruction *Instruction_EXEC) Perform(machine *VirtualMachine) error {
 	fmt.Printf("//TODO: Implement EXEC (called with %d inputs)\n", instruction.arg_count)
 	return nil
 }

@@ -1,11 +1,11 @@
-package instructions
+package vm
 
 import (
 	"testing"
 )
 
 func TestPipelineParsing(t *testing.T) {
-	expected_type := "*instructions.Instruction_PIPELINE"
+	expected_type := "*vm.Instruction_PIPELINE"
 
 	ExpectParse(t, "PIPELINE begin", expected_type, "PIPELINE begin")
 	ExpectParse(t, "PIPELINE next", expected_type, "PIPELINE next")

@@ -1,8 +1,7 @@
-package instructions
+package vm
 
 import (
 	"fmt"
-	"yolk/vm"
 )
 
 type operation uint8
@@ -45,7 +44,7 @@ func (instruction *Instruction_PIPELINE) String() string {
 	panic(fmt.Sprintf("PIPELINE instruction deserialized with unexpected mode %d", instruction.operation))
 }
 
-func (instruction *Instruction_PIPELINE) Perform(machine *vm.VirtualMachine) error {
+func (instruction *Instruction_PIPELINE) Perform(machine *VirtualMachine) error {
 	switch instruction.operation {
 	case pipeline_begin:
 		fmt.Println("//TODO: implement `PIPELINE begin`")
