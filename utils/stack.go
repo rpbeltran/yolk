@@ -39,7 +39,7 @@ func (stack *Stack[T]) PopUnsafe() (T, error) {
 		return nothing, errors.New("attempted to pop from empty stack")
 	}
 
-	res := stack.data[l-1]
+	last := stack.data[l-1]
 	stack.data = stack.data[:l-1]
-	return res, nil
+	return last, nil
 }

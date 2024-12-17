@@ -17,7 +17,11 @@ func (instruction *Instruction_PRINT) String() string {
 	return "PRINT"
 }
 
-func (instruction *Instruction_PRINT) Perform(machine *VirtualMachine) error {
-	fmt.Println("//TODO: Implement PRINT instruction")
+func (instruction *Instruction_PRINT) Perform(vm *VirtualMachine) error {
+	if value, err := vm.stack.Pop(); err != nil {
+		return err
+	} else {
+		vm.output_buffer.Push(value.Display())
+	}
 	return nil
 }

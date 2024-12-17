@@ -60,6 +60,6 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 		return &instruction, nil
 	}
 
-	return nil, fmt.Errorf("Unknown operator: %s", operator)
+	return nil, fmt.Errorf("unknown operator: %s", operator)
 
 }
