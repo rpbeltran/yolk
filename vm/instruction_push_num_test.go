@@ -46,5 +46,4 @@ func TestPushNumPerform(t *testing.T) {
 			t.Fatalf("Unexpected popped value, got %s expected %s", actual, expected)
 		}
 	}
-
 }
