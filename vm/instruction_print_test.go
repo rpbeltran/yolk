@@ -18,15 +18,19 @@ func TestPrintParsing(t *testing.T) {
 func TestPrintPerform(t *testing.T) {
 	vm := VirtualMachine{}
 
+	print_instruction, err := ParseInstruction("PRINT")
+	if err != nil {
+		t.Fatalf("Error parsing instruction %q: %v", print_instruction, err)
+	}
+
+	if err := print_instruction.Perform(&vm); err == nil {
+		t.Fatalf("Epected error executing PRINT: %v", err)
+	}
+
 	phrases := []string{"Hello", "", "foo!!", "12345", "''", `""`}
 
 	for _, phrase := range phrases {
 		vm.stack.Push(types.MakeString(phrase))
-	}
-
-	print_instruction, err := ParseInstruction("PRINT")
-	if err != nil {
-		t.Fatalf("Error parsing instruction %q: %v", print_instruction, err)
 	}
 
 	for i := range phrases {
@@ -37,6 +41,10 @@ func TestPrintPerform(t *testing.T) {
 		if actual := vm.output_buffer.Size(); actual != i+1 {
 			t.Fatalf("Queue had size %d, expected %d", actual, i+1)
 		}
+	}
+
+	if err := print_instruction.Perform(&vm); err == nil {
+		t.Fatalf("Epected error executing PRINT: %v", err)
 	}
 
 	for i := range phrases {
