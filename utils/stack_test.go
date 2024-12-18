@@ -9,6 +9,11 @@ func TestLIFO(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		stack.Push(i)
 	}
+
+	if actual := stack.Size(); actual != 100 {
+		t.Fatalf("Stack had size %d, expected 100", actual)
+	}
+
 	for i := 0; i < 100; i++ {
 		expected := 99 - i
 		if value, err := stack.Pop(); err != nil {

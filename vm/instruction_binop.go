@@ -36,10 +36,23 @@ func (instruction *Instruction_BINOP) String() string {
 	}
 }
 
-func (instruction *Instruction_BINOP) Perform(machine *VirtualMachine) error {
+func (instruction *Instruction_BINOP) Perform(vm *VirtualMachine) error {
+	right, err := vm.stack.Pop()
+	if err != nil {
+		return fmt.Errorf("popping rhs for binop: %v", err)
+	}
+	left, err := vm.stack.Pop()
+	if err != nil {
+		return fmt.Errorf("popping hs for binop: %v", err)
+	}
+
 	switch instruction.binop {
 	case binop_add:
-		fmt.Println("//TODO: implement `BINOP add`")
+		if sum, err := left.Add(right); err != nil {
+			return err
+		} else {
+			vm.stack.Push(sum)
+		}
 	default:
 		return fmt.Errorf("BINOP instruction has binop code '%d'", instruction.binop)
 	}

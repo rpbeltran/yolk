@@ -43,3 +43,7 @@ func (stack *Stack[T]) PopUnsafe() (T, error) {
 	stack.data = stack.data[:l-1]
 	return last, nil
 }
+
+func (stack *Stack[T]) Size() int {
+	return len(stack.data)
+}
