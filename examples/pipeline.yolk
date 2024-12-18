@@ -12,3 +12,22 @@ EXEC 1
 PIPELINE end
 PRINT
 # DEBUG_ONLY assert_stack_empty
+
+
+
+
+# Weird nested PIPELINE
+# say a | (`say b` | `say c`) | say d
+
+PIPELINE begin
+PUSH_STR "a"
+PIPELINE next
+PIPELINE begin
+PUSH_STR "b"
+PIPELINE next
+PUSH_STR "c"
+PIPELINE end
+PIPELINE next
+PUSH_STR "d"
+PIPELINE end
+PRINT

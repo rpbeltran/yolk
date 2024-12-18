@@ -6,6 +6,15 @@ import (
 	"testing"
 )
 
+func RequireParse(t *testing.T, input string) Instruction {
+	if instruction, err := ParseInstruction(input); err != nil {
+		t.Fatalf("ParseInstruction(%q) has unexpected error: %v", input, err)
+		return nil
+	} else {
+		return instruction
+	}
+}
+
 func ExpectParse(t *testing.T, input string, expected_type string, expected_string string) {
 	if instruction, err := ParseInstruction(input); err != nil {
 		t.Fatalf("ParseInstruction(%q) has unexpected error: %v", input, err)

@@ -44,6 +44,21 @@ func (stack *Stack[T]) PopUnsafe() (T, error) {
 	return last, nil
 }
 
+func (stack *Stack[T]) Peek() (*T, error) {
+	stack.lock.Lock()
+	defer stack.lock.Unlock()
+
+	return stack.PeekUnsafe()
+}
+
+func (stack *Stack[T]) PeekUnsafe() (*T, error) {
+	if l := len(stack.data); l == 0 {
+		return nil, errors.New("attempted to peek at empty stack")
+	} else {
+		return &stack.data[l-1], nil
+	}
+}
+
 func (stack *Stack[T]) Size() int {
 	return len(stack.data)
 }

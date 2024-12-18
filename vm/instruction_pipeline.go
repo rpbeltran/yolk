@@ -44,14 +44,25 @@ func (instruction *Instruction_PIPELINE) String() string {
 	panic(fmt.Sprintf("PIPELINE instruction deserialized with unexpected mode %d", instruction.operation))
 }
 
-func (instruction *Instruction_PIPELINE) Perform(machine *VirtualMachine) error {
+func (instruction *Instruction_PIPELINE) Perform(vm *VirtualMachine) error {
 	switch instruction.operation {
 	case pipeline_begin:
-		fmt.Println("//TODO: implement `PIPELINE begin`")
+		vm.pipeline_states.Push(nil)
 	case pipeline_next:
-		fmt.Println("//TODO: implement `PIPELINE next`")
+		_, err := vm.pipeline_states.Pop()
+		if err != nil {
+			return fmt.Errorf("could not pop pipeline state: %v", err)
+		}
+		value, err := vm.stack.Pop()
+		if err != nil {
+			return fmt.Errorf("could not pop stack: %v", err)
+		}
+		vm.pipeline_states.Push(&value)
 	case pipeline_end:
-		fmt.Println("//TODO: implement `PIPELINE end`")
+		_, err := vm.pipeline_states.Pop()
+		if err != nil {
+			return fmt.Errorf("could not pop pipeline state: %v", err)
+		}
 	}
 	return nil
 }

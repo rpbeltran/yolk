@@ -14,6 +14,12 @@ func TestLIFO(t *testing.T) {
 		t.Fatalf("Stack had size %d, expected 100", actual)
 	}
 
+	if value, err := stack.Peek(); err != nil {
+		t.Fatalf("stack.Peek() got unexpected errror: %v", err)
+	} else if *value != 99 {
+		t.Fatalf("stack.Peek() expected 99 but got %d", *value)
+	}
+
 	for i := 0; i < 100; i++ {
 		expected := 99 - i
 		if value, err := stack.Pop(); err != nil {
