@@ -39,15 +39,11 @@ func (instruction *Instruction_EXEC) mockPerform(vm *VirtualMachine) error {
 
 	args := []string{}
 	for i := range instruction.arg_count {
-		arg, err := vm.stack.Pop()
-		if err != nil {
+		if arg, err := vm.stack.Pop(); err != nil {
 			return fmt.Errorf("popping arg %d from stack: %v", i, err)
+		} else {
+			args = append(args, arg.Display())
 		}
-		arg_str, err := arg.RequireStr()
-		if err != nil {
-			return fmt.Errorf("arg %d must be a string: %v", i, err)
-		}
-		args = append(args, arg_str.Display())
 	}
 
 	var json_str string
