@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -128,5 +129,38 @@ func TestPipelinePerform(t *testing.T) {
 		t.Fatalf("Unexpected error popping stack: %v", err)
 	} else if actual := value.Display(); actual != "d" {
 		t.Fatalf(`Unexpected value %q for pipeline state, expected "d"`, actual)
+	}
+
+}
+func TestPipelinePerformFailureNextBeforeBegin(t *testing.T) {
+	vm := VirtualMachine{}
+	if err := RequireParse(t, "PIPELINE begin").Perform(&vm); err != nil {
+		t.Fatalf(`Unexpected error from "PIPELINE begin": %v`, err)
+	}
+	expected_error := "could not pop stack"
+	if err := RequireParse(t, "PIPELINE next").Perform(&vm); err == nil {
+		t.Fatal(`Expected error from "PIPELINE end" but got none`)
+	} else if !strings.Contains(err.Error(), (expected_error)) {
+		t.Fatalf(`Expected error from "PIPELINE end" to contain %q but got: %v`, expected_error, err)
+	}
+}
+
+func TestPipelinePerformFailureNextWithoutValue(t *testing.T) {
+	vm := VirtualMachine{}
+	expected_error := "could not pop pipeline state"
+	if err := RequireParse(t, "PIPELINE next").Perform(&vm); err == nil {
+		t.Fatal(`Expected error from "PIPELINE next" but got none`)
+	} else if !strings.Contains(err.Error(), (expected_error)) {
+		t.Fatalf(`Expected error from "PIPELINE next" to contain %q but got: %v`, expected_error, err)
+	}
+}
+
+func TestPipelinePerformFailureEndBeforeBegin(t *testing.T) {
+	vm := VirtualMachine{}
+	expected_error := "could not pop pipeline state"
+	if err := RequireParse(t, "PIPELINE end").Perform(&vm); err == nil {
+		t.Fatal(`Expected error from "PIPELINE end" but got none`)
+	} else if !strings.Contains(err.Error(), (expected_error)) {
+		t.Fatalf(`Expected error from "PIPELINE next" to contain %q but got: %v`, expected_error, err)
 	}
 }
