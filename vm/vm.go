@@ -25,3 +25,22 @@ func (vm *VirtualMachine) GetPipeIn() (*types.Primitive, bool) {
 		return *value, true
 	}
 }
+
+type VirtualMachineDebugState struct {
+	StackSize  uint
+	TopOfStack string
+}
+
+func (vm *VirtualMachine) GetDebugState() VirtualMachineDebugState {
+	top_of_stack, err := vm.stack.Peek()
+	if err != nil {
+		return VirtualMachineDebugState{
+			StackSize:  uint(vm.stack.Size()),
+			TopOfStack: "",
+		}
+	}
+	return VirtualMachineDebugState{
+		StackSize:  uint(vm.stack.Size()),
+		TopOfStack: (*top_of_stack).Display(),
+	}
+}

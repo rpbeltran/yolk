@@ -50,17 +50,16 @@ func (instruction *Instruction_EXEC) mockPerform(vm *VirtualMachine) error {
 		args = append(args, arg_str.Display())
 	}
 
+	var json_str string
 	if stdin, has_stdin := vm.GetPipeIn(); !has_stdin {
-		json_str := fmt.Sprintf(`{\n\t"command":%q,\n\t"args":%v\n}`, cmd_str.Display(), args)
-		json := types.MakeString(json_str)
-		vm.stack.Push(json)
+		json_str = fmt.Sprintf(`{\n\t"command":%q,\n\t"args":%v\n}`, cmd_str.Display(), args)
 	} else if stdin == nil {
 		return errors.New("vm.GetPipeIn() gave a null ptr")
 	} else {
-		json_str := fmt.Sprintf(`{\n\t"command":%q,\n\t"args":%v,\n\t"stdin":%q\n}`, cmd_str.Display(), args, (*stdin).Display())
-		json := types.MakeString(json_str)
-		vm.stack.Push(json)
+		json_str = fmt.Sprintf(`{\n\t"command":%q,\n\t"args":%v,\n\t"stdin":%q\n}`, cmd_str.Display(), args, (*stdin).Display())
 	}
+	json := types.MakeString(json_str)
+	vm.stack.Push(json)
 	return nil
 }
 
