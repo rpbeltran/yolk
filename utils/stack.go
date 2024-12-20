@@ -62,3 +62,7 @@ func (stack *Stack[T]) PeekUnsafe() (*T, error) {
 func (stack *Stack[T]) Size() int {
 	return len(stack.data)
 }
+
+func (stack *Stack[T]) Empty() bool {
+	return stack.Size() == 0
+}
