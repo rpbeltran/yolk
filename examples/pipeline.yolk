@@ -4,10 +4,10 @@ PUSH_STR "hello.txt"
 PUSH_STR "cat"
 EXEC 1
 PIPELINE next
-PUSH_STR "grep"
 PUSH_NUM 2
 PUSH_NUM 1
 BINOP add
+PUSH_STR "grep"
 EXEC 1
 PIPELINE end
 PRINT

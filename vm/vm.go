@@ -22,7 +22,11 @@ func (vm *VirtualMachine) GetPipeIn() (*types.Primitive, bool) {
 	if value, err := vm.pipeline_states.Peek(); err != nil {
 		panic(fmt.Sprintf("Failed to get pipeline state: %q", err))
 	} else {
-		return *value, true
+		if stdin := *value; stdin == nil {
+			return nil, false
+		} else {
+			return *value, true
+		}
 	}
 }
 

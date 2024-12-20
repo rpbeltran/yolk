@@ -65,9 +65,8 @@ func (instruction *Instruction_EXEC) mockPerform(vm *VirtualMachine) error {
 
 func (instruction *Instruction_EXEC) Perform(vm *VirtualMachine) error {
 	if vm.MockExecutions {
-		instruction.mockPerform(vm)
+		return instruction.mockPerform(vm)
 	} else {
 		return errors.New("nonmocked executions are currently unimplemented")
 	}
-	return nil
 }

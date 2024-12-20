@@ -12,20 +12,16 @@ func TestVMGetPipeIn(t *testing.T) {
 		t.Fatalf(`Unexpected error from "PIPELINE begin": %v`, err)
 	}
 
-	if value, has_input := vm.GetPipeIn(); !has_input {
-		t.Fatal("vm.GetPipeIn() had no value, expected nil")
-	} else if value != nil {
-		t.Fatalf("vm.GetPipeIn() gave %v, expected no nil", *value)
+	if value, has_input := vm.GetPipeIn(); has_input {
+		t.Fatalf("vm.GetPipeIn() gave %v, expected no value", *value)
 	}
 
 	if err := RequireParse(t, `PUSH_STR "a"`).Perform(&vm); err != nil {
 		t.Fatalf(`Unexpected error from 'PUSH_STR "a"': %v`, err)
 	}
 
-	if value, has_input := vm.GetPipeIn(); !has_input {
-		t.Fatal("vm.GetPipeIn() had no value, expected nil")
-	} else if value != nil {
-		t.Fatalf("vm.GetPipeIn() gave %v, expected no nil", *value)
+	if value, has_input := vm.GetPipeIn(); has_input {
+		t.Fatalf("vm.GetPipeIn() gave %v, expected no value", *value)
 	}
 
 	if err := RequireParse(t, "PIPELINE next").Perform(&vm); err != nil {
