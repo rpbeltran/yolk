@@ -2,6 +2,8 @@ package vm
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"yolk/types"
 	"yolk/utils"
 )
@@ -10,9 +12,15 @@ type VirtualMachine struct {
 	instructions        []Instruction
 	instruction_pointer int
 	stack               utils.Stack[types.Primitive] //todo: benchmark this being a pointer
-	output_buffer       utils.Queue[string]
 	pipeline_states     utils.Stack[*types.Primitive]
 	MockExecutions      bool
+	stdout              io.Writer
+}
+
+func NewVM() VirtualMachine {
+	return VirtualMachine{
+		stdout: os.Stdout,
+	}
 }
 
 func (vm *VirtualMachine) GetPipeIn() (*types.Primitive, bool) {

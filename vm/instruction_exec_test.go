@@ -32,7 +32,7 @@ func TestExecMockPerformNoArgs(t *testing.T) {
 		}
 	}
 
-	expected_string := `{\n\t"command":"foo",\n\t"args":[]\n}`
+	expected_string := "{\n\t\"command\":\"foo\",\n\t\"args\":[]\n}"
 	if actual_stack_size := vm.stack.Size(); actual_stack_size != 1 {
 		t.Fatalf("Stack had %d items after operations, expected 1", actual_stack_size)
 	}
@@ -59,7 +59,7 @@ func TestExecMockPerformOneArg(t *testing.T) {
 		}
 	}
 
-	expected_string := `{\n\t"command":"foo",\n\t"args":[bar]\n}`
+	expected_string := "{\n\t\"command\":\"foo\",\n\t\"args\":[bar]\n}"
 	if actual_stack_size := vm.stack.Size(); actual_stack_size != 1 {
 		t.Fatalf("Stack had %d items after operations, expected 1", actual_stack_size)
 	}
@@ -88,7 +88,7 @@ func TestExecMockPerformMultipleArgs(t *testing.T) {
 		}
 	}
 
-	expected_string := `{\n\t"command":"foo",\n\t"args":[a b c]\n}`
+	expected_string := "{\n\t\"command\":\"foo\",\n\t\"args\":[a b c]\n}"
 	if actual_stack_size := vm.stack.Size(); actual_stack_size != 1 {
 		t.Fatalf("Stack had %d items after operations, expected 1", actual_stack_size)
 	}
@@ -120,7 +120,7 @@ func TestExecMockPerformPipein(t *testing.T) {
 		}
 	}
 
-	expected_string := `{\n\t"command":"foo",\n\t"args":[a b c],\n\t"stdin":"Hello World!"\n}`
+	expected_string := "{\n\t\"command\":\"foo\",\n\t\"args\":[a b c],\n\t\"stdin\":\"Hello World!\"\n}"
 	if actual_stack_size := vm.stack.Size(); actual_stack_size != 1 {
 		t.Fatalf("Stack had %d items after operations, expected 1", actual_stack_size)
 	}

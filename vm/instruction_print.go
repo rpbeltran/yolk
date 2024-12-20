@@ -19,9 +19,9 @@ func (instruction *Instruction_PRINT) String() string {
 
 func (instruction *Instruction_PRINT) Perform(vm *VirtualMachine) error {
 	if value, err := vm.stack.Pop(); err != nil {
-		return err
+		return fmt.Errorf("error to getting value for printing: %w", err)
 	} else {
-		vm.output_buffer.Push(value.Display())
+		fmt.Fprintln(vm.stdout, value.Display())
 	}
 	return nil
 }

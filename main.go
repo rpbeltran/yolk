@@ -13,7 +13,7 @@ var runFlag = flag.String("run", "", ".yolk file to exec")
 var debugFlag = flag.Bool("debug", false, "Show vm state after each instruction")
 
 func execute_yolk(path string, verbose_debug bool) error {
-	var machine vm.VirtualMachine
+	machine := vm.NewVM()
 	machine.MockExecutions = true
 
 	file, err := os.Open(path)
@@ -61,7 +61,7 @@ func main() {
 		log.Fatal("--run flag not spcified")
 	}
 
-	if err := execute_yolk(*runFlag, (*debugFlag)); err != nil {
+	if err := execute_yolk(*runFlag, *debugFlag); err != nil {
 		log.Fatal(err)
 	}
 }
