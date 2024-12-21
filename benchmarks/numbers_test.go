@@ -4,6 +4,7 @@ import (
 	"math/big"
 	"testing"
 	"yolk/types"
+	"yolk/utils"
 )
 
 func BenchmarkMakeNumber(b *testing.B) {
@@ -58,6 +59,22 @@ func BenchmarkNumbersAdditionInplace(b *testing.B) {
 		if err != nil {
 			b.Fatalf("Error perfoming addition: %v", err)
 		}
+	}
+}
+
+func BenchmarkNumbersTruncate(b *testing.B) {
+	// truncate a number b.N times
+	value := big.NewRat(7621354, 3)
+	for n := 0; n < b.N; n++ {
+		utils.Truncate(value)
+	}
+}
+
+func BenchmarkNumbersTruncateInplace(b *testing.B) {
+	// truncate a number b.N times
+	value := big.NewRat(7621354, 3)
+	for n := 0; n < b.N; n++ {
+		utils.TruncateInPlace(value)
 	}
 }
 
