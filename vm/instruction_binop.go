@@ -37,13 +37,13 @@ func (instruction *Instruction_BINOP) String() string {
 }
 
 func (instruction *Instruction_BINOP) Perform(vm *VirtualMachine) error {
+	left, err := vm.stack.Pop()
+	if err != nil {
+		return fmt.Errorf("popping lhs for binop: %v", err)
+	}
 	right, err := vm.stack.Pop()
 	if err != nil {
 		return fmt.Errorf("popping rhs for binop: %v", err)
-	}
-	left, err := vm.stack.Pop()
-	if err != nil {
-		return fmt.Errorf("popping hs for binop: %v", err)
 	}
 
 	switch instruction.binop {

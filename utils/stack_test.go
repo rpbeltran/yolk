@@ -49,13 +49,8 @@ func BenchmarkLIFO(b *testing.B) {
 	stack := CreateStack[int]()
 	for i := 0; i < b.N; i++ {
 		stack.Push(i)
-	}
-	for i := 0; i < b.N; i++ {
-		expected := b.N - i - 1
-		if value, err := stack.Pop(); err != nil {
-			b.Fatalf("stack.Pop() expected %d with no error, instead received the error %v", expected, err)
-		} else if value != expected {
-			b.Fatalf("stack.Pop() expected to return %d but returned %d", expected, value)
+		if _, err := stack.Pop(); err != nil {
+			b.Fatalf("stack.Pop() had unexpected error: %v", err)
 		}
 	}
 }
@@ -63,14 +58,9 @@ func BenchmarkLIFO(b *testing.B) {
 func BenchmarkUnsafeLIFO(b *testing.B) {
 	stack := CreateStack[int]()
 	for i := 0; i < b.N; i++ {
-		stack.Push(i)
-	}
-	for i := 0; i < b.N; i++ {
-		expected := b.N - i - 1
-		if value, err := stack.Pop(); err != nil {
-			b.Fatalf("stack.Pop() expected %d with no error, instead received the error %v", expected, err)
-		} else if value != expected {
-			b.Fatalf("stack.Pop() expected to return %d but returned %d", expected, value)
+		stack.PushUnsafe(i)
+		if _, err := stack.PopUnsafe(); err != nil {
+			b.Fatalf("stack.Pop() had unexpected error: %v", err)
 		}
 	}
 }

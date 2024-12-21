@@ -2,30 +2,30 @@ package vm
 
 import (
 	"fmt"
-	"math/big"
 	"yolk/types"
-	"yolk/utils"
 )
 
 type Instruction_PUSH_NUM struct {
-	value big.Rat
+	value *types.PrimitiveNum
 }
 
 func (instruction *Instruction_PUSH_NUM) Parse(args *string) error {
-	if _, success := instruction.value.SetString(*args); !success {
+	if num, err := types.MakeNumber(*args); err != nil {
 		if len(*args) == 0 {
 			return fmt.Errorf("PUSH_NUM instruction needs a value")
 		}
 		return fmt.Errorf("PUSH_NUM instruction has invalid value %q", *args)
+	} else {
+		instruction.value = num
 	}
 	return nil
 }
 
 func (instruction *Instruction_PUSH_NUM) String() string {
-	return fmt.Sprintf("PUSH_NUM %v", utils.EncodeNum(&instruction.value))
+	return fmt.Sprintf("PUSH_NUM %s", (*instruction.value).Display())
 }
 
 func (instruction *Instruction_PUSH_NUM) Perform(vm *VirtualMachine) error {
-	vm.stack.Push(types.AsPrimitiveNumber(&instruction.value))
+	vm.stack.Push(instruction.value)
 	return nil
 }

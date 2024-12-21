@@ -6,17 +6,20 @@ import (
 )
 
 type Queue[T any] struct {
-	lock sync.Mutex
-	data []T
+	lock        sync.Mutex
+	data        []T
+	thread_safe bool
 }
 
 func CreateQueue[T any]() *Queue[T] {
-	return &Queue[T]{sync.Mutex{}, make([]T, 0)}
+	return &Queue[T]{sync.Mutex{}, make([]T, 0), false}
 }
 
 func (queue *Queue[T]) Push(v T) {
-	queue.lock.Lock()
-	defer queue.lock.Unlock()
+	if queue.thread_safe {
+		queue.lock.Lock()
+		defer queue.lock.Unlock()
+	}
 
 	queue.PushUnsafe(v)
 }
@@ -26,8 +29,10 @@ func (queue *Queue[T]) PushUnsafe(v T) {
 }
 
 func (queue *Queue[T]) Pop() (T, error) {
-	queue.lock.Lock()
-	defer queue.lock.Unlock()
+	if queue.thread_safe {
+		queue.lock.Lock()
+		defer queue.lock.Unlock()
+	}
 
 	return queue.PopUnsafe()
 }

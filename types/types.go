@@ -4,6 +4,7 @@ type Primitive interface {
 	Display() string
 	// Operators
 	Add(other Primitive) (Primitive, error)
+	AddInplace(other Primitive) error
 	// Casting
 	RequireNum() (*PrimitiveNum, error)
 	RequireStr() (*PrimitiveStr, error)

@@ -7,12 +7,12 @@ import (
 )
 
 type Instruction_PUSH_STR struct {
-	value string
+	value *types.PrimitiveStr
 }
 
 func (instruction *Instruction_PUSH_STR) Parse(args *string) error {
 	if value, err := strconv.Unquote(*args); err == nil {
-		instruction.value = value
+		instruction.value = types.MakeString(value)
 	} else {
 		if len(*args) == 0 {
 			return fmt.Errorf("PUSH_STR instruction needs a value")
@@ -23,10 +23,10 @@ func (instruction *Instruction_PUSH_STR) Parse(args *string) error {
 }
 
 func (instruction *Instruction_PUSH_STR) String() string {
-	return fmt.Sprintf("PUSH_STR %q", instruction.value)
+	return fmt.Sprintf("PUSH_STR %q", instruction.value.Display())
 }
 
 func (instruction *Instruction_PUSH_STR) Perform(vm *VirtualMachine) error {
-	vm.stack.Push(types.MakeString(instruction.value))
+	vm.stack.Push(instruction.value)
 	return nil
 }

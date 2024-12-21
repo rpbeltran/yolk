@@ -20,6 +20,14 @@ type VirtualMachine struct {
 func NewVM() VirtualMachine {
 	return VirtualMachine{
 		stdout: os.Stdout,
+		stack:  *utils.CreateStack[types.Primitive](),
+	}
+}
+
+func NewDebugVM(stdout io.Writer) VirtualMachine {
+	return VirtualMachine{
+		stdout: stdout,
+		stack:  *utils.CreateStack[types.Primitive](),
 	}
 }
 

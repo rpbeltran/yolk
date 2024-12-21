@@ -23,6 +23,10 @@ func (str *PrimitiveStr) Add(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support numeric addition")
 }
 
+func (str *PrimitiveStr) AddInplace(other Primitive) error {
+	return fmt.Errorf("string type does not support numeric addition")
+}
+
 // Casting
 
 func (str *PrimitiveStr) RequireNum() (*PrimitiveNum, error) {

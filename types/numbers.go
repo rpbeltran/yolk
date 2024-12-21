@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"math/big"
+	"strconv"
 	"yolk/utils"
 )
 
@@ -11,6 +12,9 @@ type PrimitiveNum struct {
 }
 
 func MakeNumber(value string) (*PrimitiveNum, error) {
+	if value, err := strconv.Atoi(value); err == nil {
+		return &PrimitiveNum{*big.NewRat(int64(value), 1)}, nil
+	}
 	var num big.Rat
 	if _, success := num.SetString(value); !success {
 		return nil, fmt.Errorf("cannot parse %q into a rational number", value)
@@ -36,6 +40,15 @@ func (num *PrimitiveNum) Add(other Primitive) (Primitive, error) {
 	var sum big.Rat
 	sum.Add(&num.value, &other_num.value)
 	return &PrimitiveNum{sum}, nil
+}
+
+func (num *PrimitiveNum) AddInplace(other Primitive) error {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return err
+	}
+	num.value.Add(&num.value, &other_num.value)
+	return nil
 }
 
 // Casting
