@@ -16,7 +16,7 @@ func TestBinopParsing(t *testing.T) {
 	ExpectParseFailure(t, "BINOP foo", `unexpected operator "foo"`)
 }
 
-func TestBinopPerform(t *testing.T) {
+func TestBinopAdd(t *testing.T) {
 	program := []string{
 		"PUSH_NUM 5",
 		"PUSH_NUM 8",
@@ -24,6 +24,7 @@ func TestBinopPerform(t *testing.T) {
 		"BINOP add",
 		"BINOP add",
 	}
+	expected := "25"
 
 	vm := VirtualMachine{}
 
@@ -43,9 +44,218 @@ func TestBinopPerform(t *testing.T) {
 		t.Fatalf("Unexpected error popping stack: %v", err)
 	} else {
 		if num, err := value.RequireNum(); err != nil {
-			t.Fatalf("Output of addition is not a number: %v", err)
-		} else if actual := num.Display(); actual != "25" {
-			t.Fatalf("Calculating 8 + 12 + 5 gave %s, expecte 25 ", actual)
+			t.Fatalf("Output is not a number: %v", err)
+		} else if actual := num.Display(); actual != expected {
+			t.Fatalf("Calculating (12 + 8) + 5 gave %s, expected %s", actual, expected)
+		}
+	}
+}
+
+func TestBinopSubtract(t *testing.T) {
+	program := []string{
+		"PUSH_NUM 5",
+		"PUSH_NUM 8",
+		"PUSH_NUM 12",
+		"BINOP subtract",
+		"BINOP subtract",
+	}
+	expected := "-1"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if num, err := value.RequireNum(); err != nil {
+			t.Fatalf("Output is not a number: %v", err)
+		} else if actual := num.Display(); actual != expected {
+			t.Fatalf("Calculating (12 - 8) - 5 gave %s, expected %s", actual, expected)
+		}
+	}
+}
+
+func TestBinopMuiltiply(t *testing.T) {
+	program := []string{
+		"PUSH_NUM 5",
+		"PUSH_NUM 8",
+		"PUSH_NUM 12",
+		"BINOP multiply",
+		"BINOP multiply",
+	}
+	expected := "480"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if num, err := value.RequireNum(); err != nil {
+			t.Fatalf("Output is not a number: %v", err)
+		} else if actual := num.Display(); actual != expected {
+			t.Fatalf("Calculating (12 * 8) * 5 gave %s, expected %s", actual, expected)
+		}
+	}
+}
+
+func TestBinopDivide(t *testing.T) {
+	program := []string{
+		"PUSH_NUM 5",
+		"PUSH_NUM 8",
+		"PUSH_NUM 12",
+		"BINOP divide",
+		"BINOP divide",
+	}
+	expected := "0.3"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if num, err := value.RequireNum(); err != nil {
+			t.Fatalf("Output is not a number: %v", err)
+		} else if actual := num.Display(); actual != expected {
+			t.Fatalf("Calculating (12 / 8) / 5 gave %s, expected %s", actual, expected)
+		}
+	}
+}
+
+func TestBinopIntDivide(t *testing.T) {
+	program := []string{
+		"PUSH_NUM 2",
+		"PUSH_NUM 10",
+		"PUSH_NUM 99",
+		"BINOP int_divide",
+		"BINOP int_divide",
+	}
+	expected := "4"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if num, err := value.RequireNum(); err != nil {
+			t.Fatalf("Output is not a number: %v", err)
+		} else if actual := num.Display(); actual != expected {
+			t.Fatalf("Calculating (99 // 10) // 2 gave %s, expected %s", actual, expected)
+		}
+	}
+}
+func TestBinopPower(t *testing.T) {
+	program := []string{
+		"PUSH_NUM 2",
+		"PUSH_NUM 3",
+		"PUSH_NUM 4",
+		"BINOP power",
+		"BINOP power",
+	}
+	expected := "4096"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if num, err := value.RequireNum(); err != nil {
+			t.Fatalf("Output is not a number: %v", err)
+		} else if actual := num.Display(); actual != expected {
+			t.Fatalf("Calculating (4 ** 3) ** 2 gave %s, expected %s", actual, expected)
+		}
+	}
+}
+
+func TestBinopMod(t *testing.T) {
+	program := []string{
+		"PUSH_NUM 12",
+		"PUSH_NUM 30",
+		"PUSH_NUM 44",
+		"BINOP modulus",
+		"BINOP modulus",
+	}
+	expected := "2"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if num, err := value.RequireNum(); err != nil {
+			t.Fatalf("Output is not a number: %v", err)
+		} else if actual := num.Display(); actual != expected {
+			t.Fatalf("Calculating (44 mod 30) mod 12 gave %s, expected %s", actual, expected)
 		}
 	}
 }
