@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 )
 
@@ -40,9 +41,9 @@ func Truncate(num *big.Rat) *big.Rat {
 	}
 }
 
-func ModNumber(a *big.Rat, b *big.Rat) (*big.Rat, error) {
+func ModNumber(a *big.Rat, b *big.Rat) (big.Rat, error) {
 	if b.Num().BitLen() == 0 {
-		return nil, fmt.Errorf("cannot compute mod zero")
+		return big.Rat{}, fmt.Errorf("cannot compute mod zero")
 	}
 	if a.IsInt() && b.IsInt() {
 		var mod big.Int
@@ -52,7 +53,7 @@ func ModNumber(a *big.Rat, b *big.Rat) (*big.Rat, error) {
 		}
 		var mod_rat big.Rat
 		mod_rat.SetInt(&mod)
-		return &mod_rat, nil
+		return mod_rat, nil
 	}
 	var result big.Rat
 	result.Mul(a, result.Inv(b))
@@ -62,5 +63,52 @@ func ModNumber(a *big.Rat, b *big.Rat) (*big.Rat, error) {
 	if sign := result.Sign(); sign != 0 && sign != b.Sign() {
 		result.Add(&result, b)
 	}
-	return &result, nil
+	return result, nil
+}
+
+func RaisePower(a *big.Rat, b *big.Rat) (big.Rat, error) {
+	if a.IsInt() && b.IsInt() {
+		var result big.Rat
+		if b.Sign() == -1 {
+			var denominator big.Int
+			denominator.Exp(a.Num(), result.Denom().Abs(b.Num()), nil)
+			result.SetFrac(big.NewInt(1), &denominator)
+
+		} else {
+			result.Num().Exp(a.Num(), b.Num(), nil)
+		}
+		return result, nil
+	}
+
+	if b.IsInt() {
+		var result big.Rat
+
+		var numerator big.Int
+		var denominator big.Int
+
+		if b.Sign() == -1 {
+			var b_abs big.Int
+			b_abs.Abs(b.Num())
+
+			numerator.Exp(a.Denom(), &b_abs, nil)
+			denominator.Exp(a.Num(), &b_abs, nil)
+		} else {
+			numerator.Exp(a.Num(), b.Num(), nil)
+			denominator.Exp(a.Denom(), b.Num(), nil)
+		}
+
+		result.SetFrac(&numerator, &denominator)
+
+		return result, nil
+	}
+
+	a_float, _ := a.Float64()
+	b_float, _ := b.Float64()
+
+	var result big.Rat
+	if result.SetFloat64(math.Pow(a_float, b_float)) == nil {
+		return big.Rat{}, fmt.Errorf("overflow during RaisePower(%s, %s): result of non-integer exponents must fit in float64", EncodeNum(a), EncodeNum(b))
+	}
+
+	return result, nil
 }

@@ -110,7 +110,7 @@ func TestModulo(t *testing.T) {
 		if actual, err := ModNumber(&a, &b); err != nil {
 			t.Fatalf("unexpected error computing ModNumber(%s, %s): %v", test.a, test.b, err)
 		} else if actual.Cmp(&expected) != 0 {
-			t.Fatalf("ModNumber(%s, %s) gave %s, expected %s", test.a, test.b, EncodeNum(actual), test.c)
+			t.Fatalf("ModNumber(%s, %s) gave %s, expected %s", test.a, test.b, EncodeNum(&actual), test.c)
 		}
 
 		// Ensure that inputs weren't modified
@@ -120,6 +120,73 @@ func TestModulo(t *testing.T) {
 
 		if actual := EncodeNum(&b); actual != test.b {
 			t.Fatalf("ModNumber(%s, %s) turned %s into %s", test.a, test.b, test.b, actual)
+		}
+	}
+}
+
+func TestRaisePower(t *testing.T) {
+	type testcase struct {
+		a            string
+		b            string
+		c            string
+		should_error bool
+	}
+
+	test_cases := []testcase{
+		{"0", "1", "0", false},
+		{"1", "1", "1", false},
+		{"13", "10", "137858491849", false},
+		{"10", "-5", "0.00001", false},
+		{"-10", "3", "-1000", false},
+		{"10.5", "2", "110.25", false},
+		{"-10.5", "3", "-1157.625", false},
+		{"10", "3.5", "3162.2776601683799526654183864593505859375", false},
+		{"10.00000001", "3.5", "3162.27767123635248935897834599018096923828125", false},
+		{"10.5", "3.3", "2343.822326711475398042239248752593994140625", false},
+		{"-10.5", "-3.3", "", true},
+		{"-10.5", "-3.3", "", true},
+		{"10.5", "-3", "8/9261", false},
+		{"99", "999", "", false},
+		{"99", "9999", "", false},
+		{"99", "999.1", "", true},
+		{"1000000", "0.5", "1000", false},
+		{"9", "0.5", "3", false},
+	}
+
+	for _, test := range test_cases {
+		var a big.Rat
+		if _, success := a.SetString(test.a); !success {
+			t.Fatalf("Failed to parse test string %q into rational number", test.a)
+		}
+		var b big.Rat
+		if _, success := b.SetString(test.b); !success {
+			t.Fatalf("Failed to parse test string %q into rational number", test.b)
+		}
+
+		if test.should_error {
+			if actual, err := RaisePower(&a, &b); err == nil {
+				t.Fatalf("expected error from RaisePower(%s, %s), instead successfully returned %s", test.a, test.b, &actual)
+			}
+		} else {
+			var expected big.Rat
+
+			if actual, err := RaisePower(&a, &b); err != nil {
+				t.Fatalf("unexpected error computing RaisePower(%s, %s): %v", test.a, test.b, err)
+			} else if test.c == "" {
+				// Skip checking value
+			} else if _, success := expected.SetString(test.c); !success {
+				t.Fatalf("Failed to parse test string %q into rational number", test.c)
+			} else if actual.Cmp(&expected) != 0 {
+				t.Fatalf("RaisePower(%s), %s) gave %s, expected %s", test.a, test.b, &actual, &expected)
+			}
+		}
+
+		// Ensure that inputs weren't modified
+		if actual := EncodeNum(&a); actual != test.a {
+			t.Fatalf("RaisePower(%s, %s) turned %s into %s", test.a, test.b, test.a, actual)
+		}
+		if actual := EncodeNum(&b); actual != test.b {
+			t.Fatalf("RaisePower(%s, %s) turned %s into %s", test.a, test.b, test.b, actual)
 		}
 	}
 }

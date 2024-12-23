@@ -22,10 +22,6 @@ func MakeNumber(value string) (*PrimitiveNum, error) {
 	return &PrimitiveNum{num}, nil
 }
 
-func AsPrimitiveNumber(value *big.Rat) *PrimitiveNum {
-	return &PrimitiveNum{value: *value}
-}
-
 func (num *PrimitiveNum) Display() string {
 	return utils.EncodeNum(&num.value)
 }
@@ -35,7 +31,7 @@ func (num *PrimitiveNum) Display() string {
 func (num *PrimitiveNum) Add(other Primitive) (Primitive, error) {
 	other_num, err := other.RequireNum()
 	if err != nil {
-		return &PrimitiveNum{}, err
+		return &PrimitiveNum{}, fmt.Errorf("attempting to perform addition: %w", err)
 	}
 	var sum big.Rat
 	sum.Add(&num.value, &other_num.value)
@@ -49,6 +45,138 @@ func (num *PrimitiveNum) AddInplace(other Primitive) error {
 	}
 	num.value.Add(&num.value, &other_num.value)
 	return nil
+}
+
+func (num *PrimitiveNum) Subtract(other Primitive) (Primitive, error) {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return &PrimitiveNum{}, fmt.Errorf("attempting to perform subtraction: %w", err)
+	}
+	var difference big.Rat
+	difference.Sub(&num.value, &other_num.value)
+	return &PrimitiveNum{difference}, nil
+}
+
+func (num *PrimitiveNum) SubtractInplace(other Primitive) error {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return err
+	}
+	num.value.Sub(&num.value, &other_num.value)
+	return nil
+}
+
+func (num *PrimitiveNum) Multiply(other Primitive) (Primitive, error) {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return &PrimitiveNum{}, fmt.Errorf("attempting to perform multiplication: %w", err)
+	}
+	var product big.Rat
+	product.Mul(&num.value, &other_num.value)
+	return &PrimitiveNum{product}, nil
+}
+
+func (num *PrimitiveNum) MultiplyInplace(other Primitive) error {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return err
+	}
+	num.value.Mul(&num.value, &other_num.value)
+	return nil
+}
+
+func (num *PrimitiveNum) Divide(other Primitive) (Primitive, error) {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return &PrimitiveNum{}, fmt.Errorf("attempting to perform division: %w", err)
+	}
+	if other_num.value.Num().BitLen() == 0 {
+		return nil, fmt.Errorf("cannot compute division by zero")
+	}
+	var quotient big.Rat
+	quotient.Quo(&num.value, &other_num.value)
+	return &PrimitiveNum{quotient}, nil
+}
+
+func (num *PrimitiveNum) DivideInplace(other Primitive) error {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return err
+	}
+	if other_num.value.Num().BitLen() == 0 {
+		return fmt.Errorf("cannot compute division by zero")
+	}
+	num.value.Quo(&num.value, &other_num.value)
+	return nil
+}
+
+func (num *PrimitiveNum) IntDivide(other Primitive) (Primitive, error) {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return &PrimitiveNum{}, fmt.Errorf("attempting to perform integer division: %w", err)
+	}
+	if other_num.value.Num().BitLen() == 0 {
+		return nil, fmt.Errorf("cannot compute integer division by zero")
+	}
+	var quotient big.Rat
+	quotient.Quo(&num.value, &other_num.value)
+	utils.TruncateInPlace(&quotient)
+	return &PrimitiveNum{quotient}, nil
+}
+
+func (num *PrimitiveNum) IntDivideInplace(other Primitive) error {
+	other_num, err := other.RequireNum()
+	if err != nil {
+		return err
+	}
+	if other_num.value.Num().BitLen() == 0 {
+		return fmt.Errorf("cannot compute integer division by zero")
+	}
+	num.value.Quo(&num.value, &other_num.value)
+	utils.TruncateInPlace(&num.value)
+	return nil
+}
+
+func (num *PrimitiveNum) Modulo(other Primitive) (Primitive, error) {
+	if other_num, err := other.RequireNum(); err != nil {
+		return nil, fmt.Errorf("attempting to perform modulus: %w", err)
+	} else if mod, err := utils.ModNumber(&num.value, &other_num.value); err != nil {
+		return nil, fmt.Errorf("attempting to perform modulus: %w", err)
+	} else {
+		return &PrimitiveNum{mod}, nil
+	}
+}
+
+func (num *PrimitiveNum) ModuloInplace(other Primitive) error {
+	if other_num, err := other.RequireNum(); err != nil {
+		return fmt.Errorf("attempting to perform modulus: %w", err)
+	} else if mod, err := utils.ModNumber(&num.value, &other_num.value); err != nil {
+		return fmt.Errorf("attempting to perform modulus: %w", err)
+	} else {
+		num.value.Set(&mod)
+		return nil
+	}
+}
+
+func (num *PrimitiveNum) RaisePower(other Primitive) (Primitive, error) {
+	if other_num, err := other.RequireNum(); err != nil {
+		return nil, fmt.Errorf("attempting to raise power: %w", err)
+	} else if pow, err := utils.RaisePower(&num.value, &other_num.value); err != nil {
+		return nil, fmt.Errorf("attempting to raise power: %w", err)
+	} else {
+		return &PrimitiveNum{pow}, nil
+	}
+}
+
+func (num *PrimitiveNum) RaisePowerInplace(other Primitive) error {
+	if other_num, err := other.RequireNum(); err != nil {
+		return fmt.Errorf("attempting to raise power: %w", err)
+	} else if pow, err := utils.RaisePower(&num.value, &other_num.value); err != nil {
+		return fmt.Errorf("attempting to raise power: %w", err)
+	} else {
+		num.value.Set(&pow)
+		return nil
+	}
 }
 
 // Casting
