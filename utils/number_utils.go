@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math/big"
 )
 
@@ -37,4 +38,29 @@ func Truncate(num *big.Rat) *big.Rat {
 		truncated.SetInt(big.NewInt(0).Div(n, d))
 		return &truncated
 	}
+}
+
+func ModNumber(a *big.Rat, b *big.Rat) (*big.Rat, error) {
+	if b.Num().BitLen() == 0 {
+		return nil, fmt.Errorf("cannot compute mod zero")
+	}
+	if a.IsInt() && b.IsInt() {
+		var mod big.Int
+		mod.Mod(a.Num(), b.Num())
+		if sign := mod.Sign(); sign != 0 && sign != b.Sign() {
+			mod.Add(&mod, b.Num())
+		}
+		var mod_rat big.Rat
+		mod_rat.SetInt(&mod)
+		return &mod_rat, nil
+	}
+	var result big.Rat
+	result.Mul(a, result.Inv(b))
+	TruncateInPlace(&result)
+	result.Mul(&result, b)
+	result.Sub(a, &result)
+	if sign := result.Sign(); sign != 0 && sign != b.Sign() {
+		result.Add(&result, b)
+	}
+	return &result, nil
 }
