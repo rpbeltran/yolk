@@ -17,6 +17,25 @@ func (str *PrimitiveStr) Display() string {
 	return str.value
 }
 
+// String Operators
+
+func (str *PrimitiveStr) ConcatenateInPlace(other Primitive) error {
+	if other_str, err := other.CastStr(); err != nil {
+		return fmt.Errorf("attempting to concatenate: %w", err)
+	} else {
+		str.value = str.value + other_str.value
+		return nil
+	}
+}
+
+func (str *PrimitiveStr) Concatenate(other Primitive) (Primitive, error) {
+	if other_str, err := other.CastStr(); err != nil {
+		return nil, fmt.Errorf("attempting to concatenate: %w", err)
+	} else {
+		return &PrimitiveStr{str.value + other_str.value}, nil
+	}
+}
+
 // Arithmetic Operators
 
 func (str *PrimitiveStr) Add(other Primitive) (Primitive, error) {

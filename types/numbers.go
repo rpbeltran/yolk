@@ -179,6 +179,16 @@ func (num *PrimitiveNum) RaisePowerInplace(other Primitive) error {
 	}
 }
 
+// Nonnumeric operations
+
+func (str *PrimitiveNum) Concatenate(other Primitive) (Primitive, error) {
+	return nil, fmt.Errorf("num type does not support concatenation")
+}
+
+func (str *PrimitiveNum) ConcatenateInPLace(other Primitive) error {
+	return fmt.Errorf("num type does not support concatenation")
+}
+
 // Casting
 
 func (num *PrimitiveNum) RequireNum() (*PrimitiveNum, error) {

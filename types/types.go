@@ -3,6 +3,8 @@ package types
 type Primitive interface {
 	Display() string
 	// Binary Operators
+
+	// - Math
 	Add(other Primitive) (Primitive, error)
 	AddInplace(other Primitive) error
 	Subtract(other Primitive) (Primitive, error)
@@ -17,6 +19,10 @@ type Primitive interface {
 	ModuloInplace(other Primitive) error
 	RaisePower(other Primitive) (Primitive, error)
 	RaisePowerInplace(other Primitive) error
+
+	// - String Operators
+	Concatenate(other Primitive) (Primitive, error)
+
 	// Casting
 	RequireNum() (*PrimitiveNum, error)
 	RequireStr() (*PrimitiveStr, error)

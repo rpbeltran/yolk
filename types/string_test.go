@@ -13,9 +13,38 @@ func TestStrDisplay(t *testing.T) {
 	}
 }
 
-// Add
+// String Operations
 
-func TestStrArithmetic(t *testing.T) {
+func TestStrConcatenate(t *testing.T) {
+	if actual, err := MakeString("hello ").Concatenate(makeNumOrFail("100", t)); err != nil {
+		t.Fatalf("\"hello \" ++ 100 should succeeded but instead gave the error: %v", err)
+	} else if actual.Display() != "hello 100" {
+		t.Fatalf("\"hello \" ++ 100 gave %q, expected %q", actual.Display(), "hello 100")
+	}
+	if actual, err := MakeString("hello ").Concatenate(MakeString("world")); err != nil {
+		t.Fatalf("\"hello \" ++ \"world\" should succeeded but instead gave the error: %v", err)
+	} else if actual.Display() != "hello world" {
+		t.Fatalf("\"hello \" ++ \"world\" gave %q, expected %q", actual.Display(), "hello world")
+	}
+
+	s := MakeString("foo ")
+	if err := s.ConcatenateInPlace(makeNumOrFail("100", t)); err != nil {
+		t.Fatalf("\"hello \" ++=  100 should succeeded but instead gave the error: %v", err)
+	} else if s.Display() != "foo 100" {
+		t.Fatalf("\"hello \" ++=  100 gave %q, expected %q", s.Display(), "foo 100")
+	}
+
+	s2 := MakeString("foo ")
+	if err := s2.ConcatenateInPlace(MakeString("world")); err != nil {
+		t.Fatalf("\"hello \" ++=  \"world\" should succeeded but instead gave the error: %v", err)
+	} else if s2.Display() != "foo world" {
+		t.Fatalf("\"hello \" ++=  \"world\" gave %q, expected %q", s2.Display(), "foo world")
+	}
+}
+
+// Math
+
+func TestStrMath(t *testing.T) {
 	if _, err := MakeString("foo").Add(makeNumOrFail("100", t)); err == nil {
 		t.Fatal(`"foo" + 100 succeeded but should have failed`)
 	}

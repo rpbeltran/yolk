@@ -28,7 +28,20 @@ func TestNumDisplay(t *testing.T) {
 	}
 }
 
-// Add
+func TestNumNonArithmetic(t *testing.T) {
+	if actual, err := makeNumOrFail("100", t).Concatenate(makeNumOrFail("100", t)); err == nil {
+		t.Fatalf("100 + 100 should have errored but instead succeeded and returned %s", actual.Display())
+	}
+	if actual, err := makeNumOrFail("100", t).Concatenate(MakeString("foo")); err == nil {
+		t.Fatalf("100 + foo should have errored but instead succeeded and returned %s", actual.Display())
+	}
+	if err := makeNumOrFail("100", t).ConcatenateInPLace(makeNumOrFail("100", t)); err == nil {
+		t.Fatalf("100 + 100 should have errored but instead succeeded")
+	}
+	if err := makeNumOrFail("100", t).ConcatenateInPLace(MakeString("foo")); err == nil {
+		t.Fatalf("100 + foo should have errored but instead succeeded")
+	}
+}
 
 type binop_test_case struct {
 	a            string
@@ -36,6 +49,8 @@ type binop_test_case struct {
 	c            string
 	should_error bool
 }
+
+// Add
 
 func TestNumAdd(t *testing.T) {
 	test_cases := []binop_test_case{

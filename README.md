@@ -33,20 +33,21 @@ A stack based Virtual Machine for executing eggshell
 * BUILD_CALLABLE
 * DEFINE_STRUCT
 * ASSERT
+* ...
 
 
 ## Implemented Binary Operators
 
 * add
-
-### Todo Operators
-
 * subtract
 * multiply
 * divide
 * int_divide
 * power
 * modulus
+
+### Todo Operators
+
 * concat
 * compare_eq
 * compare_lt
