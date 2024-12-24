@@ -112,3 +112,9 @@ func RaisePower(a *big.Rat, b *big.Rat) (big.Rat, error) {
 
 	return result, nil
 }
+
+func RatsAlmostEqual(a, b *big.Rat) bool {
+	var diff big.Rat
+	return diff.Abs(diff.Sub(a, b)).Cmp(big.NewRat(1, 100000000000)) == -1
+
+}

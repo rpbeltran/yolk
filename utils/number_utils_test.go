@@ -176,7 +176,7 @@ func TestRaisePower(t *testing.T) {
 				// Skip checking value
 			} else if _, success := expected.SetString(test.c); !success {
 				t.Fatalf("Failed to parse test string %q into rational number", test.c)
-			} else if actual.Cmp(&expected) != 0 {
+			} else if !RatsAlmostEqual(&actual, &expected) {
 				t.Fatalf("RaisePower(%s), %s) gave %s, expected %s", test.a, test.b, &actual, &expected)
 			}
 		}
@@ -187,6 +187,36 @@ func TestRaisePower(t *testing.T) {
 		}
 		if actual := EncodeNum(&b); actual != test.b {
 			t.Fatalf("RaisePower(%s, %s) turned %s into %s", test.a, test.b, test.b, actual)
+		}
+	}
+}
+
+func TestRatsAlmostEqual(t *testing.T) {
+	equals := map[string]string{
+		"1": "1.0000000000000000000001",
+		"2": "2",
+		"3": "2.9999999999999999999999",
+	}
+	not_equals := map[string]string{
+		"1": "1.00001",
+		"2": "2.5",
+		"3": "2",
+	}
+
+	for a, b := range equals {
+		var a_rat, b_rat big.Rat
+		a_rat.SetString(a)
+		b_rat.SetString(b)
+		if !RatsAlmostEqual(&a_rat, &b_rat) {
+			t.Fatalf("RatsAlmostEqual(%s, %s) gave false, expected true, diff", a, b)
+		}
+	}
+	for a, b := range not_equals {
+		var a_rat, b_rat big.Rat
+		a_rat.SetString(a)
+		b_rat.SetString(b)
+		if RatsAlmostEqual(&a_rat, &b_rat) {
+			t.Fatalf("RatsAlmostEqual(%s, %s) gave true, expected false", a, b)
 		}
 	}
 }
