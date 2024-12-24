@@ -35,7 +35,6 @@ A stack based Virtual Machine for executing eggshell
 * ASSERT
 * ...
 
-
 ## Implemented Binary Operators
 
 * add

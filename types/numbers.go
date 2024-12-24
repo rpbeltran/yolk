@@ -196,7 +196,11 @@ func (num *PrimitiveNum) RequireNum() (*PrimitiveNum, error) {
 }
 
 func (num *PrimitiveNum) RequireStr() (*PrimitiveStr, error) {
-	return nil, fmt.Errorf("%s used where a string was required", num.Display())
+	return nil, fmt.Errorf("Num %s used where a string was required", num.Display())
+}
+
+func (num *PrimitiveNum) RequireBool() (*PrimitiveBool, error) {
+	return nil, fmt.Errorf("Num %s used where a bool was required", num.Display())
 }
 
 func (num *PrimitiveNum) CastNum() (*PrimitiveNum, error) {
@@ -205,4 +209,8 @@ func (num *PrimitiveNum) CastNum() (*PrimitiveNum, error) {
 
 func (num *PrimitiveNum) CastStr() (*PrimitiveStr, error) {
 	return &PrimitiveStr{num.Display()}, nil
+}
+
+func (num *PrimitiveNum) CastBool() (*PrimitiveBool, error) {
+	return MakeBool(num.value.Num().BitLen() != 0), nil
 }

@@ -46,51 +46,51 @@ func (str *PrimitiveStr) AddInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) Subtract(other Primitive) (Primitive, error) {
+func (str *PrimitiveStr) Subtract(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) SubtractInplace(other Primitive) error {
+func (str *PrimitiveStr) SubtractInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) Multiply(other Primitive) (Primitive, error) {
+func (str *PrimitiveStr) Multiply(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) MultiplyInplace(other Primitive) error {
+func (str *PrimitiveStr) MultiplyInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) Divide(other Primitive) (Primitive, error) {
+func (str *PrimitiveStr) Divide(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) DivideInplace(other Primitive) error {
+func (str *PrimitiveStr) DivideInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) IntDivide(other Primitive) (Primitive, error) {
+func (str *PrimitiveStr) IntDivide(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) IntDivideInplace(other Primitive) error {
+func (str *PrimitiveStr) IntDivideInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) Modulo(other Primitive) (Primitive, error) {
+func (str *PrimitiveStr) Modulo(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) ModuloInplace(other Primitive) error {
+func (str *PrimitiveStr) ModuloInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) RaisePower(other Primitive) (Primitive, error) {
+func (str *PrimitiveStr) RaisePower(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support numeral arithmetic")
 }
 
-func (num *PrimitiveStr) RaisePowerInplace(other Primitive) error {
+func (str *PrimitiveStr) RaisePowerInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support numeral arithmetic")
 }
 
@@ -101,7 +101,11 @@ func (str *PrimitiveStr) RequireNum() (*PrimitiveNum, error) {
 }
 
 func (str *PrimitiveStr) RequireStr() (*PrimitiveStr, error) {
-	return &PrimitiveStr{str.Display()}, nil
+	return str, nil
+}
+
+func (str *PrimitiveStr) RequireBool() (*PrimitiveBool, error) {
+	return nil, fmt.Errorf("string value %q used where boolean was required", str.value)
 }
 
 func (str *PrimitiveStr) CastNum() (*PrimitiveNum, error) {
@@ -113,5 +117,9 @@ func (str *PrimitiveStr) CastNum() (*PrimitiveNum, error) {
 }
 
 func (str *PrimitiveStr) CastStr() (*PrimitiveStr, error) {
-	return &PrimitiveStr{str.Display()}, nil
+	return str, nil
+}
+
+func (str *PrimitiveStr) CastBool() (*PrimitiveBool, error) {
+	return MakeBool(len(str.value) != 0), nil
 }

@@ -26,6 +26,9 @@ type Primitive interface {
 	// Casting
 	RequireNum() (*PrimitiveNum, error)
 	RequireStr() (*PrimitiveStr, error)
+	RequireBool() (*PrimitiveBool, error)
+
 	CastNum() (*PrimitiveNum, error)
 	CastStr() (*PrimitiveStr, error)
+	CastBool() (*PrimitiveBool, error)
 }

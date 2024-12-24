@@ -162,6 +162,12 @@ func TestStrRequireStr(t *testing.T) {
 	}
 }
 
+func TestStrRequireBool(t *testing.T) {
+	if _, err := MakeString("true").RequireBool(); err == nil {
+		t.Fatalf("PrimitiveStr().RequireNum() succeeded but should have failed")
+	}
+}
+
 func TestStrCastNum(t *testing.T) {
 	s := "100"
 	if value, err := MakeString(s).CastNum(); err != nil {
@@ -183,5 +189,19 @@ func TestStrCastStr(t *testing.T) {
 		t.Fatalf("PrimitiveStr().CastStr() returned the error %v but should have succeeded", err)
 	} else if actual := val.Display(); actual != s {
 		t.Fatalf("PrimitiveStr().CastStr() returned %s, expected %s", actual, s)
+	}
+}
+
+func TestStrCastBool(t *testing.T) {
+	if value, err := MakeString("spam").CastBool(); err != nil {
+		t.Fatalf("PrimitiveStr(%q).CastBool() returned the error %v but should have succeeded", "spam", err)
+	} else if actual := value.Display(); actual != "true" {
+		t.Fatalf("PrimitiveStr(%q).CastBool() returned %s, expected %s", "spam", actual, "true")
+	}
+
+	if value, err := MakeString("").CastBool(); err != nil {
+		t.Fatalf("PrimitiveStr(%q).CastBool() returned the error %v but should have succeeded", "", err)
+	} else if actual := value.Display(); actual != "false" {
+		t.Fatalf("PrimitiveStr(%q).CastBool() returned %s, expected %s", "", actual, "false")
 	}
 }

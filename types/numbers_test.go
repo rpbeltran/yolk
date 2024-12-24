@@ -341,7 +341,7 @@ func TestNumRaisePower(t *testing.T) {
 
 // Casting
 
-func TestRequireNum(t *testing.T) {
+func TestNumRequireNum(t *testing.T) {
 	n := "100"
 	if val, err := makeNumOrFail(n, t).RequireNum(); err != nil {
 		t.Fatalf("PrimitiveNum().RequireNum() returned the error %v but should have succeeded", err)
@@ -350,14 +350,20 @@ func TestRequireNum(t *testing.T) {
 	}
 }
 
-func TestRequireStr(t *testing.T) {
+func TestNumRequireStr(t *testing.T) {
 	n := "100"
 	if _, err := makeNumOrFail(n, t).RequireStr(); err == nil {
 		t.Fatalf("PrimitiveNum().RequireStr() succeeded but should have failed")
 	}
 }
 
-func TestCastNum(t *testing.T) {
+func TestNumRequireBool(t *testing.T) {
+	if _, err := makeNumOrFail("100", t).RequireBool(); err == nil {
+		t.Fatalf("PrimitiveNum().RequireBool() succeeded but should have failed")
+	}
+}
+
+func TestNumCastNum(t *testing.T) {
 	n := "100"
 	if val, err := makeNumOrFail(n, t).CastNum(); err != nil {
 		t.Fatalf("PrimitiveNum().CastNum() returned the error %v but should have succeeded", err)
@@ -366,11 +372,25 @@ func TestCastNum(t *testing.T) {
 	}
 }
 
-func TestCastStr(t *testing.T) {
+func TestNumCastStr(t *testing.T) {
 	n := "100"
 	if val, err := makeNumOrFail(n, t).CastStr(); err != nil {
 		t.Fatalf("PrimitiveNum().CastStr() returned the error %v but should have succeeded", err)
 	} else if actual := val.Display(); actual != n {
 		t.Fatalf("PrimitiveNum().CastStr() returned %s, expected %s", actual, n)
+	}
+}
+
+func TestNumCastBool(t *testing.T) {
+	if val, err := makeNumOrFail("100", t).CastBool(); err != nil {
+		t.Fatalf("PrimitiveNum().CastBool() returned the error %v but should have succeeded", err)
+	} else if actual := val.Display(); actual != "true" {
+		t.Fatalf("PrimitiveNum().CastBool() returned %s, expected %s", actual, "true")
+	}
+
+	if val, err := makeNumOrFail("0", t).CastBool(); err != nil {
+		t.Fatalf("PrimitiveNum().CastBool() returned the error %v but should have succeeded", err)
+	} else if actual := val.Display(); actual != "false" {
+		t.Fatalf("PrimitiveNum().CastBool() returned %s, expected %s", actual, "false")
 	}
 }
