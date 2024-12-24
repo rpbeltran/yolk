@@ -45,10 +45,10 @@ A stack based Virtual Machine for executing eggshell
 * int_divide
 * power
 * modulus
+* concat
 
 ### Todo Operators
 
-* concat
 * compare_eq
 * compare_lt
 * compare_lt
