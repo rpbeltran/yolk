@@ -259,3 +259,38 @@ func TestBinopMod(t *testing.T) {
 		}
 	}
 }
+
+func TestBinopConcat(t *testing.T) {
+	program := []string{
+		`PUSH_STR "bar"`,
+		"PUSH_NUM 0",
+		`PUSH_STR "fo"`,
+		"BINOP concat",
+		"BINOP concat",
+	}
+	expected := "fo0bar"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if str, err := value.RequireStr(); err != nil {
+			t.Fatalf("Output is not a string: %v", err)
+		} else if actual := str.Display(); actual != expected {
+			t.Fatalf("Calculating (44 mod 30) mod 12 gave %s, expected %s", actual, expected)
+		}
+	}
+}

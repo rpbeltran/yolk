@@ -14,6 +14,7 @@ const (
 	binop_int_divide binop = iota
 	binop_power      binop = iota
 	binop_modulus    binop = iota
+	binop_concat     binop = iota
 )
 
 type Instruction_BINOP struct {
@@ -36,6 +37,8 @@ func (instruction *Instruction_BINOP) Parse(args *string) error {
 		instruction.binop = binop_power
 	case "modulus":
 		instruction.binop = binop_modulus
+	case "concat":
+		instruction.binop = binop_concat
 	default:
 		if len(*args) == 0 {
 			return fmt.Errorf("BINOP instruction needs operator, none provided")
@@ -61,6 +64,8 @@ func (instruction *Instruction_BINOP) String() string {
 		return "BINOP power"
 	case binop_modulus:
 		return "BINOP modulus"
+	case binop_concat:
+		return "BINOP concat"
 	default:
 		panic(fmt.Sprintf("Unimplemented BINOP serialization for mode %d", instruction.binop))
 	}
@@ -118,6 +123,12 @@ func (instruction *Instruction_BINOP) Perform(vm *VirtualMachine) error {
 			return err
 		} else {
 			vm.stack.Push(mod)
+		}
+	case binop_concat:
+		if concatenated, err := left.Concatenate(right); err != nil {
+			return err
+		} else {
+			vm.stack.Push(concatenated)
 		}
 	default:
 		return fmt.Errorf("BINOP instruction has binop code '%d'", instruction.binop)
