@@ -29,7 +29,7 @@ func (num *PrimitiveNum) Display() string {
 // Operators
 
 func (num *PrimitiveNum) Add(other Primitive) (Primitive, error) {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return &PrimitiveNum{}, fmt.Errorf("attempting to perform addition: %w", err)
 	}
@@ -39,7 +39,7 @@ func (num *PrimitiveNum) Add(other Primitive) (Primitive, error) {
 }
 
 func (num *PrimitiveNum) AddInplace(other Primitive) error {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (num *PrimitiveNum) AddInplace(other Primitive) error {
 }
 
 func (num *PrimitiveNum) Subtract(other Primitive) (Primitive, error) {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return &PrimitiveNum{}, fmt.Errorf("attempting to perform subtraction: %w", err)
 	}
@@ -58,7 +58,7 @@ func (num *PrimitiveNum) Subtract(other Primitive) (Primitive, error) {
 }
 
 func (num *PrimitiveNum) SubtractInplace(other Primitive) error {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (num *PrimitiveNum) SubtractInplace(other Primitive) error {
 }
 
 func (num *PrimitiveNum) Multiply(other Primitive) (Primitive, error) {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return &PrimitiveNum{}, fmt.Errorf("attempting to perform multiplication: %w", err)
 	}
@@ -77,7 +77,7 @@ func (num *PrimitiveNum) Multiply(other Primitive) (Primitive, error) {
 }
 
 func (num *PrimitiveNum) MultiplyInplace(other Primitive) error {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (num *PrimitiveNum) MultiplyInplace(other Primitive) error {
 }
 
 func (num *PrimitiveNum) Divide(other Primitive) (Primitive, error) {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return &PrimitiveNum{}, fmt.Errorf("attempting to perform division: %w", err)
 	}
@@ -99,7 +99,7 @@ func (num *PrimitiveNum) Divide(other Primitive) (Primitive, error) {
 }
 
 func (num *PrimitiveNum) DivideInplace(other Primitive) error {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (num *PrimitiveNum) DivideInplace(other Primitive) error {
 }
 
 func (num *PrimitiveNum) IntDivide(other Primitive) (Primitive, error) {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return &PrimitiveNum{}, fmt.Errorf("attempting to perform integer division: %w", err)
 	}
@@ -125,7 +125,7 @@ func (num *PrimitiveNum) IntDivide(other Primitive) (Primitive, error) {
 }
 
 func (num *PrimitiveNum) IntDivideInplace(other Primitive) error {
-	other_num, err := other.RequireNum()
+	other_num, err := other.CastImplicitNum()
 	if err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func (num *PrimitiveNum) IntDivideInplace(other Primitive) error {
 }
 
 func (num *PrimitiveNum) Modulo(other Primitive) (Primitive, error) {
-	if other_num, err := other.RequireNum(); err != nil {
+	if other_num, err := other.CastImplicitNum(); err != nil {
 		return nil, fmt.Errorf("attempting to perform modulus: %w", err)
 	} else if mod, err := utils.ModNumber(&num.value, &other_num.value); err != nil {
 		return nil, fmt.Errorf("attempting to perform modulus: %w", err)
@@ -148,7 +148,7 @@ func (num *PrimitiveNum) Modulo(other Primitive) (Primitive, error) {
 }
 
 func (num *PrimitiveNum) ModuloInplace(other Primitive) error {
-	if other_num, err := other.RequireNum(); err != nil {
+	if other_num, err := other.CastImplicitNum(); err != nil {
 		return fmt.Errorf("attempting to perform modulus: %w", err)
 	} else if mod, err := utils.ModNumber(&num.value, &other_num.value); err != nil {
 		return fmt.Errorf("attempting to perform modulus: %w", err)
@@ -159,7 +159,7 @@ func (num *PrimitiveNum) ModuloInplace(other Primitive) error {
 }
 
 func (num *PrimitiveNum) RaisePower(other Primitive) (Primitive, error) {
-	if other_num, err := other.RequireNum(); err != nil {
+	if other_num, err := other.CastImplicitNum(); err != nil {
 		return nil, fmt.Errorf("attempting to raise power: %w", err)
 	} else if pow, err := utils.RaisePower(&num.value, &other_num.value); err != nil {
 		return nil, fmt.Errorf("attempting to raise power: %w", err)
