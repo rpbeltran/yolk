@@ -43,7 +43,7 @@ func TestNumNonArithmetic(t *testing.T) {
 	}
 }
 
-type binop_test_case struct {
+type binop_num_test_case struct {
 	a            string
 	b            string
 	c            string
@@ -53,7 +53,7 @@ type binop_test_case struct {
 // Add
 
 func TestNumAdd(t *testing.T) {
-	test_cases := []binop_test_case{
+	test_cases := []binop_num_test_case{
 		{"123", "456", "579", false},
 		{"12.03", "45.06", "57.09", false},
 		{"12", "45.06", "57.06", false},
@@ -91,7 +91,7 @@ func TestNumAdd(t *testing.T) {
 }
 
 func TestNumSubtract(t *testing.T) {
-	test_cases := []binop_test_case{
+	test_cases := []binop_num_test_case{
 		{"456", "123", "333", false},
 		{"123", "456", "-333", false},
 		{"10", "4.5", "5.5", false},
@@ -130,7 +130,7 @@ func TestNumSubtract(t *testing.T) {
 }
 
 func TestNumMultiply(t *testing.T) {
-	test_cases := []binop_test_case{
+	test_cases := []binop_num_test_case{
 		{"456", "123", "56088", false},
 		{"10", "4.5", "45", false},
 		{"12.1", "1.2", "14.52", false},
@@ -169,7 +169,7 @@ func TestNumMultiply(t *testing.T) {
 }
 
 func TestNumDivide(t *testing.T) {
-	test_cases := []binop_test_case{
+	test_cases := []binop_num_test_case{
 		{"1", "100", "0.01", false},
 		{"75", "3", "25", false},
 		{"75.3", "3", "25.1", false},
@@ -210,7 +210,7 @@ func TestNumDivide(t *testing.T) {
 }
 
 func TestNumIntDivide(t *testing.T) {
-	test_cases := []binop_test_case{
+	test_cases := []binop_num_test_case{
 		{"3", "2", "1", false},
 		{"5", "6", "0", false},
 		{"1", "100", "0", false},
@@ -252,7 +252,7 @@ func TestNumIntDivide(t *testing.T) {
 }
 
 func TestNumModulo(t *testing.T) {
-	test_cases := []binop_test_case{
+	test_cases := []binop_num_test_case{
 		{"3", "2", "1", false},
 		{"5", "6", "5", false},
 		{"1", "100", "1", false},
@@ -296,7 +296,7 @@ func TestNumModulo(t *testing.T) {
 }
 
 func TestNumRaisePower(t *testing.T) {
-	test_cases := []binop_test_case{
+	test_cases := []binop_num_test_case{
 		{"3", "2", "9", false},
 		{"5", "6", "15625", false},
 		{"9", "0.5", "3", false},

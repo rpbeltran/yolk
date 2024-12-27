@@ -21,17 +21,25 @@ func (boolean *PrimitiveBool) Display() string {
 	}
 }
 
-// String Operators
+// Logical Operators
 
-func (boolean *PrimitiveBool) ConcatenateInPlace(other Primitive) error {
-	return fmt.Errorf("bool type does not support numeral arithmetic")
+func (boolean *PrimitiveBool) And(other Primitive) (Primitive, error) {
+	if other_bool, err := other.CastBool(); err != nil {
+		return nil, fmt.Errorf("attempting to And: %w", err)
+	} else {
+		return &PrimitiveBool{boolean.value && other_bool.value}, nil
+	}
 }
 
-func (boolean *PrimitiveBool) Concatenate(other Primitive) (Primitive, error) {
-	return nil, fmt.Errorf("bool type does not support numeral arithmetic")
+func (boolean *PrimitiveBool) Or(other Primitive) (Primitive, error) {
+	if other_bool, err := other.CastBool(); err != nil {
+		return nil, fmt.Errorf("attempting to Or: %w", err)
+	} else {
+		return &PrimitiveBool{boolean.value || other_bool.value}, nil
+	}
 }
 
-// Arithmetic Operators
+// Non logical Operators
 
 func (boolean *PrimitiveBool) Add(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("bool type does not support numeral arithmetic")
@@ -87,6 +95,14 @@ func (boolean *PrimitiveBool) RaisePower(other Primitive) (Primitive, error) {
 
 func (boolean *PrimitiveBool) RaisePowerInplace(other Primitive) error {
 	return fmt.Errorf("bool type does not support numeral arithmetic")
+}
+
+func (boolean *PrimitiveBool) ConcatenateInPlace(other Primitive) error {
+	return fmt.Errorf("bool type does not support numeral arithmetic")
+}
+
+func (boolean *PrimitiveBool) Concatenate(other Primitive) (Primitive, error) {
+	return nil, fmt.Errorf("bool type does not support numeral arithmetic")
 }
 
 // Casting

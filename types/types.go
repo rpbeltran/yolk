@@ -23,6 +23,10 @@ type Primitive interface {
 	// - String Operators
 	Concatenate(other Primitive) (Primitive, error)
 
+	// - Logical Operators
+	And(other Primitive) (Primitive, error)
+	Or(other Primitive) (Primitive, error)
+
 	// Casting
 	RequireNum() (*PrimitiveNum, error)
 	RequireStr() (*PrimitiveStr, error)

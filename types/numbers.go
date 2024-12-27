@@ -189,6 +189,16 @@ func (str *PrimitiveNum) ConcatenateInPLace(other Primitive) error {
 	return fmt.Errorf("num type does not support concatenation")
 }
 
+// Logical Operators
+
+func (num *PrimitiveNum) And(other Primitive) (Primitive, error) {
+	return nil, fmt.Errorf("num type does not support boolean logic")
+}
+
+func (num *PrimitiveNum) Or(other Primitive) (Primitive, error) {
+	return nil, fmt.Errorf("num type does not support boolean logic")
+}
+
 // Casting
 
 func (num *PrimitiveNum) RequireNum() (*PrimitiveNum, error) {
@@ -196,11 +206,11 @@ func (num *PrimitiveNum) RequireNum() (*PrimitiveNum, error) {
 }
 
 func (num *PrimitiveNum) RequireStr() (*PrimitiveStr, error) {
-	return nil, fmt.Errorf("Num %s used where a string was required", num.Display())
+	return nil, fmt.Errorf("num %s used where a string was required", num.Display())
 }
 
 func (num *PrimitiveNum) RequireBool() (*PrimitiveBool, error) {
-	return nil, fmt.Errorf("Num %s used where a bool was required", num.Display())
+	return nil, fmt.Errorf("num %s used where a bool was required", num.Display())
 }
 
 func (num *PrimitiveNum) CastNum() (*PrimitiveNum, error) {

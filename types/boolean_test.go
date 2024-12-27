@@ -13,6 +13,54 @@ func TestBoolDisplay(t *testing.T) {
 	}
 }
 
+// Test logical operators
+
+type binop_bool_test_case struct {
+	a bool
+	b bool
+	c bool
+}
+
+func TestBooleanAnd(t *testing.T) {
+	test_cases := []binop_bool_test_case{
+		{false, false, false},
+		{false, true, false},
+		{true, false, false},
+		{true, true, true},
+	}
+	for _, test := range test_cases {
+		a_bool := MakeBool(test.a)
+		b_bool := MakeBool(test.b)
+		if actual, err := a_bool.And(b_bool); err != nil {
+			t.Fatalf("Got %t and %t returned error %v, expected %t", test.a, test.b, err, test.c)
+		} else if actual_bool, err := actual.RequireBool(); err != nil {
+			t.Fatalf("%t and %t should have returned a bool, but RequireBool() failed with: %v", test.a, test.b, err)
+		} else if actual_bool.value != test.c {
+			t.Fatalf("Got %t and %t = %t, expected %t", test.a, test.b, actual_bool.value, test.c)
+		}
+	}
+}
+
+func TestBooleanOr(t *testing.T) {
+	test_cases := []binop_bool_test_case{
+		{false, false, false},
+		{false, true, true},
+		{true, false, true},
+		{true, true, true},
+	}
+	for _, test := range test_cases {
+		a_bool := MakeBool(test.a)
+		b_bool := MakeBool(test.b)
+		if actual, err := a_bool.Or(b_bool); err != nil {
+			t.Fatalf("Got %t or %t returned error %v, expected %t", test.a, test.b, err, test.c)
+		} else if actual_bool, err := actual.RequireBool(); err != nil {
+			t.Fatalf("%t or %t should have returned a bool, but RequireBool() failed with: %v", test.a, test.b, err)
+		} else if actual_bool.value != test.c {
+			t.Fatalf("Got %t or %t = %t, expected %t", test.a, test.b, actual_bool.value, test.c)
+		}
+	}
+}
+
 // Non logical operators
 
 func TestBoolNonlogicalOps(t *testing.T) {

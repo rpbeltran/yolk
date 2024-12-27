@@ -94,6 +94,16 @@ func (str *PrimitiveStr) RaisePowerInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support numeral arithmetic")
 }
 
+// Logical Operators
+
+func (str *PrimitiveStr) And(other Primitive) (Primitive, error) {
+	return nil, fmt.Errorf("string type does not support boolean logic")
+}
+
+func (str *PrimitiveStr) Or(other Primitive) (Primitive, error) {
+	return nil, fmt.Errorf("string type does not support boolean logic")
+}
+
 // Casting
 
 func (str *PrimitiveStr) RequireNum() (*PrimitiveNum, error) {
