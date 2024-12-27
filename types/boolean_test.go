@@ -4,15 +4,6 @@ import (
 	"testing"
 )
 
-func TestBoolDisplay(t *testing.T) {
-	if actual := MakeBool(true).Display(); actual != "true" {
-		t.Fatalf("MakeBool(true).Display() returned %q, expected %q", actual, "true")
-	}
-	if actual := MakeBool(false).Display(); actual != "false" {
-		t.Fatalf("MakeBool(false).Display() returned %q, expected %q", actual, "false")
-	}
-}
-
 // Test logical operators
 
 type binop_bool_test_case struct {
@@ -202,16 +193,6 @@ func TestBoolCastImplicit(t *testing.T) {
 	if value, err := MakeBool(true).CastImplicitNum(); err == nil {
 		t.Fatalf("MakeBool(true).CastNum() gave %v, expected to fail with an error:", value)
 	}
-
-	if value, err := MakeBool(true).CastImplicitStr(); err == nil {
-		t.Fatalf("MakeBool(true).CastStr() gave %v, expected to fail with an error:", value)
-	}
-
-	if actual, err := MakeBool(false).CastImplicitBool(); err != nil {
-		t.Fatalf("MakeBool(false).CastBool() failed with error: %v", err)
-	} else if actual.value {
-		t.Fatalf("MakeBool(false).CastBool() gave true, expected false")
-	}
 }
 
 func TestBoolCastExplicit(t *testing.T) {
@@ -226,22 +207,23 @@ func TestBoolCastExplicit(t *testing.T) {
 	} else if actual := value.Display(); actual != "0" {
 		t.Fatalf("MakeBool(false).CastNum() returned %s, expected 0", actual)
 	}
+}
 
-	if value, err := MakeBool(true).CastExplicitStr(); err != nil {
-		t.Fatalf("MakeBool(true).CastStr() returned the error %v but should have succeeded", err)
-	} else if actual := value.Display(); actual != "true" {
-		t.Fatalf("MakeBool(true).CastNum() returned %s, expected %q", actual, "true")
+func TestBoolDisplay(t *testing.T) {
+	if actual := MakeBool(true).Display(); actual != "true" {
+		t.Fatalf("MakeBool(true).Display() returned %q, expected %q", actual, "true")
+	}
+	if actual := MakeBool(false).Display(); actual != "false" {
+		t.Fatalf("MakeBool(false).Display() returned %q, expected %q", actual, "false")
+	}
+}
+
+func TestTruthy(t *testing.T) {
+	if MakeBool(false).Truthy() {
+		t.Fatalf("MakeBool(false).Truthy() gave true, expected false")
 	}
 
-	if value, err := MakeBool(false).CastExplicitStr(); err != nil {
-		t.Fatalf("MakeBool(false).CastStr() returned the error %v but should have succeeded", err)
-	} else if actual := value.Display(); actual != "false" {
-		t.Fatalf("MakeBool(false).CastNum() returned %s, expected %q", actual, "false")
-	}
-
-	if actual, err := MakeBool(false).CastExplicitBool(); err != nil {
-		t.Fatalf("MakeBool(false).CastBool() failed with error: %v", err)
-	} else if actual.value {
-		t.Fatalf("MakeBool(false).CastBool() gave true, expected false")
+	if !MakeBool(true).Truthy() {
+		t.Fatalf("MakeBool(true).Truthy() gave false, expected true")
 	}
 }

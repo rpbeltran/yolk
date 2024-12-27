@@ -13,27 +13,15 @@ func MakeString(value string) *PrimitiveStr {
 	return &PrimitiveStr{value}
 }
 
-func (str *PrimitiveStr) Display() string {
-	return str.value
-}
-
 // String Operators
 
 func (str *PrimitiveStr) ConcatenateInPlace(other Primitive) error {
-	if other_str, err := other.CastImplicitStr(); err != nil {
-		return fmt.Errorf("attempting to concatenate: %w", err)
-	} else {
-		str.value = str.value + other_str.value
-		return nil
-	}
+	str.value = str.value + other.Display()
+	return nil
 }
 
 func (str *PrimitiveStr) Concatenate(other Primitive) (Primitive, error) {
-	if other_str, err := other.CastImplicitStr(); err != nil {
-		return nil, fmt.Errorf("attempting to concatenate: %w", err)
-	} else {
-		return &PrimitiveStr{str.value + other_str.value}, nil
-	}
+	return &PrimitiveStr{str.value + other.Display()}, nil
 }
 
 // Arithmetic Operators
@@ -122,14 +110,6 @@ func (str *PrimitiveStr) CastImplicitNum() (*PrimitiveNum, error) {
 	return nil, fmt.Errorf("string value %q used where implicit number was required", str.value)
 }
 
-func (str *PrimitiveStr) CastImplicitStr() (*PrimitiveStr, error) {
-	return str, nil
-}
-
-func (str *PrimitiveStr) CastImplicitBool() (*PrimitiveBool, error) {
-	return MakeBool(len(str.value) != 0), nil
-}
-
 func (str *PrimitiveStr) CastExplicitNum() (*PrimitiveNum, error) {
 	var num big.Rat
 	if _, success := num.SetString(str.value); success {
@@ -138,10 +118,10 @@ func (str *PrimitiveStr) CastExplicitNum() (*PrimitiveNum, error) {
 	return nil, fmt.Errorf("cannot interpret the string %q as a number", str.value)
 }
 
-func (str *PrimitiveStr) CastExplicitStr() (*PrimitiveStr, error) {
-	return str, nil
+func (str *PrimitiveStr) Display() string {
+	return str.value
 }
 
-func (str *PrimitiveStr) CastExplicitBool() (*PrimitiveBool, error) {
-	return MakeBool(len(str.value) != 0), nil
+func (str *PrimitiveStr) Truthy() bool {
+	return len(str.value) != 0
 }

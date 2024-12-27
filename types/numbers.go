@@ -22,10 +22,6 @@ func MakeNumber(value string) (*PrimitiveNum, error) {
 	return &PrimitiveNum{num}, nil
 }
 
-func (num *PrimitiveNum) Display() string {
-	return utils.EncodeNum(&num.value)
-}
-
 // Operators
 
 func (num *PrimitiveNum) Add(other Primitive) (Primitive, error) {
@@ -217,22 +213,14 @@ func (num *PrimitiveNum) CastImplicitNum() (*PrimitiveNum, error) {
 	return num, nil
 }
 
-func (num *PrimitiveNum) CastImplicitStr() (*PrimitiveStr, error) {
-	return &PrimitiveStr{num.Display()}, nil
-}
-
-func (num *PrimitiveNum) CastImplicitBool() (*PrimitiveBool, error) {
-	return MakeBool(num.value.Num().BitLen() != 0), nil
-}
-
 func (num *PrimitiveNum) CastExplicitNum() (*PrimitiveNum, error) {
 	return num, nil
 }
 
-func (num *PrimitiveNum) CastExplicitStr() (*PrimitiveStr, error) {
-	return &PrimitiveStr{num.Display()}, nil
+func (num *PrimitiveNum) Display() string {
+	return utils.EncodeNum(&num.value)
 }
 
-func (num *PrimitiveNum) CastExplicitBool() (*PrimitiveBool, error) {
-	return MakeBool(num.value.Num().BitLen() != 0), nil
+func (num *PrimitiveNum) Truthy() bool {
+	return num.value.Num().BitLen() != 0
 }

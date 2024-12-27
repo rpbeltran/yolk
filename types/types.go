@@ -1,7 +1,7 @@
 package types
 
 type Primitive interface {
-	Display() string
+
 	// Binary Operators
 
 	// - Math
@@ -34,10 +34,8 @@ type Primitive interface {
 	RequireBool() (*PrimitiveBool, error)
 
 	CastImplicitNum() (*PrimitiveNum, error)
-	CastImplicitStr() (*PrimitiveStr, error)
-	CastImplicitBool() (*PrimitiveBool, error)
-
 	CastExplicitNum() (*PrimitiveNum, error)
-	CastExplicitStr() (*PrimitiveStr, error)
-	CastExplicitBool() (*PrimitiveBool, error)
+
+	Display() string
+	Truthy() bool
 }

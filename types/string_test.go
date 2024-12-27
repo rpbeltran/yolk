@@ -4,15 +4,6 @@ import (
 	"testing"
 )
 
-func TestStrDisplay(t *testing.T) {
-	test_cases := []string{"hello", "", "123", " @#()*", `""`}
-	for _, tc := range test_cases {
-		if actual := MakeString(tc).Display(); actual != tc {
-			t.Fatalf("makePrimitiveNumber(%q).Display() returned %q, expected %q", tc, actual, tc)
-		}
-	}
-}
-
 // String Operations
 
 func TestStrConcatenate(t *testing.T) {
@@ -147,18 +138,16 @@ func TestStrMath(t *testing.T) {
 // Casting
 
 func TestStrRequireNum(t *testing.T) {
-	s := "100"
-	if _, err := MakeString(s).RequireNum(); err == nil {
+	if _, err := MakeString("100").RequireNum(); err == nil {
 		t.Fatalf("PrimitiveStr().RequireNum() succeeded but should have failed")
 	}
 }
 
 func TestStrRequireStr(t *testing.T) {
-	s := "foo"
-	if val, err := MakeString(s).RequireStr(); err != nil {
+	if val, err := MakeString("100").RequireStr(); err != nil {
 		t.Fatalf("PrimitiveStr().RequireStr() returned the error %v but should have succeeded", err)
-	} else if actual := val.Display(); actual != s {
-		t.Fatalf("PrimitiveStr().RequireStr() returned %s, expected %s", actual, s)
+	} else if actual := val.Display(); actual != "100" {
+		t.Fatalf("PrimitiveStr().RequireStr() returned %s, expected %s", actual, "100")
 	}
 }
 
@@ -169,28 +158,8 @@ func TestStrRequireBool(t *testing.T) {
 }
 
 func TestStrCastNumImplicit(t *testing.T) {
-	s := "100"
-	if value, err := MakeString(s).CastImplicitNum(); err == nil {
-		t.Fatalf("PrimitiveStr(%q).CastImplicitNum() gave %v, expected to fail with an error", s, value)
-	}
-
-	s = "foo"
-	if val, err := MakeString(s).CastImplicitStr(); err != nil {
-		t.Fatalf("PrimitiveStr().CastImplicitStr() returned the error %v but should have succeeded", err)
-	} else if actual := val.Display(); actual != s {
-		t.Fatalf("PrimitiveStr().CastImplicitStr() returned %s, expected %s", actual, s)
-	}
-
-	if value, err := MakeString("spam").CastImplicitBool(); err != nil {
-		t.Fatalf("PrimitiveStr(%q).CastImplicitBool() returned the error %v but should have succeeded", "spam", err)
-	} else if actual := value.Display(); actual != "true" {
-		t.Fatalf("PrimitiveStr(%q).CastImplicitBool() returned %s, expected %s", "spam", actual, "true")
-	}
-
-	if value, err := MakeString("").CastImplicitBool(); err != nil {
-		t.Fatalf("PrimitiveStr(%q).CastImplicitBool() returned the error %v but should have succeeded", "", err)
-	} else if actual := value.Display(); actual != "false" {
-		t.Fatalf("PrimitiveStr(%q).CastImplicitBool() returned %s, expected %s", "", actual, "false")
+	if value, err := MakeString("100").CastImplicitNum(); err == nil {
+		t.Fatalf("PrimitiveStr(%q).CastImplicitNum() gave %v, expected to fail with an error", "100", value)
 	}
 }
 
@@ -205,23 +174,23 @@ func TestStrCastNumExplicit(t *testing.T) {
 	if _, err := MakeString("foo").CastExplicitNum(); err == nil {
 		t.Fatalf(`PrimitiveStr("foo").RequireStr() succeeded but should have failed`)
 	}
+}
 
-	s = "foo"
-	if val, err := MakeString(s).CastExplicitStr(); err != nil {
-		t.Fatalf("PrimitiveStr().CastStr() returned the error %v but should have succeeded", err)
-	} else if actual := val.Display(); actual != s {
-		t.Fatalf("PrimitiveStr().CastStr() returned %s, expected %s", actual, s)
+func TestStrDisplay(t *testing.T) {
+	test_cases := []string{"hello", "", "123", " @#()*", `""`}
+	for _, tc := range test_cases {
+		if actual := MakeString(tc).Display(); actual != tc {
+			t.Fatalf("makePrimitiveNumber(%q).Display() returned %q, expected %q", tc, actual, tc)
+		}
+	}
+}
+
+func TestStrTruthy(t *testing.T) {
+	if !MakeString("spam").Truthy() {
+		t.Fatal(`PrimitiveStr("spam").Truthy() returned false, expected true`)
 	}
 
-	if value, err := MakeString("spam").CastExplicitBool(); err != nil {
-		t.Fatalf("PrimitiveStr(%q).CastBool() returned the error %v but should have succeeded", "spam", err)
-	} else if actual := value.Display(); actual != "true" {
-		t.Fatalf("PrimitiveStr(%q).CastBool() returned %s, expected %s", "spam", actual, "true")
-	}
-
-	if value, err := MakeString("").CastExplicitBool(); err != nil {
-		t.Fatalf("PrimitiveStr(%q).CastBool() returned the error %v but should have succeeded", "", err)
-	} else if actual := value.Display(); actual != "false" {
-		t.Fatalf("PrimitiveStr(%q).CastBool() returned %s, expected %s", "", actual, "false")
+	if MakeString("").Truthy() {
+		t.Fatal(`PrimitiveStr("").Truthy() returned true, expected false`)
 	}
 }
