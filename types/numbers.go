@@ -185,7 +185,7 @@ func (str *PrimitiveNum) Concatenate(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("num type does not support concatenation")
 }
 
-func (str *PrimitiveNum) ConcatenateInPLace(other Primitive) error {
+func (str *PrimitiveNum) ConcatenateInPlace(other Primitive) error {
 	return fmt.Errorf("num type does not support concatenation")
 }
 
@@ -213,14 +213,26 @@ func (num *PrimitiveNum) RequireBool() (*PrimitiveBool, error) {
 	return nil, fmt.Errorf("num %s used where a bool was required", num.Display())
 }
 
-func (num *PrimitiveNum) CastNum() (*PrimitiveNum, error) {
+func (num *PrimitiveNum) CastImplicitNum() (*PrimitiveNum, error) {
 	return num, nil
 }
 
-func (num *PrimitiveNum) CastStr() (*PrimitiveStr, error) {
+func (num *PrimitiveNum) CastImplicitStr() (*PrimitiveStr, error) {
 	return &PrimitiveStr{num.Display()}, nil
 }
 
-func (num *PrimitiveNum) CastBool() (*PrimitiveBool, error) {
+func (num *PrimitiveNum) CastImplicitBool() (*PrimitiveBool, error) {
+	return MakeBool(num.value.Num().BitLen() != 0), nil
+}
+
+func (num *PrimitiveNum) CastExplicitNum() (*PrimitiveNum, error) {
+	return num, nil
+}
+
+func (num *PrimitiveNum) CastExplicitStr() (*PrimitiveStr, error) {
+	return &PrimitiveStr{num.Display()}, nil
+}
+
+func (num *PrimitiveNum) CastExplicitBool() (*PrimitiveBool, error) {
 	return MakeBool(num.value.Num().BitLen() != 0), nil
 }

@@ -35,10 +35,10 @@ func TestNumNonArithmetic(t *testing.T) {
 	if actual, err := makeNumOrFail("100", t).Concatenate(MakeString("foo")); err == nil {
 		t.Fatalf("100 + foo should have errored but instead succeeded and returned %s", actual.Display())
 	}
-	if err := makeNumOrFail("100", t).ConcatenateInPLace(makeNumOrFail("100", t)); err == nil {
+	if err := makeNumOrFail("100", t).ConcatenateInPlace(makeNumOrFail("100", t)); err == nil {
 		t.Fatalf("100 + 100 should have errored but instead succeeded")
 	}
-	if err := makeNumOrFail("100", t).ConcatenateInPLace(MakeString("foo")); err == nil {
+	if err := makeNumOrFail("100", t).ConcatenateInPlace(MakeString("foo")); err == nil {
 		t.Fatalf("100 + foo should have errored but instead succeeded")
 	}
 }
@@ -363,32 +363,55 @@ func TestNumRequireBool(t *testing.T) {
 	}
 }
 
-func TestNumCastNum(t *testing.T) {
+func TestNumCastImplicit(t *testing.T) {
 	n := "100"
-	if val, err := makeNumOrFail(n, t).CastNum(); err != nil {
+	if val, err := makeNumOrFail(n, t).CastImplicitNum(); err != nil {
 		t.Fatalf("PrimitiveNum().CastNum() returned the error %v but should have succeeded", err)
 	} else if actual := val.Display(); actual != n {
 		t.Fatalf("PrimitiveNum().CastNum() returned %s, expected %s", actual, n)
 	}
-}
 
-func TestNumCastStr(t *testing.T) {
-	n := "100"
-	if val, err := makeNumOrFail(n, t).CastStr(); err != nil {
+	if value, err := makeNumOrFail(n, t).CastImplicitStr(); err != nil {
 		t.Fatalf("PrimitiveNum().CastStr() returned the error %v but should have succeeded", err)
-	} else if actual := val.Display(); actual != n {
+	} else if actual := value.Display(); actual != n {
 		t.Fatalf("PrimitiveNum().CastStr() returned %s, expected %s", actual, n)
 	}
-}
 
-func TestNumCastBool(t *testing.T) {
-	if val, err := makeNumOrFail("100", t).CastBool(); err != nil {
+	if val, err := makeNumOrFail("100", t).CastImplicitBool(); err != nil {
 		t.Fatalf("PrimitiveNum().CastBool() returned the error %v but should have succeeded", err)
 	} else if actual := val.Display(); actual != "true" {
 		t.Fatalf("PrimitiveNum().CastBool() returned %s, expected %s", actual, "true")
 	}
 
-	if val, err := makeNumOrFail("0", t).CastBool(); err != nil {
+	if val, err := makeNumOrFail("0", t).CastImplicitBool(); err != nil {
+		t.Fatalf("PrimitiveNum().CastBool() returned the error %v but should have succeeded", err)
+	} else if actual := val.Display(); actual != "false" {
+		t.Fatalf("PrimitiveNum().CastBool() returned %s, expected %s", actual, "false")
+	}
+
+}
+
+func TestNumCastExplicit(t *testing.T) {
+	n := "100"
+	if val, err := makeNumOrFail(n, t).CastExplicitNum(); err != nil {
+		t.Fatalf("PrimitiveNum().CastNum() returned the error %v but should have succeeded", err)
+	} else if actual := val.Display(); actual != n {
+		t.Fatalf("PrimitiveNum().CastNum() returned %s, expected %s", actual, n)
+	}
+
+	if val, err := makeNumOrFail(n, t).CastExplicitStr(); err != nil {
+		t.Fatalf("PrimitiveNum().CastStr() returned the error %v but should have succeeded", err)
+	} else if actual := val.Display(); actual != n {
+		t.Fatalf("PrimitiveNum().CastStr() returned %s, expected %s", actual, n)
+	}
+
+	if val, err := makeNumOrFail("100", t).CastExplicitBool(); err != nil {
+		t.Fatalf("PrimitiveNum().CastBool() returned the error %v but should have succeeded", err)
+	} else if actual := val.Display(); actual != "true" {
+		t.Fatalf("PrimitiveNum().CastBool() returned %s, expected %s", actual, "true")
+	}
+
+	if val, err := makeNumOrFail("0", t).CastExplicitBool(); err != nil {
 		t.Fatalf("PrimitiveNum().CastBool() returned the error %v but should have succeeded", err)
 	} else if actual := val.Display(); actual != "false" {
 		t.Fatalf("PrimitiveNum().CastBool() returned %s, expected %s", actual, "false")

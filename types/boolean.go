@@ -24,7 +24,7 @@ func (boolean *PrimitiveBool) Display() string {
 // Logical Operators
 
 func (boolean *PrimitiveBool) And(other Primitive) (Primitive, error) {
-	if other_bool, err := other.CastBool(); err != nil {
+	if other_bool, err := other.CastImplicitBool(); err != nil {
 		return nil, fmt.Errorf("attempting to And: %w", err)
 	} else {
 		return &PrimitiveBool{boolean.value && other_bool.value}, nil
@@ -32,7 +32,7 @@ func (boolean *PrimitiveBool) And(other Primitive) (Primitive, error) {
 }
 
 func (boolean *PrimitiveBool) Or(other Primitive) (Primitive, error) {
-	if other_bool, err := other.CastBool(); err != nil {
+	if other_bool, err := other.CastImplicitBool(); err != nil {
 		return nil, fmt.Errorf("attempting to Or: %w", err)
 	} else {
 		return &PrimitiveBool{boolean.value || other_bool.value}, nil
@@ -119,17 +119,29 @@ func (boolean *PrimitiveBool) RequireBool() (*PrimitiveBool, error) {
 	return boolean, nil
 }
 
-func (boolean *PrimitiveBool) CastNum() (*PrimitiveNum, error) {
+func (boolean *PrimitiveBool) CastImplicitNum() (*PrimitiveNum, error) {
+	return nil, fmt.Errorf("bool %q used where number-like required", boolean.Display())
+}
+
+func (boolean *PrimitiveBool) CastImplicitStr() (*PrimitiveStr, error) {
+	return nil, fmt.Errorf("bool %q used where string-like required", boolean.Display())
+}
+
+func (boolean *PrimitiveBool) CastImplicitBool() (*PrimitiveBool, error) {
+	return boolean, nil
+}
+
+func (boolean *PrimitiveBool) CastExplicitNum() (*PrimitiveNum, error) {
 	if boolean.value {
 		return &PrimitiveNum{*big.NewRat(1, 1)}, nil
 	}
 	return &PrimitiveNum{*big.NewRat(0, 1)}, nil
 }
 
-func (boolean *PrimitiveBool) CastStr() (*PrimitiveStr, error) {
+func (boolean *PrimitiveBool) CastExplicitStr() (*PrimitiveStr, error) {
 	return &PrimitiveStr{boolean.Display()}, nil
 }
 
-func (boolean *PrimitiveBool) CastBool() (*PrimitiveBool, error) {
+func (boolean *PrimitiveBool) CastExplicitBool() (*PrimitiveBool, error) {
 	return boolean, nil
 }

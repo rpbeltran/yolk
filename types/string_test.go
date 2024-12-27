@@ -168,38 +168,58 @@ func TestStrRequireBool(t *testing.T) {
 	}
 }
 
-func TestStrCastNum(t *testing.T) {
+func TestStrCastNumImplicit(t *testing.T) {
 	s := "100"
-	if value, err := MakeString(s).CastNum(); err != nil {
+	if value, err := MakeString(s).CastImplicitNum(); err == nil {
+		t.Fatalf("PrimitiveStr(%q).CastImplicitNum() gave %v, expected to fail with an error", s, value)
+	}
+
+	s = "foo"
+	if val, err := MakeString(s).CastImplicitStr(); err != nil {
+		t.Fatalf("PrimitiveStr().CastImplicitStr() returned the error %v but should have succeeded", err)
+	} else if actual := val.Display(); actual != s {
+		t.Fatalf("PrimitiveStr().CastImplicitStr() returned %s, expected %s", actual, s)
+	}
+
+	if value, err := MakeString("spam").CastImplicitBool(); err != nil {
+		t.Fatalf("PrimitiveStr(%q).CastImplicitBool() returned the error %v but should have succeeded", "spam", err)
+	} else if actual := value.Display(); actual != "true" {
+		t.Fatalf("PrimitiveStr(%q).CastImplicitBool() returned %s, expected %s", "spam", actual, "true")
+	}
+
+	if value, err := MakeString("").CastImplicitBool(); err != nil {
+		t.Fatalf("PrimitiveStr(%q).CastImplicitBool() returned the error %v but should have succeeded", "", err)
+	} else if actual := value.Display(); actual != "false" {
+		t.Fatalf("PrimitiveStr(%q).CastImplicitBool() returned %s, expected %s", "", actual, "false")
+	}
+}
+
+func TestStrCastNumExplicit(t *testing.T) {
+	s := "100"
+	if value, err := MakeString(s).CastExplicitNum(); err != nil {
 		t.Fatalf("PrimitiveStr(%q).CastNum() returned the error %v but should have succeeded", s, err)
 	} else if actual := value.Display(); actual != "100" {
 		t.Fatalf("PrimitiveStr(%q).CastNum() returned %s, expected %s", s, actual, s)
 	}
-}
 
-func TestStrCastNumFailure(t *testing.T) {
-	if _, err := MakeString("foo").CastNum(); err == nil {
+	if _, err := MakeString("foo").CastExplicitNum(); err == nil {
 		t.Fatalf(`PrimitiveStr("foo").RequireStr() succeeded but should have failed`)
 	}
-}
 
-func TestStrCastStr(t *testing.T) {
-	s := "foo"
-	if val, err := MakeString(s).CastStr(); err != nil {
+	s = "foo"
+	if val, err := MakeString(s).CastExplicitStr(); err != nil {
 		t.Fatalf("PrimitiveStr().CastStr() returned the error %v but should have succeeded", err)
 	} else if actual := val.Display(); actual != s {
 		t.Fatalf("PrimitiveStr().CastStr() returned %s, expected %s", actual, s)
 	}
-}
 
-func TestStrCastBool(t *testing.T) {
-	if value, err := MakeString("spam").CastBool(); err != nil {
+	if value, err := MakeString("spam").CastExplicitBool(); err != nil {
 		t.Fatalf("PrimitiveStr(%q).CastBool() returned the error %v but should have succeeded", "spam", err)
 	} else if actual := value.Display(); actual != "true" {
 		t.Fatalf("PrimitiveStr(%q).CastBool() returned %s, expected %s", "spam", actual, "true")
 	}
 
-	if value, err := MakeString("").CastBool(); err != nil {
+	if value, err := MakeString("").CastExplicitBool(); err != nil {
 		t.Fatalf("PrimitiveStr(%q).CastBool() returned the error %v but should have succeeded", "", err)
 	} else if actual := value.Display(); actual != "false" {
 		t.Fatalf("PrimitiveStr(%q).CastBool() returned %s, expected %s", "", actual, "false")

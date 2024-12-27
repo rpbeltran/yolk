@@ -22,6 +22,7 @@ type Primitive interface {
 
 	// - String Operators
 	Concatenate(other Primitive) (Primitive, error)
+	ConcatenateInPlace(other Primitive) error
 
 	// - Logical Operators
 	And(other Primitive) (Primitive, error)
@@ -32,7 +33,11 @@ type Primitive interface {
 	RequireStr() (*PrimitiveStr, error)
 	RequireBool() (*PrimitiveBool, error)
 
-	CastNum() (*PrimitiveNum, error)
-	CastStr() (*PrimitiveStr, error)
-	CastBool() (*PrimitiveBool, error)
+	CastImplicitNum() (*PrimitiveNum, error)
+	CastImplicitStr() (*PrimitiveStr, error)
+	CastImplicitBool() (*PrimitiveBool, error)
+
+	CastExplicitNum() (*PrimitiveNum, error)
+	CastExplicitStr() (*PrimitiveStr, error)
+	CastExplicitBool() (*PrimitiveBool, error)
 }
