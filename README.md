@@ -22,7 +22,8 @@ A stack based Virtual Machine for executing eggshell
 * STORE_LOCAL
 * STORE_GLOBAL
 * JUMP
-* JUMP_IF
+* JUMP_EQ
+* JUMP_NEQ
 * BINOP_INPLACE
 * UNOP
 * UNOP_INPLACE
@@ -45,14 +46,14 @@ A stack based Virtual Machine for executing eggshell
 * power
 * modulus
 * concat
+* and
+* or
 
 ### Todo Operators
 
 * compare_eq
 * compare_lt
 * compare_lt
-* and
-* or
 * curry
 * ...
 
