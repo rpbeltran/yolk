@@ -18,7 +18,7 @@ func ExecuteYolkFile(machine *vm.VirtualMachine, path string, verbose_debug bool
 
 	scanner := bufio.NewScanner(file)
 
-	if err := put_program_in_vm(machine, *scanner); err != nil {
+	if err := machine.PutProgramInVM(scanner); err != nil {
 		return fmt.Errorf("parsing instructions: %v", err)
 	}
 

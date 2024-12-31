@@ -1,9 +1,11 @@
 package vm
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"yolk/types"
 	"yolk/utils"
 )
@@ -13,6 +15,7 @@ type VirtualMachine struct {
 	instruction_pointer int
 	stack               utils.Stack[types.Primitive] //todo: benchmark this being a pointer
 	pipeline_states     utils.Stack[*types.Primitive]
+	labels              map[uint64]int
 	MockExecutions      bool
 	stdout              io.Writer
 }
@@ -23,6 +26,7 @@ func NewVM() VirtualMachine {
 		stack:               *utils.CreateStack[types.Primitive](),
 		pipeline_states:     *utils.CreateStack[*types.Primitive](),
 		instruction_pointer: 0,
+		labels:              make(map[uint64]int),
 	}
 }
 
@@ -33,6 +37,7 @@ func NewDebugVM(stdout io.Writer) VirtualMachine {
 		pipeline_states:     *utils.CreateStack[*types.Primitive](),
 		instruction_pointer: 0,
 		MockExecutions:      true,
+		labels:              make(map[uint64]int),
 	}
 }
 
@@ -96,6 +101,35 @@ func (vm *VirtualMachine) RunProgram(verbose_debug bool) error {
 			}
 		}
 		vm.instruction_pointer += 1
+	}
+	return nil
+}
+
+func (vm *VirtualMachine) PutProgramInVM(scanner *bufio.Scanner) error {
+	vm.ClearProgram()
+
+	line_num := 0
+	for scanner.Scan() {
+		line_num += 1
+		line := scanner.Text()
+		if strings.HasPrefix(line, ".LABEL ") {
+			line = strings.TrimSpace(line)
+			_, args, _ := strings.Cut(line, " ")
+			args = strings.TrimSpace(args)
+			var instruction Instruction_LABEL
+			if err := instruction.Parse(&args); err != nil {
+				return err
+			}
+			instruction.AddTo(vm)
+			vm.AddProgramInstruction(&instruction)
+		} else if instruction, err := ParseInstruction(line); err != nil {
+			return fmt.Errorf("parsing line %d %q: %w", line_num, line, err)
+		} else if instruction != nil {
+			vm.AddProgramInstruction(instruction)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("scanning yolk: %v", err)
 	}
 	return nil
 }

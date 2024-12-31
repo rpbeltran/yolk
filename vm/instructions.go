@@ -22,8 +22,26 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 	args = strings.TrimSpace(args)
 
 	switch operator {
+	case "BINOP":
+		var instruction Instruction_BINOP
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
 	case "EXEC":
 		var instruction Instruction_EXEC
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
+	case "JUMP":
+		var instruction Instruction_JUMP
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
+	case ".LABEL":
+		var instruction Instruction_LABEL
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}
@@ -52,12 +70,7 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
-	case "BINOP":
-		var instruction Instruction_BINOP
-		if err := instruction.Parse(&args); err != nil {
-			return nil, err
-		}
-		return &instruction, nil
+
 	}
 
 	return nil, fmt.Errorf("unknown operator: %s", operator)
