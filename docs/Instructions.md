@@ -2,15 +2,19 @@
 
 
 ## List of Implemented Instructions
-| Instruction | Argument(s) |
-| ----------- | --------- |
-| BINOP       | operation: *[add]* |
-| EXEC*       | arg_count: *uint*   |
-| PIPELINE    | mode: *[begin, next, end]* |
-| PRINT       |  |
-| PUSH_NUM    | value: *Number* |
-| PUSH_STR    | value: *Quoted* |
 
+|  Instruction  |         Argument(s)        |
+| ------------- | -------------------------- |
+| BINOP         | operation: *[add]*         |
+| EXEC          | arg_count: *uint*          |
+| JUMP          | label: *uint*              |
+| JUMP_IF_TRUE  | label: *uint*              |
+| JUMP_IF_FALSE | label: *uint*              |
+| .LABEL        | label: *uint*              |
+| PIPELINE      | mode: *[begin, next, end]* |
+| PRINT         |                            |
+| PUSH_NUM      | value: *Number*            |
+| PUSH_STR      | value: *Quoted*            |
 
 
 ## BINOP ${operation}
@@ -77,8 +81,89 @@ EXEC 3
 ```
 
 
-## PIPELINE ${mode}
+## JUMP ${label_id}
 
+Unconditionally sets the instruction pointer to the label with the given id.
+
+If label id is not in the vm's list of known labels, execution will terminate with an error state.
+
+Arguments:
+ * label_id: uint, a unique id associated with this label
+
+```
+# Example Egg:
+# loop {
+#   say("hello")
+# }
+
+.LABEL 123
+PUSH_STR "hello"
+PRINT
+JUMP 123
+```
+
+## JUMP_IF_FALSE ${label_id}
+
+Pops the top value from the stack, and if that value is false, sets the instruction pointer to the
+label with the given id. If the data stack is empty, or if the top value if not Boolean, execution
+will terminate with an error state.
+
+If the data stack is empty, or if the top value if not Boolean, execution will terminate with an
+error state.
+If label id is not in the vm's list of known labels, execution will terminate with an error state.
+
+Arguments:
+ * label_id: uint, a unique id associated with this label
+
+```
+# Example Egg:
+# if (a) {
+#   say("hello")
+# }
+# say("goodbye")
+
+
+LOAD_NAME  a
+JUMP_IF_FALSE  123
+PUSH_STR "hello"
+PRINT
+.LABEL 123
+PUSH_STR "goodbye"
+PRINT
+```
+
+## JUMP_IF_TRUE ${label_id}
+
+Pops the top value from the stack, and if that value is true, sets the instruction pointer to the
+label with the given id. 
+
+If the data stack is empty, or if the top value if not Boolean, execution will terminate with an
+error state.
+If label id is not in the vm's list of known labels, execution will terminate with an error state.
+
+Arguments:
+ * label_id: uint, a unique id associated with this label
+
+```
+# Example Egg: (a or b)
+LOAD_NAME  a
+DUPLICATE
+JUMP_IF_TRUE  123
+LOAD_NAME  b
+.LABEL 123
+```
+
+## .LABEL ${label_id}
+
+Designates a point in program execution for JUMP statements to go to.
+Executing a label instruction is a no-op.
+Label locations become known to the VM when new instructions are added to the program.
+
+Arguments:
+ * label_id: uint, a unique id associated with this label
+
+
+## PIPELINE ${mode}
 
 Modifies the VMs pipeline_state stack to facilitate data pipelines. Behavior depends on *mode*:
 * begin: Adds a new entry to the pipeline_state stack. The entry will have a value of nil.
@@ -136,7 +221,7 @@ Arguments: None
 Example:
 
 ```
-# egg: do {say("Hello World!")
+# egg: do {say("Hello World!")}
 # -- vm.stack:[]
 # -- stdout:""
 PUSH_STRING "Hello World!"
