@@ -23,7 +23,7 @@ A stack based Virtual Machine for executing eggshell
 * STORE_GLOBAL
 * JUMP
 * JUMP_EQ
-* JUMP_NEQ
+* JUMP_IF_FALSE
 * BINOP_INPLACE
 * UNOP
 * UNOP_INPLACE
