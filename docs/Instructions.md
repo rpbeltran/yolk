@@ -5,17 +5,42 @@
 
 |  Instruction  |         Argument(s)        |
 | ------------- | -------------------------- |
+| ASSIGN_NAME   | name: *Name*               |
 | BINOP         | operation: *[add]*         |
+| DECLARE_NAME  | name: *Name*               |
 | EXEC          | arg_count: *uint*          |
 | JUMP          | label: *uint*              |
 | JUMP_IF_TRUE  | label: *uint*              |
 | JUMP_IF_FALSE | label: *uint*              |
 | .LABEL        | label: *uint*              |
+| LOAD_NAME     | name: *Name*               |
 | PIPELINE      | mode: *[begin, next, end]* |
 | PRINT         |                            |
+| PUSH_BOOL     | value: *[true, false]*     |
 | PUSH_NUM      | value: *Number*            |
 | PUSH_STR      | value: *Quoted*            |
 
+## ASSIGN_NAME ${name}
+
+Pops the value from the top of the stack and stores it in an existing variable.
+If a variable with the given name does not exist in any of the current scopes,
+or if the stack is empty execution will terminate with an error state.
+
+Arguments:
+* name: name of a variable to update the value of (unquoted)
+
+Example:
+
+```
+# egg: (foo)
+# -- vm.stack:[7]
+# -- vm.global_names{"foo":i,}
+# -- vm.globals{i:1,}
+DECLARE_NAME foo
+# -- vm.stack:[]
+# -- vm.global_names{"foo":i,}
+# -- vm.globals{i:7,}
+```
 
 ## BINOP ${operation}
 
@@ -38,6 +63,26 @@ PUSH_NUM 5
 # -- vm.stack:[10 5]
 BINOP divide
 # -- vm.stack:[2]
+```
+
+## DECLARE_NAME ${name}
+
+Pops the value from the top of the stack and stores it in a new variable in the current scope. If a variable with the given name already exists in the current scope, or if the stack is empty execution will terminate with an error state.
+
+Arguments:
+* name: name of a variable to create (unquoted)
+
+Example:
+
+```
+# egg: (foo)
+# -- vm.stack:[7]
+# -- vm.global_names{}
+# -- vm.globals{}
+DECLARE_NAME foo
+# -- vm.stack:[]
+# -- vm.global_names{"foo":i,}
+# -- vm.globals{i:7,}
 ```
 
 ## EXEC ${arg_count}
@@ -163,6 +208,27 @@ Arguments:
  * label_id: uint, a unique id associated with this label
 
 
+## LOAD_NAME ${name}
+
+Loads a variable from memory and pushes it onto the top of the stack.
+The variable will be searched for in local scope first and then in global scope if it cannot be found in the local scope. If a variable with the given name cannot be found in either the local scope or the global scope execution will terminate with an error state.
+
+Arguments:
+* name: name of a variable to load onto the stack (unquoted)
+
+Example:
+
+```
+# egg: (foo)
+# -- vm.stack:[]
+# -- vm.global_names{"foo":i,}
+# -- vm.globals{i:7,}
+LOAD_NAME foo
+# -- vm.stack:[7]
+# -- vm.global_names{"foo":i,}
+# -- vm.globals{i:7,}
+```
+
 ## PIPELINE ${mode}
 
 Modifies the VMs pipeline_state stack to facilitate data pipelines. Behavior depends on *mode*:
@@ -230,6 +296,22 @@ PUSH_NUM 5
 # -- vm.stack:[10 5]
 BINOP divide
 # -- vm.stack:[2]
+```
+
+## PUSH_BOOL ${value}
+
+Pushes a boolean value to the top of the stack.
+
+Arguments:
+* value: boolean value to push, either 'true' or 'false' (unquoted)
+
+Example:
+
+```
+# egg: (true)
+# -- vm.stack:[]
+PUSH_BOOL true
+# -- vm.stack:[true]
 ```
 
 ## PUSH_NUM ${value}

@@ -6,14 +6,18 @@ A stack based Virtual Machine for executing eggshell
 
 |  Instruction  |         Argument(s)        |
 | ------------- | -------------------------- |
+| ASSIGN_NAME   | name: *Name*               |
 | BINOP         | operation: *[add]*         |
+| DECLARE_NAME  | name: *Name*               |
 | EXEC          | arg_count: *uint*          |
 | JUMP          | label: *uint*              |
 | JUMP_IF_TRUE  | label: *uint*              |
 | JUMP_IF_FALSE | label: *uint*              |
 | .LABEL        | label: *uint*              |
+| LOAD_NAME     | name: *Name*               |
 | PIPELINE      | mode: *[begin, next, end]* |
 | PRINT         |                            |
+| PUSH_BOOL     | value: *[true, false]*     |
 | PUSH_NUM      | value: *Number*            |
 | PUSH_STR      | value: *Quoted*            |
 
@@ -22,10 +26,6 @@ A stack based Virtual Machine for executing eggshell
 
 ### Todo Instructions
 
-* LOAD_LOCAL
-* LOAD_GLOBAL
-* STORE_LOCAL
-* STORE_GLOBAL
 * BINOP_INPLACE
 * UNOP
 * UNOP_INPLACE
