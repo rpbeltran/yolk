@@ -18,9 +18,7 @@ type VirtualMachine struct {
 	labels              map[uint64]int
 	MockExecutions      bool
 	stdout              io.Writer
-	globals             map[uint64]types.Primitive
-	global_names        map[string]uint64
-	variable_id_counter uint64
+	globals             map[string]types.Primitive
 }
 
 func NewVM() VirtualMachine {
@@ -30,8 +28,7 @@ func NewVM() VirtualMachine {
 		pipeline_states:     *utils.CreateStack[*types.Primitive](),
 		instruction_pointer: 0,
 		labels:              make(map[uint64]int),
-		globals:             make(map[uint64]types.Primitive),
-		global_names:        make(map[string]uint64),
+		globals:             make(map[string]types.Primitive),
 	}
 }
 
@@ -43,8 +40,7 @@ func NewDebugVM(stdout io.Writer) VirtualMachine {
 		instruction_pointer: 0,
 		MockExecutions:      true,
 		labels:              make(map[uint64]int),
-		globals:             make(map[uint64]types.Primitive),
-		global_names:        make(map[string]uint64),
+		globals:             make(map[string]types.Primitive),
 	}
 }
 

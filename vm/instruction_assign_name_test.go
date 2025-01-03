@@ -26,7 +26,7 @@ func TestAssignNamePerform(t *testing.T) {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)
 	} else if err := instruction.Perform(&vm); err != nil {
 		t.Fatalf("Error executing instruction %q: %v", instruction, err)
-	} else if value, _, err := vm.FetchVariable(name); err != nil {
+	} else if value, err := vm.FetchVariable(name); err != nil {
 		t.Fatalf("Error popping stack after performing ASSIGN_NAME: %v", err)
 	} else if display := value.Display(); display != message {
 		t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
@@ -35,7 +35,7 @@ func TestAssignNamePerform(t *testing.T) {
 		vm.stack.Push(types.MakeString(message))
 		if err := instruction.Perform(&vm); err != nil {
 			t.Fatalf("Error executing instruction %q: %v", instruction, err)
-		} else if value, _, err := vm.FetchVariable(name); err != nil {
+		} else if value, err := vm.FetchVariable(name); err != nil {
 			t.Fatalf("Error popping stack after performing ASSIGN_NAME: %v", err)
 		} else if display := value.Display(); display != message {
 			t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)

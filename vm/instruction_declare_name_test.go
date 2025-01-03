@@ -25,18 +25,17 @@ func TestDeclareNamePerform(t *testing.T) {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)
 	} else if err := instruction.Perform(&vm); err != nil {
 		t.Fatalf("Error executing instruction %q: %v", instruction, err)
-	} else if value, _, err := vm.FetchVariable(name); err != nil {
+	} else if value, err := vm.FetchVariable(name); err != nil {
 		t.Fatalf("Error popping stack after performing DECLARE_NAME: %v", err)
 	} else if display := value.Display(); display != message {
 		t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
 	} else {
-		vm.global_names = make(map[string]uint64)
-		vm.globals = make(map[uint64]types.Primitive)
+		vm.globals = make(map[string]types.Primitive)
 		message = "Goodbye world!!"
 		vm.stack.Push(types.MakeString(message))
 		if err := instruction.Perform(&vm); err != nil {
 			t.Fatalf("Error executing instruction %q: %v", instruction, err)
-		} else if value, _, err := vm.FetchVariable(name); err != nil {
+		} else if value, err := vm.FetchVariable(name); err != nil {
 			t.Fatalf("Error popping stack after performing DECLARE_NAME: %v", err)
 		} else if display := value.Display(); display != message {
 			t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
