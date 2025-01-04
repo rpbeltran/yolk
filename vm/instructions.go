@@ -34,6 +34,12 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
+	case "COMPARE":
+		var instruction Instruction_COMPARE
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
 	case "DECLARE_NAME":
 		var instruction Instruction_DECLARE_NAME
 		if err := instruction.Parse(&args); err != nil {
@@ -42,12 +48,6 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 		return &instruction, nil
 	case "EXEC":
 		var instruction Instruction_EXEC
-		if err := instruction.Parse(&args); err != nil {
-			return nil, err
-		}
-		return &instruction, nil
-	case "IS_EQUAL":
-		var instruction Instruction_IS_EQUAL
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}
