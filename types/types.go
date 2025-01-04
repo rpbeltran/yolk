@@ -30,6 +30,7 @@ type Primitive interface {
 
 	// - Comparisons
 	Equal(other Primitive) bool
+	LessThan(other Primitive) (bool, error)
 
 	// Casting
 	RequireNum() (*PrimitiveNum, error)

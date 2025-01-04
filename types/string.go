@@ -22,6 +22,14 @@ func (str *PrimitiveStr) Equal(other Primitive) bool {
 	return false
 }
 
+func (str *PrimitiveStr) LessThan(other Primitive) (bool, error) {
+	if as_num, err := other.RequireStr(); err != nil {
+		return false, fmt.Errorf("cannot compare string %s to %v", str.Display(), other.Display())
+	} else {
+		return str.value < as_num.value, nil
+	}
+}
+
 // String Operators
 
 func (str *PrimitiveStr) ConcatenateInPlace(other Primitive) error {

@@ -243,15 +243,51 @@ func TestBoolEquality(t *testing.T) {
 	}
 
 	if MakeBool(false).Equal(MakeString("")) {
-		t.Fatal("Equal(false, true) gave true, expected false")
+		t.Fatal(`Equal(false, true) gave "", expected false`)
 	}
 	if MakeBool(true).Equal(MakeString("")) {
-		t.Fatal("Equal(true, false) gave true, expected false")
+		t.Fatal(`Equal(true, false) gave "", expected false`)
 	}
 	if MakeBool(false).Equal(makeNumOrFail("0", t)) {
-		t.Fatal("Equal(false, true) gave true, expected false")
+		t.Fatal("Equal(false, true) gave 0, expected false")
 	}
 	if MakeBool(true).Equal(makeNumOrFail("1", t)) {
+		t.Fatal("Equal(true, false) gave 1, expected false")
+	}
+}
+
+func TestBoolLessThan(t *testing.T) {
+	if lt, err := MakeBool(false).LessThan(MakeBool(false)); err != nil {
+		t.Fatalf("Unexpected error testing false < false")
+	} else if lt {
+		t.Fatal("Equal(false, false) gave true, expected false")
+	}
+	if lt, err := MakeBool(false).LessThan(MakeBool(true)); err != nil {
+		t.Fatalf("Unexpected error testing false < true")
+	} else if !lt {
+		t.Fatal("Equal(false, true) gave false, expected true")
+	}
+	if lt, err := MakeBool(true).LessThan(MakeBool(false)); err != nil {
+		t.Fatalf("Unexpected error testing true < false")
+	} else if lt {
 		t.Fatal("Equal(true, false) gave true, expected false")
+	}
+	if lt, err := MakeBool(true).LessThan(MakeBool(true)); err != nil {
+		t.Fatalf("Unexpected error testing true < true")
+	} else if lt {
+		t.Fatal("Equal(true, true) gave false, expected true")
+	}
+
+	if lt, err := MakeBool(false).LessThan(MakeString("")); err == nil {
+		t.Fatalf("Expected error testing false < \"\", instead succeded and gave %t", lt)
+	}
+	if lt, err := MakeBool(true).LessThan(MakeString("")); err == nil {
+		t.Fatalf("Expected error testing true < \"\", instead succeded and gave %t", lt)
+	}
+	if lt, err := MakeBool(false).LessThan(makeNumOrFail("0", t)); err == nil {
+		t.Fatalf("Expected error testing false < 0, instead succeded and gave %t", lt)
+	}
+	if lt, err := MakeBool(true).LessThan(makeNumOrFail("1", t)); err == nil {
+		t.Fatalf("Expected error testing true < 1, instead succeded and gave %t", lt)
 	}
 }

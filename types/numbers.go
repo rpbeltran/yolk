@@ -31,6 +31,14 @@ func (num *PrimitiveNum) Equal(other Primitive) bool {
 	return false
 }
 
+func (num *PrimitiveNum) LessThan(other Primitive) (bool, error) {
+	if as_num, err := other.RequireNum(); err != nil {
+		return false, fmt.Errorf("cannot compare num %s to %v", num.Display(), other.Display())
+	} else {
+		return num.value.Cmp(&as_num.value) == -1, nil
+	}
+}
+
 // Operators
 
 func (num *PrimitiveNum) Add(other Primitive) (Primitive, error) {

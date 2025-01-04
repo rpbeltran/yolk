@@ -222,3 +222,28 @@ func TestStringEquality(t *testing.T) {
 		t.Fatal("Equal(true, false) gave true, expected false")
 	}
 }
+
+func TestStrLessThan(t *testing.T) {
+	if lt, err := MakeString("bbb").LessThan(MakeString("aaa")); err != nil {
+		t.Fatal(`Unexpected error testing "bbb" < "aaa"`)
+	} else if lt {
+		t.Fatal(`LessThan("bbb", "aaa") gave true, expected false`)
+	}
+	if lt, err := MakeString("aaa").LessThan(MakeString("bbb")); err != nil {
+		t.Fatal(`Unexpected error testing "aaa" < "bbb"`)
+	} else if !lt {
+		t.Fatal(`LessThan("aaa", "bbb") gave false, expected true`)
+	}
+	if lt, err := MakeString("bbb").LessThan(MakeString("bbb")); err != nil {
+		t.Fatal(`Unexpected error testing "bbb" < "bbb"`)
+	} else if lt {
+		t.Fatal(`LessThan("bbb", "bbb") gave true, expected false`)
+	}
+
+	if lt, err := MakeString("foo").LessThan(MakeBool(true)); err == nil {
+		t.Fatalf("Expected error testing \"foo\" < true, instead succeeded and gave %t", lt)
+	}
+	if lt, err := MakeString("foo").LessThan(makeNumOrFail("0", t)); err == nil {
+		t.Fatalf("Expected error testing \"foo\" < 0, instead succeeded and gave %t", lt)
+	}
+}

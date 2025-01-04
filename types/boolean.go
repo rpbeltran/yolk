@@ -22,6 +22,14 @@ func (boolean *PrimitiveBool) Equal(other Primitive) bool {
 	return false
 }
 
+func (boolean *PrimitiveBool) LessThan(other Primitive) (bool, error) {
+	if as_bool, err := other.RequireBool(); err != nil {
+		return false, fmt.Errorf("cannot compare boolean %s to %v", boolean.Display(), other.Display())
+	} else {
+		return !boolean.value && as_bool.value, nil
+	}
+}
+
 // Logical Operators
 
 func (boolean *PrimitiveBool) And(other Primitive) (Primitive, error) {

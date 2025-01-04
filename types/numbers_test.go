@@ -407,3 +407,28 @@ func TestNumEquality(t *testing.T) {
 	}
 
 }
+
+func TestNumLessThan(t *testing.T) {
+	if lt, err := makeNumOrFail("5", t).LessThan(makeNumOrFail("-15", t)); err != nil {
+		t.Fatalf("Unexpected error testing 5 < -15")
+	} else if lt {
+		t.Fatal("Equal(5, -15) gave true, expected false")
+	}
+	if lt, err := makeNumOrFail("5", t).LessThan(makeNumOrFail("5", t)); err != nil {
+		t.Fatalf("Unexpected error testing 5 < 5")
+	} else if lt {
+		t.Fatal("Equal(5, 5) gave true, expected false")
+	}
+	if lt, err := makeNumOrFail("5", t).LessThan(makeNumOrFail("10", t)); err != nil {
+		t.Fatalf("Unexpected error testing 5 < 10")
+	} else if !lt {
+		t.Fatal("Equal(5, 10) gave false, expected true")
+	}
+
+	if lt, err := makeNumOrFail("5", t).LessThan(MakeString("4")); err == nil {
+		t.Fatalf("Expected error testing 5 < \"4\", instead succeded and gave %t", lt)
+	}
+	if lt, err := makeNumOrFail("5", t).LessThan(MakeBool(true)); err == nil {
+		t.Fatalf("Expected error testing 5 < true, instead succeded and gave %t", lt)
+	}
+}
