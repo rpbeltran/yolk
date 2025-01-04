@@ -218,12 +218,40 @@ func TestBoolDisplay(t *testing.T) {
 	}
 }
 
-func TestTruthy(t *testing.T) {
+func TestBoolTruthy(t *testing.T) {
 	if MakeBool(false).Truthy() {
 		t.Fatalf("MakeBool(false).Truthy() gave true, expected false")
 	}
 
 	if !MakeBool(true).Truthy() {
 		t.Fatalf("MakeBool(true).Truthy() gave false, expected true")
+	}
+}
+
+func TestBoolEquality(t *testing.T) {
+	if !MakeBool(false).Equal(MakeBool(false)) {
+		t.Fatal("Equal(false, false) gave false, expected true")
+	}
+	if MakeBool(false).Equal(MakeBool(true)) {
+		t.Fatal("Equal(false, true) gave true, expected false")
+	}
+	if MakeBool(true).Equal(MakeBool(false)) {
+		t.Fatal("Equal(true, false) gave true, expected false")
+	}
+	if !MakeBool(true).Equal(MakeBool(true)) {
+		t.Fatal("Equal(true, true) gave false, expected true")
+	}
+
+	if MakeBool(false).Equal(MakeString("")) {
+		t.Fatal("Equal(false, true) gave true, expected false")
+	}
+	if MakeBool(true).Equal(MakeString("")) {
+		t.Fatal("Equal(true, false) gave true, expected false")
+	}
+	if MakeBool(false).Equal(makeNumOrFail("0", t)) {
+		t.Fatal("Equal(false, true) gave true, expected false")
+	}
+	if MakeBool(true).Equal(makeNumOrFail("1", t)) {
+		t.Fatal("Equal(true, false) gave true, expected false")
 	}
 }

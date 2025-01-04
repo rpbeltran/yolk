@@ -13,6 +13,15 @@ func MakeBool(value bool) *PrimitiveBool {
 	return &PrimitiveBool{value}
 }
 
+// Comparisons
+
+func (boolean *PrimitiveBool) Equal(other Primitive) bool {
+	if as_bool, err := other.RequireBool(); err == nil {
+		return boolean.value == as_bool.value
+	}
+	return false
+}
+
 // Logical Operators
 
 func (boolean *PrimitiveBool) And(other Primitive) (Primitive, error) {

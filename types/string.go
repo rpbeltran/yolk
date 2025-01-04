@@ -13,6 +13,15 @@ func MakeString(value string) *PrimitiveStr {
 	return &PrimitiveStr{value}
 }
 
+// Comparisons
+
+func (str *PrimitiveStr) Equal(other Primitive) bool {
+	if as_str, err := other.RequireStr(); err == nil {
+		return str.value == as_str.value
+	}
+	return false
+}
+
 // String Operators
 
 func (str *PrimitiveStr) ConcatenateInPlace(other Primitive) error {

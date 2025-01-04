@@ -194,3 +194,31 @@ func TestStrTruthy(t *testing.T) {
 		t.Fatal(`PrimitiveStr("").Truthy() returned true, expected false`)
 	}
 }
+
+func TestStringEquality(t *testing.T) {
+	if !MakeString("foo").Equal(MakeString("foo")) {
+		t.Fatal("Equal(false, false) gave false, expected true")
+	}
+	if MakeString("foo").Equal(MakeString("bar")) {
+		t.Fatal("Equal(false, true) gave true, expected false")
+	}
+	if MakeString("bar").Equal(MakeString("foo")) {
+		t.Fatal("Equal(true, false) gave true, expected false")
+	}
+	if !MakeString("bar").Equal(MakeString("bar")) {
+		t.Fatal("Equal(true, true) gave false, expected true")
+	}
+
+	if MakeString("true").Equal(MakeBool(true)) {
+		t.Fatal("Equal(false, true) gave true, expected false")
+	}
+	if MakeString("").Equal(MakeBool(false)) {
+		t.Fatal("Equal(true, false) gave true, expected false")
+	}
+	if MakeString("0").Equal(makeNumOrFail("0", t)) {
+		t.Fatal("Equal(false, true) gave true, expected false")
+	}
+	if MakeString("1").Equal(makeNumOrFail("1", t)) {
+		t.Fatal("Equal(true, false) gave true, expected false")
+	}
+}

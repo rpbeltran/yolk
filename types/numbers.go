@@ -22,6 +22,15 @@ func MakeNumber(value string) (*PrimitiveNum, error) {
 	return &PrimitiveNum{num}, nil
 }
 
+// Comparisons
+
+func (num *PrimitiveNum) Equal(other Primitive) bool {
+	if as_num, err := other.RequireNum(); err == nil {
+		return num.value.Cmp(&as_num.value) == 0
+	}
+	return false
+}
+
 // Operators
 
 func (num *PrimitiveNum) Add(other Primitive) (Primitive, error) {

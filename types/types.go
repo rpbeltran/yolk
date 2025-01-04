@@ -28,6 +28,9 @@ type Primitive interface {
 	And(other Primitive) (Primitive, error)
 	Or(other Primitive) (Primitive, error)
 
+	// - Comparisons
+	Equal(other Primitive) bool
+
 	// Casting
 	RequireNum() (*PrimitiveNum, error)
 	RequireStr() (*PrimitiveStr, error)

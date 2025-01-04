@@ -390,3 +390,20 @@ func TestNumTruthy(t *testing.T) {
 		t.Fatalf("PrimitiveNum(0).Truthy() returned true, expected false")
 	}
 }
+
+func TestNumEquality(t *testing.T) {
+	if !makeNumOrFail("1", t).Equal(makeNumOrFail("1.0", t)) {
+		t.Fatal("Equal(1, 1) gave false, expected true")
+	}
+	if makeNumOrFail("1", t).Equal(makeNumOrFail("2", t)) {
+		t.Fatal("Equal(1, 2) gave true, expected false")
+	}
+
+	if makeNumOrFail("1", t).Equal(MakeBool(true)) {
+		t.Fatal("Equal(1, true) gave true, expected false")
+	}
+	if makeNumOrFail("1", t).Equal(MakeString("1")) {
+		t.Fatal(`Equal("1", 1) gave true, expected false`)
+	}
+
+}
