@@ -4,22 +4,23 @@ A stack based Virtual Machine for executing eggshell
 
 ## Implemented Instructions
 
-|  Instruction  |         Argument(s)        |
-| ------------- | -------------------------- |
-| ASSIGN_NAME   | name: *Name*               |
-| BINOP         | operation: *[add]*         |
-| DECLARE_NAME  | name: *Name*               |
-| EXEC          | arg_count: *uint*          |
-| JUMP          | label: *uint*              |
-| JUMP_IF_TRUE  | label: *uint*              |
-| JUMP_IF_FALSE | label: *uint*              |
-| .LABEL        | label: *uint*              |
-| LOAD_NAME     | name: *Name*               |
-| PIPELINE      | mode: *[begin, next, end]* |
-| PRINT         |                            |
-| PUSH_BOOL     | value: *[true, false]*     |
-| PUSH_NUM      | value: *Number*            |
-| PUSH_STR      | value: *Quoted*            |
+|  Instruction  |            Argument(s)          |
+| ------------- | ------------------------------- |
+| ASSIGN_NAME   | name: *Name*                    |
+| BINOP         | operation: *[add, and, ...]*    |
+| COMPARE       | test_mode: *[equal, less, ...]* |
+| DECLARE_NAME  | name: *Name*                    |
+| EXEC          | arg_count: *uint*               |
+| JUMP          | label: *uint*                   |
+| JUMP_IF_TRUE  | label: *uint*                   |
+| JUMP_IF_FALSE | label: *uint*                   |
+| .LABEL        | label: *uint*                   |
+| LOAD_NAME     | name: *Name*                    |
+| PIPELINE      | mode: *[begin, next, end]*      |
+| PRINT         |                                 |
+| PUSH_BOOL     | value: *[true, false]*          |
+| PUSH_NUM      | value: *Number*                 |
+| PUSH_STR      | value: *Quoted*                 |
 
 
 *EXEC is only implemented in mock execution mode
@@ -53,9 +54,6 @@ A stack based Virtual Machine for executing eggshell
 
 ### Todo Operators
 
-* compare_eq
-* compare_lt
-* compare_lt
 * curry
 * ...
 

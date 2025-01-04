@@ -3,22 +3,23 @@
 
 ## List of Implemented Instructions
 
-|  Instruction  |         Argument(s)        |
-| ------------- | -------------------------- |
-| ASSIGN_NAME   | name: *Name*               |
-| BINOP         | operation: *[add]*         |
-| DECLARE_NAME  | name: *Name*               |
-| EXEC          | arg_count: *uint*          |
-| JUMP          | label: *uint*              |
-| JUMP_IF_TRUE  | label: *uint*              |
-| JUMP_IF_FALSE | label: *uint*              |
-| .LABEL        | label: *uint*              |
-| LOAD_NAME     | name: *Name*               |
-| PIPELINE      | mode: *[begin, next, end]* |
-| PRINT         |                            |
-| PUSH_BOOL     | value: *[true, false]*     |
-| PUSH_NUM      | value: *Number*            |
-| PUSH_STR      | value: *Quoted*            |
+|  Instruction  |            Argument(s)          |
+| ------------- | ------------------------------- |
+| ASSIGN_NAME   | name: *Name*                    |
+| BINOP         | operation: *[add, and, ...]*    |
+| COMPARE       | test_mode: *[equal, less, ...]* |
+| DECLARE_NAME  | name: *Name*                    |
+| EXEC          | arg_count: *uint*               |
+| JUMP          | label: *uint*                   |
+| JUMP_IF_TRUE  | label: *uint*                   |
+| JUMP_IF_FALSE | label: *uint*                   |
+| .LABEL        | label: *uint*                   |
+| LOAD_NAME     | name: *Name*                    |
+| PIPELINE      | mode: *[begin, next, end]*      |
+| PRINT         |                                 |
+| PUSH_BOOL     | value: *[true, false]*          |
+| PUSH_NUM      | value: *Number*                 |
+| PUSH_STR      | value: *Quoted*                 |
 
 ## ASSIGN_NAME ${name}
 
@@ -57,12 +58,42 @@ Example:
 ```
 # egg: (10 / 5)
 # -- vm.stack:[]
-PUSH_NUM 10
-# -- vm.stack:[10]
 PUSH_NUM 5
-# -- vm.stack:[10 5]
+# -- vm.stack:[5]
+PUSH_NUM 10
+# -- vm.stack:[5 10]
 BINOP divide
 # -- vm.stack:[2]
+```
+
+## COMPARE ${test_mode}
+
+Pops two values off the stack and attempts to perform a comparison of the two values then push
+the resulting value onto the stack. The first popped value is the right operand, and the second
+popped value becomes the left operand. If the operations fails, execution will terminate with an
+error state. The resulting value depends on the test_mode provided, which can be any of the following:
+* equal: check if left == right
+* unequal: check if left != right
+* less: check if left < right
+* lte: check if left <= right
+* greater: check if left > right
+* gte: check if left >= right
+
+Arguments:
+* test_mode: enum, specifies the comparison operation to use.
+Must be one of the above mentioned options.
+
+Example:
+
+```
+# egg: (10 == 5)
+# -- vm.stack:[]
+PUSH_NUM 5
+# -- vm.stack:[10]
+PUSH_NUM 10
+# -- vm.stack:[10 5]
+COMPARE equal
+# -- vm.stack:[false]
 ```
 
 ## DECLARE_NAME ${name}
