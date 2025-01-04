@@ -34,6 +34,12 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
+	case "BINOP_INPLACE":
+		var instruction Instruction_BINOP_INPLACE
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
 	case "COMPARE":
 		var instruction Instruction_COMPARE
 		if err := instruction.Parse(&args); err != nil {

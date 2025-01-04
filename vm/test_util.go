@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"yolk/types"
 )
 
 func RequireParse(t *testing.T, input string) Instruction {
@@ -25,6 +26,16 @@ func ExpectParse(t *testing.T, input string, expected_type string, expected_stri
 	}
 }
 
+func ExpectParseSame(t *testing.T, input string, expected_type string) {
+	if instruction, err := ParseInstruction(input); err != nil {
+		t.Fatalf("ParseInstruction(%q) has unexpected error: %v", input, err)
+	} else if instruction_type := fmt.Sprintf("%T", instruction); instruction_type != expected_type {
+		t.Fatalf("ParseInstruction(%q) expected type %q, actual type %q", input, expected_type, instruction_type)
+	} else if instruction.String() != input {
+		t.Fatalf("ParseInstruction(%q).String() expected %q, actual %q", input, input, instruction)
+	}
+}
+
 func ExpectParseFailure(t *testing.T, input string, expect_contains string) {
 	if instruction, err := ParseInstruction(input); err == nil {
 		t.Fatalf("ParseInstruction(%q) expected error containing %q but received no error", input, expect_contains)
@@ -32,5 +43,14 @@ func ExpectParseFailure(t *testing.T, input string, expect_contains string) {
 		t.Fatalf("ParseInstruction(%q) expected error containing %q but received %v", input, expect_contains, err)
 	} else if instruction != nil {
 		t.Fatalf("ParseInstruction(%q) expected nil instruction but received %v", input, instruction)
+	}
+}
+
+func RequireNum(t *testing.T, input string) *types.PrimitiveNum {
+	if num, err := types.MakeNumber(input); err != nil {
+		t.Fatalf("MakeNumber(%s) failed: %v", input, err)
+		return nil
+	} else {
+		return num
 	}
 }
