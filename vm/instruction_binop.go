@@ -15,6 +15,8 @@ const (
 	binop_power      binop = iota
 	binop_modulus    binop = iota
 	binop_concat     binop = iota
+	binop_and        binop = iota
+	binop_or         binop = iota
 )
 
 type Instruction_BINOP struct {
@@ -39,6 +41,10 @@ func (instruction *Instruction_BINOP) Parse(args *string) error {
 		instruction.binop = binop_modulus
 	case "concat":
 		instruction.binop = binop_concat
+	case "and":
+		instruction.binop = binop_and
+	case "or":
+		instruction.binop = binop_or
 	default:
 		if len(*args) == 0 {
 			return fmt.Errorf("BINOP instruction needs operator, none provided")
@@ -66,6 +72,10 @@ func (instruction *Instruction_BINOP) String() string {
 		return "BINOP modulus"
 	case binop_concat:
 		return "BINOP concat"
+	case binop_and:
+		return "BINOP and"
+	case binop_or:
+		return "BINOP or"
 	default:
 		panic(fmt.Sprintf("Unimplemented BINOP serialization for mode %d", instruction.binop))
 	}
@@ -126,6 +136,18 @@ func (instruction *Instruction_BINOP) Perform(vm *VirtualMachine) error {
 		}
 	case binop_concat:
 		if concatenated, err := left.Concatenate(right); err != nil {
+			return err
+		} else {
+			vm.stack.Push(concatenated)
+		}
+	case binop_and:
+		if mod, err := left.And(right); err != nil {
+			return err
+		} else {
+			vm.stack.Push(mod)
+		}
+	case binop_or:
+		if concatenated, err := left.Or(right); err != nil {
 			return err
 		} else {
 			vm.stack.Push(concatenated)

@@ -294,3 +294,73 @@ func TestBinopConcat(t *testing.T) {
 		}
 	}
 }
+
+func TestBinopAnd(t *testing.T) {
+	program := []string{
+		`PUSH_BOOL true`,
+		"PUSH_BOOL true",
+		`PUSH_BOOL false`,
+		"BINOP and",
+		"BINOP and",
+	}
+	expected := "false"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if as_bool, err := value.RequireBool(); err != nil {
+			t.Fatalf("Output is not a string: %v", err)
+		} else if actual := as_bool.Display(); actual != expected {
+			t.Fatalf("Calculating (true && true) && false gave %s, expected %s", actual, expected)
+		}
+	}
+}
+
+func TestBinopOr(t *testing.T) {
+	program := []string{
+		`PUSH_BOOL true`,
+		"PUSH_BOOL true",
+		`PUSH_BOOL false`,
+		"BINOP or",
+		"BINOP or",
+	}
+	expected := "true"
+
+	vm := VirtualMachine{}
+
+	for _, line := range program {
+		line_instruction, err := ParseInstruction(line)
+		if err != nil {
+			t.Fatalf("Error parsing instruction %q: %v", line_instruction, err)
+		}
+		if err := line_instruction.Perform(&vm); err != nil {
+			t.Fatalf("Unexpected error executing %q: %v", line, err)
+		}
+	}
+	if actual := vm.stack.Size(); actual != 1 {
+		t.Fatalf("Stack had %d items after operations, expected 1", actual)
+	}
+	if value, err := vm.stack.Pop(); err != nil {
+		t.Fatalf("Unexpected error popping stack: %v", err)
+	} else {
+		if as_bool, err := value.RequireBool(); err != nil {
+			t.Fatalf("Output is not a string: %v", err)
+		} else if actual := as_bool.Display(); actual != expected {
+			t.Fatalf("Calculating (true || true) || false gave %s, expected %s", actual, expected)
+		}
+	}
+}
