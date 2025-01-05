@@ -13,6 +13,10 @@ func MakeString(value string) *PrimitiveStr {
 	return &PrimitiveStr{value}
 }
 
+func (str *PrimitiveStr) Type() string {
+	return "str"
+}
+
 // Comparisons
 
 func (str *PrimitiveStr) Equal(other Primitive) bool {

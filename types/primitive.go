@@ -1,6 +1,8 @@
 package types
 
 type Primitive interface {
+	Type() string
+
 	// - Math
 	Add(other Primitive) (Primitive, error)
 	AddInplace(other Primitive) error

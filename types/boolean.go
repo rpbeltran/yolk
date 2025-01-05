@@ -13,6 +13,10 @@ func MakeBool(value bool) *PrimitiveBool {
 	return &PrimitiveBool{value}
 }
 
+func (boolean *PrimitiveBool) Type() string {
+	return "bool"
+}
+
 // Comparisons
 
 func (boolean *PrimitiveBool) Equal(other Primitive) bool {

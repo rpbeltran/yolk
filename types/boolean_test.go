@@ -4,6 +4,13 @@ import (
 	"testing"
 )
 
+func TestBoolType(t *testing.T) {
+	expected := "bool"
+	if actual := MakeBool(true).Type(); actual != expected {
+		t.Fatalf("Expected (true).type() == %q, instead got %q", expected, actual)
+	}
+}
+
 // Test logical operators
 
 type binop_bool_test_case struct {

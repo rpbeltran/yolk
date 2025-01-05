@@ -13,6 +13,13 @@ func makeNumOrFail(value string, t *testing.T) *PrimitiveNum {
 	return num
 }
 
+func TestNumType(t *testing.T) {
+	expected := "num"
+	if actual := makeNumOrFail("100", t).Type(); actual != expected {
+		t.Fatalf("Expected (100).type() == %q, instead got %q", expected, actual)
+	}
+}
+
 func TestNumNonArithmetic(t *testing.T) {
 	if actual, err := makeNumOrFail("100", t).Concatenate(makeNumOrFail("100", t)); err == nil {
 		t.Fatalf("100 ++ 100 should have errored but instead succeeded and returned %s", actual.Display())

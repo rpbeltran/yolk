@@ -4,6 +4,13 @@ import (
 	"testing"
 )
 
+func TestStrType(t *testing.T) {
+	expected := "str"
+	if actual := MakeString("foo").Type(); actual != expected {
+		t.Fatalf("Expected (\"foo\").type() == %q, instead got %q", expected, actual)
+	}
+}
+
 // String Operations
 
 func TestStrConcatenate(t *testing.T) {

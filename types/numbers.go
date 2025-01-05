@@ -22,6 +22,10 @@ func MakeNumber(value string) (*PrimitiveNum, error) {
 	return &PrimitiveNum{num}, nil
 }
 
+func (num *PrimitiveNum) Type() string {
+	return "num"
+}
+
 // Comparisons
 
 func (num *PrimitiveNum) Equal(other Primitive) bool {

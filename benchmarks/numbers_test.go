@@ -18,7 +18,6 @@ func BenchmarkMakeNumber(b *testing.B) {
 
 func BenchmarkNumbersAddition(b *testing.B) {
 	// add 2**63-1 to an accumulator b.N times
-
 	inc, err := types.MakeNumber("7")
 	if err != nil {
 		b.Fatalf("Error making number 7: %v", err)
@@ -41,7 +40,6 @@ func BenchmarkNumbersAddition(b *testing.B) {
 
 func BenchmarkNumbersAdditionInplace(b *testing.B) {
 	// add 2**63-1 to an accumulator b.N times
-
 	inc, err := types.MakeNumber("7")
 	if err != nil {
 		b.Fatalf("Error making number 7: %v", err)
