@@ -15,16 +15,29 @@ func makeNumOrFail(value string, t *testing.T) *PrimitiveNum {
 
 func TestNumNonArithmetic(t *testing.T) {
 	if actual, err := makeNumOrFail("100", t).Concatenate(makeNumOrFail("100", t)); err == nil {
-		t.Fatalf("100 + 100 should have errored but instead succeeded and returned %s", actual.Display())
+		t.Fatalf("100 ++ 100 should have errored but instead succeeded and returned %s", actual.Display())
 	}
 	if actual, err := makeNumOrFail("100", t).Concatenate(MakeString("foo")); err == nil {
-		t.Fatalf("100 + foo should have errored but instead succeeded and returned %s", actual.Display())
+		t.Fatalf("100 ++ foo should have errored but instead succeeded and returned %s", actual.Display())
 	}
 	if err := makeNumOrFail("100", t).ConcatenateInPlace(makeNumOrFail("100", t)); err == nil {
-		t.Fatalf("100 + 100 should have errored but instead succeeded")
+		t.Fatalf("100 ++= 100 should have errored but instead succeeded")
 	}
 	if err := makeNumOrFail("100", t).ConcatenateInPlace(MakeString("foo")); err == nil {
-		t.Fatalf("100 + foo should have errored but instead succeeded")
+		t.Fatalf("100 ++= foo should have errored but instead succeeded")
+	}
+
+	if actual, err := makeNumOrFail("100", t).And(MakeBool(true)); err == nil {
+		t.Fatalf("100 && true should have errored but instead succeeded and returned %s", actual.Display())
+	}
+	if actual, err := makeNumOrFail("100", t).Or(MakeBool(true)); err == nil {
+		t.Fatalf("100 || true should have errored but instead succeeded and returned %s", actual.Display())
+	}
+	if err := makeNumOrFail("100", t).AndInplace(MakeBool(true)); err == nil {
+		t.Fatalf("100 &&= true should have errored but instead succeeded")
+	}
+	if err := makeNumOrFail("100", t).OrInplace(MakeBool(true)); err == nil {
+		t.Fatalf("100 ||= true should have errored but instead succeeded")
 	}
 }
 

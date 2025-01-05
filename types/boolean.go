@@ -36,8 +36,18 @@ func (boolean *PrimitiveBool) And(other Primitive) (Primitive, error) {
 	return &PrimitiveBool{boolean.value && other.Truthy()}, nil
 }
 
+func (boolean *PrimitiveBool) AndInplace(other Primitive) error {
+	boolean.value = boolean.value && other.Truthy()
+	return nil
+}
+
 func (boolean *PrimitiveBool) Or(other Primitive) (Primitive, error) {
 	return &PrimitiveBool{boolean.value || other.Truthy()}, nil
+}
+
+func (boolean *PrimitiveBool) OrInplace(other Primitive) error {
+	boolean.value = boolean.value || other.Truthy()
+	return nil
 }
 
 // Non logical Operators

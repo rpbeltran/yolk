@@ -35,7 +35,7 @@ func TestStrConcatenate(t *testing.T) {
 
 // Math
 
-func TestStrMath(t *testing.T) {
+func TestStrNonstringOps(t *testing.T) {
 	if _, err := MakeString("foo").Add(makeNumOrFail("100", t)); err == nil {
 		t.Fatal(`"foo" + 100 succeeded but should have failed`)
 	}
@@ -51,87 +51,103 @@ func TestStrMath(t *testing.T) {
 	}
 
 	if _, err := MakeString("foo").Subtract(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" - 100 succeeded but should have failed`)
 	}
 	if _, err := MakeString("foo").Subtract(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" - "bar" succeeded but should have failed`)
 	}
 
 	if err := MakeString("foo").SubtractInplace(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" - 100 succeeded but should have failed`)
 	}
 	if err := MakeString("foo").SubtractInplace(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" - "bar" succeeded but should have failed`)
 	}
 
 	if _, err := MakeString("foo").Multiply(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" * 100 succeeded but should have failed`)
 	}
 	if _, err := MakeString("foo").Multiply(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" * "bar" succeeded but should have failed`)
 	}
 
 	if err := MakeString("foo").MultiplyInplace(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" * 100 succeeded but should have failed`)
 	}
 	if err := MakeString("foo").MultiplyInplace(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" * "bar" succeeded but should have failed`)
 	}
 
 	if _, err := MakeString("foo").Divide(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" / 100 succeeded but should have failed`)
 	}
 	if _, err := MakeString("foo").Divide(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" / "bar" succeeded but should have failed`)
 	}
 
 	if err := MakeString("foo").DivideInplace(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" / 100 succeeded but should have failed`)
 	}
 	if err := MakeString("foo").DivideInplace(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" / "bar" succeeded but should have failed`)
 	}
 
 	if _, err := MakeString("foo").IntDivide(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" // 100 succeeded but should have failed`)
 	}
 	if _, err := MakeString("foo").IntDivide(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" // "bar" succeeded but should have failed`)
 	}
 
 	if err := MakeString("foo").IntDivideInplace(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" // 100 succeeded but should have failed`)
 	}
 	if err := MakeString("foo").IntDivideInplace(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" // "bar" succeeded but should have failed`)
 	}
 
 	if _, err := MakeString("foo").Modulo(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" % 100 succeeded but should have failed`)
 	}
 	if _, err := MakeString("foo").Modulo(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" % "bar" succeeded but should have failed`)
 	}
 
 	if err := MakeString("foo").ModuloInplace(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" % 100 succeeded but should have failed`)
 	}
 	if err := MakeString("foo").ModuloInplace(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" % "bar" succeeded but should have failed`)
 	}
 
 	if _, err := MakeString("foo").RaisePower(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" ** 100 succeeded but should have failed`)
 	}
 	if _, err := MakeString("foo").RaisePower(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" ** "bar" succeeded but should have failed`)
 	}
 
 	if err := MakeString("foo").RaisePowerInplace(makeNumOrFail("100", t)); err == nil {
-		t.Fatal(`"foo" + 100 succeeded but should have failed`)
+		t.Fatal(`"foo" ** 100 succeeded but should have failed`)
 	}
 	if err := MakeString("foo").RaisePowerInplace(MakeString("bar")); err == nil {
-		t.Fatal(`"foo" + "bar" succeeded but should have failed`)
+		t.Fatal(`"foo" ** "bar" succeeded but should have failed`)
+	}
+
+	if _, err := MakeString("foo").And(MakeBool(true)); err == nil {
+		t.Fatal(`"foo" && true succeeded but should have failed`)
+	}
+
+	if err := MakeString("foo").AndInplace(MakeBool(true)); err == nil {
+		t.Fatal(`"foo" &&= true succeeded but should have failed`)
+	}
+
+	if _, err := MakeString("foo").Or(MakeBool(true)); err == nil {
+		t.Fatal(`"foo" || true succeeded but should have failed`)
+	}
+
+	if err := MakeString("foo").OrInplace(MakeBool(true)); err == nil {
+		t.Fatal(`"foo" ||= true succeeded but should have failed`)
 	}
 }
 

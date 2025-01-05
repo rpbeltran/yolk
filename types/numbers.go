@@ -208,8 +208,16 @@ func (num *PrimitiveNum) And(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("num type does not support boolean logic")
 }
 
+func (num *PrimitiveNum) AndInplace(other Primitive) error {
+	return fmt.Errorf("num type does not support boolean logic")
+}
+
 func (num *PrimitiveNum) Or(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("num type does not support boolean logic")
+}
+
+func (num *PrimitiveNum) OrInplace(other Primitive) error {
+	return fmt.Errorf("num type does not support boolean logic")
 }
 
 // Casting

@@ -33,7 +33,7 @@ func (str *PrimitiveStr) LessThan(other Primitive) (bool, error) {
 // String Operators
 
 func (str *PrimitiveStr) ConcatenateInPlace(other Primitive) error {
-	str.value = str.value + other.Display()
+	str.value += other.Display()
 	return nil
 }
 
@@ -105,8 +105,16 @@ func (str *PrimitiveStr) And(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support boolean logic")
 }
 
+func (str *PrimitiveStr) AndInplace(other Primitive) error {
+	return fmt.Errorf("string type does not support boolean logic")
+}
+
 func (str *PrimitiveStr) Or(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support boolean logic")
+}
+
+func (str *PrimitiveStr) OrInplace(other Primitive) error {
+	return fmt.Errorf("string type does not support boolean logic")
 }
 
 // Casting

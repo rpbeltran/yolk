@@ -27,6 +27,8 @@ type Primitive interface {
 	// - Logical Operators
 	And(other Primitive) (Primitive, error)
 	Or(other Primitive) (Primitive, error)
+	AndInplace(other Primitive) error
+	OrInplace(other Primitive) error
 
 	// - Comparisons
 	Equal(other Primitive) bool

@@ -29,6 +29,12 @@ func TestBooleanAnd(t *testing.T) {
 		} else if actual_bool.value != test.c {
 			t.Fatalf("Got %t and %t = %t, expected %t", test.a, test.b, actual_bool.value, test.c)
 		}
+
+		if err := a_bool.AndInplace(b_bool); err != nil {
+			t.Fatalf("%t &&= %t returned error %v, expected %t", test.a, test.b, err, test.c)
+		} else if a_bool.value != test.c {
+			t.Fatalf("Got %t &&= %t => %t, expected %t", test.a, test.b, a_bool.value, test.c)
+		}
 	}
 }
 
@@ -48,6 +54,12 @@ func TestBooleanOr(t *testing.T) {
 			t.Fatalf("%t or %t should have returned a bool, but RequireBool() failed with: %v", test.a, test.b, err)
 		} else if actual_bool.value != test.c {
 			t.Fatalf("Got %t or %t = %t, expected %t", test.a, test.b, actual_bool.value, test.c)
+		}
+
+		if err := a_bool.OrInplace(b_bool); err != nil {
+			t.Fatalf("%t ||= %t returned error %v, expected %t", test.a, test.b, err, test.c)
+		} else if a_bool.value != test.c {
+			t.Fatalf("Got %t ||= %t => %t, expected %t", test.a, test.b, a_bool.value, test.c)
 		}
 	}
 }
