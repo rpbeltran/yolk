@@ -5,17 +5,17 @@
 
 |  Instruction  |             Argument(s)            |
 | ------------- | ---------------------------------- |
-| ASSIGN_NAME   | name: *Name*                       |
+| ASSIGN        | name: *Name*                       |
 | BINOP         | operation: *[add, and, ...]*       |
 | BINOP_INPLACE | operation: Operation, name: *Name* |
 | COMPARE       | test_mode: *[equal, less, ...]*    |
-| DECLARE_NAME  | name: *Name*                       |
+| DECLARE       | name: *Name*                       |
 | EXEC          | arg_count: *uint*                  |
 | JUMP          | label: *uint*                      |
 | JUMP_IF_TRUE  | label: *uint*                      |
 | JUMP_IF_FALSE | label: *uint*                      |
 | .LABEL        | label: *uint*                      |
-| LOAD_NAME     | name: *Name*                       |
+| LOAD          | name: *Name*                       |
 | NEGATE        |                                    |
 | NOT           |                                    |
 | PIPELINE      | mode: *[begin, next, end]*         |
@@ -24,7 +24,7 @@
 | PUSH_NUM      | value: *Number*                    |
 | PUSH_STR      | value: *Quoted*                    |
 
-## ASSIGN_NAME ${name}
+## ASSIGN ${name}
 
 Pops the value from the top of the stack and stores it in an existing variable.
 If a variable with the given name does not exist in any of the current scopes,
@@ -40,7 +40,7 @@ Example:
 # -- vm.stack:[7]
 # -- vm.global_names{"foo":i,}
 # -- vm.globals{i:1,}
-DECLARE_NAME foo
+DECLARE foo
 # -- vm.stack:[]
 # -- vm.global_names{"foo":i,}
 # -- vm.globals{i:7,}
@@ -128,7 +128,7 @@ COMPARE equal
 # -- vm.stack:[false]
 ```
 
-## DECLARE_NAME ${name}
+## DECLARE ${name}
 
 Pops the value from the top of the stack and stores it in a new variable in the current scope.
 If a variable with the given name already exists in the current scope, or if the stack is empty
@@ -144,7 +144,7 @@ Example:
 # -- vm.stack:[7]
 # -- vm.global_names{}
 # -- vm.globals{}
-DECLARE_NAME foo
+DECLARE foo
 # -- vm.stack:[]
 # -- vm.global_names{"foo":i,}
 # -- vm.globals{i:7,}
@@ -233,7 +233,7 @@ Arguments:
 # say("goodbye")
 
 
-LOAD_NAME  a
+LOAD  a
 JUMP_IF_FALSE  123
 PUSH_STR "hello"
 PRINT
@@ -256,10 +256,10 @@ Arguments:
 
 ```
 # Example Egg: (a or b)
-LOAD_NAME  a
+LOAD  a
 DUPLICATE
 JUMP_IF_TRUE  123
-LOAD_NAME  b
+LOAD  b
 .LABEL 123
 ```
 
@@ -273,7 +273,7 @@ Arguments:
  * label_id: uint, a unique id associated with this label
 
 
-## LOAD_NAME ${name}
+## LOAD ${name}
 
 Loads a variable from memory and pushes it onto the top of the stack.
 The variable will be searched for in local scope first and then in global scope if it cannot be
@@ -291,7 +291,7 @@ Example:
 # -- vm.stack:[]
 # -- vm.global_names{"foo":i,}
 # -- vm.globals{i:7,}
-LOAD_NAME foo
+LOAD foo
 # -- vm.stack:[7]
 # -- vm.global_names{"foo":i,}
 # -- vm.globals{i:7,}
@@ -367,13 +367,13 @@ PUSH_NUM 3
 PIPELINE next
 # -- vm.stack:[]
 # -- vm.pipeline_states:[3]
-LOAD_NAME add3
+LOAD add3
 # -- vm.stack:[add3]
 # -- vm.pipeline_states:[3]
 PIPELINE next
 # -- vm.stack:[]
 # -- vm.pipeline_states:[f(3)]
-LOAD_NAME g
+LOAD g
 # -- vm.stack:[g]
 # -- vm.pipeline_states:[f(3)]
 PIPELINE end

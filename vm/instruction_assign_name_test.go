@@ -7,11 +7,11 @@ import (
 )
 
 func TestAssignNameParsing(t *testing.T) {
-	expected_type := "*vm.Instruction_ASSIGN_NAME"
+	expected_type := "*vm.Instruction_ASSIGN"
 
-	ExpectParse(t, `ASSIGN_NAME foo`, expected_type, `ASSIGN_NAME foo`)
-	ExpectParse(t, `ASSIGN_NAME foo_bar`, expected_type, `ASSIGN_NAME foo_bar`)
-	ExpectParseFailure(t, "ASSIGN_NAME", "needs a name")
+	ExpectParse(t, `ASSIGN foo`, expected_type, `ASSIGN foo`)
+	ExpectParse(t, `ASSIGN foo_bar`, expected_type, `ASSIGN foo_bar`)
+	ExpectParseFailure(t, "ASSIGN", "needs a name")
 }
 
 func TestAssignNamePerform(t *testing.T) {
@@ -25,12 +25,12 @@ func TestAssignNamePerform(t *testing.T) {
 	}
 	vm.stack.Push(types.MakeString(message))
 
-	if instruction, err := ParseInstruction(fmt.Sprintf("ASSIGN_NAME %s", name)); err != nil {
+	if instruction, err := ParseInstruction(fmt.Sprintf("ASSIGN %s", name)); err != nil {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)
 	} else if err := instruction.Perform(&vm); err != nil {
 		t.Fatalf("Error executing instruction %q: %v", instruction, err)
 	} else if value, err := vm.FetchVariable(name); err != nil {
-		t.Fatalf("Error popping stack after performing ASSIGN_NAME: %v", err)
+		t.Fatalf("Error popping stack after performing ASSIGN: %v", err)
 	} else if display := value.Display(); display != message {
 		t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
 	} else {
@@ -39,7 +39,7 @@ func TestAssignNamePerform(t *testing.T) {
 		if err := instruction.Perform(&vm); err != nil {
 			t.Fatalf("Error executing instruction %q: %v", instruction, err)
 		} else if value, err := vm.FetchVariable(name); err != nil {
-			t.Fatalf("Error popping stack after performing ASSIGN_NAME: %v", err)
+			t.Fatalf("Error popping stack after performing ASSIGN: %v", err)
 		} else if display := value.Display(); display != message {
 			t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
 		}

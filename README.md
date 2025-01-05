@@ -6,17 +6,17 @@ A stack based Virtual Machine for executing eggshell
 
 |  Instruction  |             Argument(s)            |
 | ------------- | ---------------------------------- |
-| ASSIGN_NAME   | name: *Name*                       |
+| ASSIGN        | name: *Name*                       |
 | BINOP         | operation: *[add, and, ...]*       |
 | BINOP_INPLACE | operation: Operation, name: *Name* |
 | COMPARE       | test_mode: *[equal, less, ...]*    |
-| DECLARE_NAME  | name: *Name*                       |
+| DECLARE       | name: *Name*                       |
 | EXEC          | arg_count: *uint*                  |
 | JUMP          | label: *uint*                      |
 | JUMP_IF_TRUE  | label: *uint*                      |
 | JUMP_IF_FALSE | label: *uint*                      |
 | .LABEL        | label: *uint*                      |
-| LOAD_NAME     | name: *Name*                       |
+| LOAD          | name: *Name*                       |
 | NEGATE        |                                    |
 | NOT           |                                    |
 | PIPELINE      | mode: *[begin, next, end]*         |
@@ -30,7 +30,7 @@ A stack based Virtual Machine for executing eggshell
 
 ### Todo Instructions
 
-* DECLARE_NAME_TYPED
+* DECLARE_TYPED
 * .DEFINE
 * .DEFINE_TYPED
 * SUB_SCOPE

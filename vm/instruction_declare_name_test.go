@@ -7,11 +7,11 @@ import (
 )
 
 func TestDeclareNameParsing(t *testing.T) {
-	expected_type := "*vm.Instruction_DECLARE_NAME"
+	expected_type := "*vm.Instruction_DECLARE"
 
-	ExpectParse(t, `DECLARE_NAME foo`, expected_type, `DECLARE_NAME foo`)
-	ExpectParse(t, `DECLARE_NAME foo_bar`, expected_type, `DECLARE_NAME foo_bar`)
-	ExpectParseFailure(t, "DECLARE_NAME", "needs a name")
+	ExpectParse(t, `DECLARE foo`, expected_type, `DECLARE foo`)
+	ExpectParse(t, `DECLARE foo_bar`, expected_type, `DECLARE foo_bar`)
+	ExpectParseFailure(t, "DECLARE", "needs a name")
 }
 
 func TestDeclareNamePerform(t *testing.T) {
@@ -21,12 +21,12 @@ func TestDeclareNamePerform(t *testing.T) {
 	vm := NewVM()
 	vm.stack.Push(types.MakeString(message))
 
-	if instruction, err := ParseInstruction(fmt.Sprintf("DECLARE_NAME %s", name)); err != nil {
+	if instruction, err := ParseInstruction(fmt.Sprintf("DECLARE %s", name)); err != nil {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)
 	} else if err := instruction.Perform(&vm); err != nil {
 		t.Fatalf("Error executing instruction %q: %v", instruction, err)
 	} else if value, err := vm.FetchVariable(name); err != nil {
-		t.Fatalf("Error popping stack after performing DECLARE_NAME: %v", err)
+		t.Fatalf("Error popping stack after performing DECLARE: %v", err)
 	} else if display := value.Display(); display != message {
 		t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
 	} else {
@@ -36,7 +36,7 @@ func TestDeclareNamePerform(t *testing.T) {
 		if err := instruction.Perform(&vm); err != nil {
 			t.Fatalf("Error executing instruction %q: %v", instruction, err)
 		} else if value, err := vm.FetchVariable(name); err != nil {
-			t.Fatalf("Error popping stack after performing DECLARE_NAME: %v", err)
+			t.Fatalf("Error popping stack after performing DECLARE: %v", err)
 		} else if display := value.Display(); display != message {
 			t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
 		}

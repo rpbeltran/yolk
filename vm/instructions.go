@@ -22,8 +22,8 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 	args = strings.TrimSpace(args)
 
 	switch operator {
-	case "ASSIGN_NAME":
-		var instruction Instruction_ASSIGN_NAME
+	case "ASSIGN":
+		var instruction Instruction_ASSIGN
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}
@@ -46,8 +46,8 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
-	case "DECLARE_NAME":
-		var instruction Instruction_DECLARE_NAME
+	case "DECLARE":
+		var instruction Instruction_DECLARE
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}
@@ -88,8 +88,8 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
-	case "LOAD_NAME":
-		var instruction Instruction_LOAD_NAME
+	case "LOAD":
+		var instruction Instruction_LOAD
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}
