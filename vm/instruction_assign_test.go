@@ -9,9 +9,12 @@ import (
 func TestAssignNameParsing(t *testing.T) {
 	expected_type := "*vm.Instruction_ASSIGN"
 
-	ExpectParse(t, `ASSIGN foo`, expected_type, `ASSIGN foo`)
-	ExpectParse(t, `ASSIGN foo_bar`, expected_type, `ASSIGN foo_bar`)
-	ExpectParseFailure(t, "ASSIGN", "needs a name")
+	ExpectParse(t, `ASSIGN <foo>`, expected_type, `ASSIGN <foo>`)
+	ExpectParse(t, `ASSIGN <foo_bar>`, expected_type, `ASSIGN <foo_bar>`)
+	ExpectParseWrappedFailure(t, "ASSIGN", ErrParsingASSIGN)
+	ExpectParseWrappedFailure(t, "ASSIGN foo", ErrParsingASSIGN)
+	ExpectParseWrappedFailure(t, `ASSIGN "foo"`, ErrParsingASSIGN)
+	ExpectParseWrappedFailure(t, `ASSIGN "<foo> hello"`, ErrParsingASSIGN)
 }
 
 func TestAssignNamePerform(t *testing.T) {
@@ -25,7 +28,7 @@ func TestAssignNamePerform(t *testing.T) {
 	}
 	vm.stack.Push(types.MakeString(message))
 
-	if instruction, err := ParseInstruction(fmt.Sprintf("ASSIGN %s", name)); err != nil {
+	if instruction, err := ParseInstruction(fmt.Sprintf("ASSIGN <%s>", name)); err != nil {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)
 	} else if err := instruction.Perform(&vm); err != nil {
 		t.Fatalf("Error executing instruction %q: %v", instruction, err)

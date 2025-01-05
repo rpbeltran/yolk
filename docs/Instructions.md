@@ -31,19 +31,17 @@ If a variable with the given name does not exist in any of the current scopes,
 or if the stack is empty execution will terminate with an error state.
 
 Arguments:
-* name: name of a variable to update the value of (unquoted)
+* name: name of a variable to update the value of (angle quoted)
 
 Example:
 
 ```
 # egg: (foo)
 # -- vm.stack:[7]
-# -- vm.global_names{"foo":i,}
-# -- vm.globals{i:1,}
-DECLARE foo
+# -- vm.globals: {foo=1,}
+DECLARE <foo>
 # -- vm.stack:[]
-# -- vm.global_names{"foo":i,}
-# -- vm.globals{i:7,}
+# -- vm.globals: {foo=7,}
 ```
 
 ## BINOP ${operation}
@@ -80,20 +78,20 @@ execution will terminate with an error state.
 
 Arguments:
 * operation: enum, specifies a binary operation to perform (see ./Operations.md for options)
-* name: name of the variable to update, quoted
+* name: name of the variable to update (angle quoted)
 
 Example:
 
 ```
 # egg: foo /= 3
 # -- vm.stack:[]
-# -- vm.globals{"foo":15,}
+# -- vm.globals{foo=15,}
 PUSH_NUM 3
 # -- vm.stack:[3]
-# -- vm.globals{"foo":15,}
-BINOP_INPLACE divide "foo"
+# -- vm.globals{foo=15,}
+BINOP_INPLACE divide <foo>
 # -- vm.stack:[]
-# -- vm.globals{"foo":3,}
+# -- vm.globals{foo=3,}
 ```
 
 ## COMPARE ${test_mode}
@@ -135,7 +133,7 @@ If a variable with the given name already exists in the current scope, or if the
 execution will terminate with an error state.
 
 Arguments:
-* name: name of a variable to create (unquoted)
+* name: name of a variable to create (angle quoted)
 
 Example:
 
@@ -144,10 +142,9 @@ Example:
 # -- vm.stack:[7]
 # -- vm.global_names{}
 # -- vm.globals{}
-DECLARE foo
+DECLARE <foo>
 # -- vm.stack:[]
-# -- vm.global_names{"foo":i,}
-# -- vm.globals{i:7,}
+# -- vm.globals{foo=7,}
 ```
 
 ## EXEC ${arg_count}
@@ -289,12 +286,10 @@ Example:
 ```
 # egg: (foo)
 # -- vm.stack:[]
-# -- vm.global_names{"foo":i,}
-# -- vm.globals{i:7,}
+# -- vm.globals{foo=7,}
 LOAD foo
 # -- vm.stack:[7]
-# -- vm.global_names{"foo":i,}
-# -- vm.globals{i:7,}
+# -- vm.globals{foo=7,}
 ```
 
 ## NEGATE 

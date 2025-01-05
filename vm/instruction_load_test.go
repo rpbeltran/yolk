@@ -9,9 +9,12 @@ import (
 func TestLoadNameParsing(t *testing.T) {
 	expected_type := "*vm.Instruction_LOAD"
 
-	ExpectParse(t, `LOAD foo`, expected_type, `LOAD foo`)
-	ExpectParse(t, `LOAD foo_bar`, expected_type, `LOAD foo_bar`)
-	ExpectParseFailure(t, "LOAD", "needs a name")
+	ExpectParseSame(t, `LOAD <foo>`, expected_type)
+	ExpectParseSame(t, `LOAD <foo_bar>`, expected_type)
+	ExpectParseWrappedFailure(t, "LOAD", ErrParsingLOAD)
+	ExpectParseWrappedFailure(t, "LOAD foo", ErrParsingLOAD)
+	ExpectParseWrappedFailure(t, `LOAD "foo"`, ErrParsingLOAD)
+	ExpectParseWrappedFailure(t, `LOAD "<foo> hello"`, ErrParsingLOAD)
 }
 
 func TestLoadNamePerform(t *testing.T) {
@@ -24,7 +27,7 @@ func TestLoadNamePerform(t *testing.T) {
 		t.Fatalf("Unexpected error storing variable: %v", err)
 	}
 
-	if instruction, err := ParseInstruction(fmt.Sprintf("LOAD %s", name)); err != nil {
+	if instruction, err := ParseInstruction(fmt.Sprintf("LOAD <%s>", name)); err != nil {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)
 	} else if err := instruction.Perform(&vm); err != nil {
 		t.Fatalf("Error executing instruction %v: %v", instruction, err)
@@ -41,7 +44,7 @@ func TestLoadNamePerform(t *testing.T) {
 			t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
 		}
 	}
-	if instruction, err := ParseInstruction("LOAD fake"); err != nil {
+	if instruction, err := ParseInstruction("LOAD <fake>"); err != nil {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)
 	} else if err := instruction.Perform(&vm); err == nil {
 		t.Fatalf("expecte error executing instruction %v, got none", instruction)

@@ -1,23 +1,28 @@
 package vm
 
 import (
+	"errors"
 	"fmt"
+	"yolk/utils"
 )
 
 type Instruction_DECLARE struct {
 	name string
 }
 
+var ErrParsingDECLARE = errors.New("failed to parse DECLARE")
+
 func (instruction *Instruction_DECLARE) Parse(args *string) error {
-	if len(*args) == 0 {
-		return fmt.Errorf("DECLARE instruction needs a name")
+	if name, err := utils.DeserializeName(*args); err != nil {
+		return fmt.Errorf("%w: bad name arg: %w", ErrParsingDECLARE, err)
+	} else {
+		instruction.name = name
+		return nil
 	}
-	instruction.name = *args
-	return nil
 }
 
 func (instruction *Instruction_DECLARE) String() string {
-	return fmt.Sprintf("DECLARE %s", instruction.name)
+	return fmt.Sprintf("DECLARE %s", utils.SerializeName(instruction.name))
 }
 
 func (instruction *Instruction_DECLARE) Perform(vm *VirtualMachine) error {

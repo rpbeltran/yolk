@@ -10,21 +10,22 @@ import (
 func TestBinopInplaceParsing(t *testing.T) {
 	expected_type := "*vm.Instruction_BINOP_INPLACE"
 
-	ExpectParseSame(t, `BINOP_INPLACE add "sum"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE add "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE subtract "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE multiply "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE divide "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE int_divide "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE power "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE modulus "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE concat "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE and "foo"`, expected_type)
-	ExpectParseSame(t, `BINOP_INPLACE or "foo"`, expected_type)
-	ExpectParseFailure(t, "BINOP_INPLACE", "needs operator and name")
-	ExpectParseFailure(t, "BINOP_INPLACE foo", `needs operator and name`)
-	ExpectParseFailure(t, `BINOP_INPLACE foo bar`, `unexpected operator "foo"`)
-	ExpectParseFailure(t, `BINOP_INPLACE add ""`, `instruction has invalid name`)
+	ExpectParseSame(t, `BINOP_INPLACE add <sum>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE add <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE subtract <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE multiply <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE divide <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE int_divide <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE power <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE modulus <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE concat <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE and <foo>`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE or <foo>`, expected_type)
+	ExpectParseFailure(t, "BINOP_INPLACE", "instruction needs operator and name")
+	ExpectParseFailure(t, "BINOP_INPLACE foo", "instruction needs operator and name")
+	ExpectParseFailure(t, "BINOP_INPLACE foo bar", "unexpected operator")
+	ExpectParseWrappedFailure(t, `BINOP_INPLACE add ""`, ErrParsingBinopInplaceName)
+	ExpectParseWrappedFailure(t, `BINOP_INPLACE add <>`, ErrParsingBinopInplaceName)
 }
 
 type BinOpInplaceTestCase struct {
@@ -60,7 +61,7 @@ func TestBinopInplace(t *testing.T) {
 
 		vm.stack.Push(tc.rhs)
 
-		instruction := fmt.Sprintf("BINOP_INPLACE %s %q", tc.operation, name)
+		instruction := fmt.Sprintf("BINOP_INPLACE %s <%s>", tc.operation, name)
 
 		if err := RequireParse(t, instruction).Perform(&vm); err != nil {
 			t.Fatalf("Unexpected error performing %q: %v", instruction, err)
@@ -100,7 +101,7 @@ func TestBinopInplaceFailure(t *testing.T) {
 		}
 		vm.stack.Push(tc.rhs)
 
-		instruction := fmt.Sprintf("BINOP_INPLACE %s %q", tc.operation, name)
+		instruction := fmt.Sprintf("BINOP_INPLACE %s <%s>", tc.operation, name)
 
 		if err := RequireParse(t, instruction).Perform(&vm); err == nil {
 			t.Fatalf("Expected an error performing %q with %q and %q, got none",
@@ -116,7 +117,7 @@ func TestBinopInplaceArgsFailure(t *testing.T) {
 	if err := vm.StoreNewVariable(name, types.MakeString("hello world!")); err != nil {
 		t.Fatalf("Unexpected error storing variable: %v", err)
 	}
-	instruction := fmt.Sprintf("BINOP_INPLACE concat %q", name)
+	instruction := fmt.Sprintf("BINOP_INPLACE concat <%s>", name)
 
 	if err := RequireParse(t, instruction).Perform(&vm); err == nil {
 		t.Fatal("Expected an error performing BINOP_INPLACE with empty stack, got none")
@@ -124,7 +125,7 @@ func TestBinopInplaceArgsFailure(t *testing.T) {
 		t.Fatalf("Expected an error containing 'rhs' got %v", err)
 	}
 
-	instruction = fmt.Sprintf("BINOP_INPLACE concat %q", "fake_name")
+	instruction = fmt.Sprintf("BINOP_INPLACE concat <%s>", "fake_name")
 	vm.stack.Push(types.MakeString("hello"))
 	if err := RequireParse(t, instruction).Perform(&vm); err == nil {
 		t.Fatal("Expected an error performing BINOP_INPLACE with empty stack, got none")

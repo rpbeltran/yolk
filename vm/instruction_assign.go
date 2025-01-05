@@ -1,23 +1,28 @@
 package vm
 
 import (
+	"errors"
 	"fmt"
+	"yolk/utils"
 )
 
 type Instruction_ASSIGN struct {
 	name string
 }
 
+var ErrParsingASSIGN = errors.New("failed to parse ASSIGN")
+
 func (instruction *Instruction_ASSIGN) Parse(args *string) error {
-	if len(*args) == 0 {
-		return fmt.Errorf("ASSIGN instruction needs a name")
+	if name, err := utils.DeserializeName(*args); err != nil {
+		return fmt.Errorf("%w: bad name arg: %w", ErrParsingASSIGN, err)
+	} else {
+		instruction.name = name
+		return nil
 	}
-	instruction.name = *args
-	return nil
 }
 
 func (instruction *Instruction_ASSIGN) String() string {
-	return fmt.Sprintf("ASSIGN %s", instruction.name)
+	return fmt.Sprintf("ASSIGN %s", utils.SerializeName(instruction.name))
 }
 
 func (instruction *Instruction_ASSIGN) Perform(vm *VirtualMachine) error {

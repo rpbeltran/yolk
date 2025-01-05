@@ -5,15 +5,22 @@ import (
 	"fmt"
 )
 
-var ErrStripAngleQuotedGotEmptyString = errors.New("StripAngleQuotes() got the empty string which is invalid")
-var ErrStripAngleQuotedGotInvalidString = errors.New("StripAngleQuotes() got a string which was not surounded by '<' and '>'")
+var ErrDeserializeNameGotEmptyString = errors.New("DeserializeName() got the empty string which is invalid")
+var ErrDeserializeNameGotInvalidString = errors.New("DeserializeName() got a string which was not surounded by '<' and '>'")
+var ErrDeserializeNameGotEmptyName = errors.New("DeserializeName() got an empty name which is not allowed")
 
-func StripAngleQuotes(quoted string) (string, error) {
+func DeserializeName(quoted string) (string, error) {
 	if l := len(quoted); l == 0 {
-		return "", ErrStripAngleQuotedGotEmptyString
-	} else if quoted[0] == '<' && quoted[l-1] == '>' {
-		return quoted[1 : l-1], nil
+		return "", ErrDeserializeNameGotEmptyString
+	} else if quoted[0] != '<' || quoted[l-1] != '>' {
+		return "", fmt.Errorf("%w: %q", ErrDeserializeNameGotInvalidString, quoted)
+	} else if l == 2 {
+		return "", fmt.Errorf("%w: %q", ErrDeserializeNameGotEmptyName, quoted)
 	} else {
-		return "", fmt.Errorf("%w: %q", ErrStripAngleQuotedGotInvalidString, quoted)
+		return quoted[1 : l-1], nil
 	}
+}
+
+func SerializeName(name string) string {
+	return fmt.Sprintf("<%s>", name)
 }

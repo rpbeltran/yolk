@@ -5,67 +5,75 @@ import (
 	"testing"
 )
 
-func TestStripAngleQuotes(t *testing.T) {
+func TestDeserializeName(t *testing.T) {
 	s := "<foo>"
-	if stripped, err := StripAngleQuotes(s); err != nil {
-		t.Fatalf("Unexpected error from StripAngleQuotes(%q): %v", s, err)
+	if stripped, err := DeserializeName(s); err != nil {
+		t.Fatalf("Unexpected error from DeserializeName(%q): %v", s, err)
 	} else if stripped != "foo" {
-		t.Fatalf("Expected StripAngleQuotes(%q) == %q, got %q", s, "foo", stripped)
+		t.Fatalf("Expected DeserializeName(%q) == %q, got %q", s, "foo", stripped)
 	}
 
 	s = "<hello <> world>>"
-	if stripped, err := StripAngleQuotes(s); err != nil {
-		t.Fatalf("Unexpected error from StripAngleQuotes(%q): %v", s, err)
+	if stripped, err := DeserializeName(s); err != nil {
+		t.Fatalf("Unexpected error from DeserializeName(%q): %v", s, err)
 	} else if stripped != "hello <> world>" {
-		t.Fatalf("Expected StripAngleQuotes(%q) == %q, got %q", s, "hello <> world>", stripped)
+		t.Fatalf("Expected DeserializeName(%q) == %q, got %q", s, "hello <> world>", stripped)
 	}
 
 	s = "<>"
-	if stripped, err := StripAngleQuotes(s); err != nil {
-		t.Fatalf("Unexpected error from StripAngleQuotes(%q): %v", s, err)
-	} else if stripped != "" {
-		t.Fatalf("Expected StripAngleQuotes(%q) == %q, got %q", s, "", stripped)
+	if result, err := DeserializeName(s); err == nil {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrDeserializeNameGotEmptyName, result)
+	} else if !errors.Is(err, ErrDeserializeNameGotEmptyName) {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead failed with %v", s, ErrDeserializeNameGotEmptyName, err)
 	}
 
 	s = ""
-	if result, err := StripAngleQuotes(s); err == nil {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrStripAngleQuotedGotEmptyString, result)
-	} else if !errors.Is(err, ErrStripAngleQuotedGotEmptyString) {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead failed with %v", s, ErrStripAngleQuotedGotEmptyString, err)
+	if result, err := DeserializeName(s); err == nil {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrDeserializeNameGotEmptyString, result)
+	} else if !errors.Is(err, ErrDeserializeNameGotEmptyString) {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead failed with %v", s, ErrDeserializeNameGotEmptyString, err)
 	}
 
 	s = "foo"
-	if result, err := StripAngleQuotes(s); err == nil {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrStripAngleQuotedGotInvalidString, result)
-	} else if !errors.Is(err, ErrStripAngleQuotedGotInvalidString) {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead failed with %v", s, ErrStripAngleQuotedGotInvalidString, err)
+	if result, err := DeserializeName(s); err == nil {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrDeserializeNameGotInvalidString, result)
+	} else if !errors.Is(err, ErrDeserializeNameGotInvalidString) {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead failed with %v", s, ErrDeserializeNameGotInvalidString, err)
 	}
 
 	s = "foo>"
-	if result, err := StripAngleQuotes(s); err == nil {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrStripAngleQuotedGotInvalidString, result)
-	} else if !errors.Is(err, ErrStripAngleQuotedGotInvalidString) {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead failed with %v", s, ErrStripAngleQuotedGotInvalidString, err)
+	if result, err := DeserializeName(s); err == nil {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrDeserializeNameGotInvalidString, result)
+	} else if !errors.Is(err, ErrDeserializeNameGotInvalidString) {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead failed with %v", s, ErrDeserializeNameGotInvalidString, err)
 	}
 
 	s = "<foo"
-	if result, err := StripAngleQuotes(s); err == nil {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrStripAngleQuotedGotInvalidString, result)
-	} else if !errors.Is(err, ErrStripAngleQuotedGotInvalidString) {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead failed with %v", s, ErrStripAngleQuotedGotInvalidString, err)
+	if result, err := DeserializeName(s); err == nil {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrDeserializeNameGotInvalidString, result)
+	} else if !errors.Is(err, ErrDeserializeNameGotInvalidString) {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead failed with %v", s, ErrDeserializeNameGotInvalidString, err)
 	}
 
 	s = ">foo>"
-	if result, err := StripAngleQuotes(s); err == nil {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrStripAngleQuotedGotInvalidString, result)
-	} else if !errors.Is(err, ErrStripAngleQuotedGotInvalidString) {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead failed with %v", s, ErrStripAngleQuotedGotInvalidString, err)
+	if result, err := DeserializeName(s); err == nil {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrDeserializeNameGotInvalidString, result)
+	} else if !errors.Is(err, ErrDeserializeNameGotInvalidString) {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead failed with %v", s, ErrDeserializeNameGotInvalidString, err)
 	}
 
 	s = "<foo<"
-	if result, err := StripAngleQuotes(s); err == nil {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrStripAngleQuotedGotInvalidString, result)
-	} else if !errors.Is(err, ErrStripAngleQuotedGotInvalidString) {
-		t.Fatalf("StripAngleQuotes(%q) was expected to fail with %v, instead failed with %v", s, ErrStripAngleQuotedGotInvalidString, err)
+	if result, err := DeserializeName(s); err == nil {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead succeeded and gave %q", s, ErrDeserializeNameGotInvalidString, result)
+	} else if !errors.Is(err, ErrDeserializeNameGotInvalidString) {
+		t.Fatalf("DeserializeName(%q) was expected to fail with %v, instead failed with %v", s, ErrDeserializeNameGotInvalidString, err)
+	}
+}
+
+func TestSerializeName(t *testing.T) {
+	s := "foo"
+	expected := "<foo>"
+	if quoted := SerializeName(s); quoted != expected {
+		t.Fatalf("Expected SerializeName(%q) to return %q, instead got %q", s, expected, quoted)
 	}
 }

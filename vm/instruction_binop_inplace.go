@@ -3,9 +3,12 @@ package vm
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
+	"yolk/utils"
 )
+
+var ErrParsingBinopInplace = errors.New("failed to parse BINOP_INPLACE")
+var ErrParsingBinopInplaceName = fmt.Errorf("%w: invalid name arg", ErrParsingBinopInplace)
 
 type inplace_binop uint8
 
@@ -62,10 +65,8 @@ func (instruction *Instruction_BINOP_INPLACE) Parse(args *string) error {
 		return fmt.Errorf("BINOP_INPLACE instruction specifies unexpected operator %q", operator)
 	}
 
-	if name_unquoted, err := strconv.Unquote(name); err != nil {
-		return fmt.Errorf("BINOP_INPLACE instruction has invalid name %q (needs quotes)", name)
-	} else if len(name_unquoted) == 0 {
-		return fmt.Errorf("BINOP_INPLACE instruction has invalid name %q", name)
+	if name_unquoted, err := utils.DeserializeName(name); err != nil {
+		return fmt.Errorf("%w: %w", ErrParsingBinopInplaceName, err)
 	} else {
 		instruction.name = name_unquoted
 	}
@@ -75,25 +76,25 @@ func (instruction *Instruction_BINOP_INPLACE) Parse(args *string) error {
 func (instruction *Instruction_BINOP_INPLACE) String() string {
 	switch instruction.operation {
 	case binop_add_inplace:
-		return fmt.Sprintf("BINOP_INPLACE add %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE add %s", utils.SerializeName(instruction.name))
 	case binop_subtract_inplace:
-		return fmt.Sprintf("BINOP_INPLACE subtract %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE subtract %s", utils.SerializeName(instruction.name))
 	case binop_multiply_inplace:
-		return fmt.Sprintf("BINOP_INPLACE multiply %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE multiply %s", utils.SerializeName(instruction.name))
 	case binop_divide_inplace:
-		return fmt.Sprintf("BINOP_INPLACE divide %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE divide %s", utils.SerializeName(instruction.name))
 	case binop_int_divide_inplace:
-		return fmt.Sprintf("BINOP_INPLACE int_divide %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE int_divide %s", utils.SerializeName(instruction.name))
 	case binop_power_inplace:
-		return fmt.Sprintf("BINOP_INPLACE power %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE power %s", utils.SerializeName(instruction.name))
 	case binop_modulus_inplace:
-		return fmt.Sprintf("BINOP_INPLACE modulus %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE modulus %s", utils.SerializeName(instruction.name))
 	case binop_concat_inplace:
-		return fmt.Sprintf("BINOP_INPLACE concat %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE concat %s", utils.SerializeName(instruction.name))
 	case binop_and_inplace:
-		return fmt.Sprintf("BINOP_INPLACE and %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE and %s", utils.SerializeName(instruction.name))
 	case binop_or_inplace:
-		return fmt.Sprintf("BINOP_INPLACE or %q", instruction.name)
+		return fmt.Sprintf("BINOP_INPLACE or %s", utils.SerializeName(instruction.name))
 	default:
 		panic(fmt.Sprintf("Unimplemented BINOP_INPLACE serialization for mode %d", instruction.operation))
 	}
