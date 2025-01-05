@@ -54,7 +54,10 @@ func TestBinopInplace(t *testing.T) {
 
 		initial := tc.lhs.Display()
 
-		vm.StoreNewVariable(name, tc.lhs)
+		if err := vm.StoreNewVariable(name, tc.lhs); err != nil {
+			t.Fatalf("Unexpected error storing variable: %v", err)
+		}
+
 		vm.stack.Push(tc.rhs)
 
 		instruction := fmt.Sprintf("BINOP_INPLACE %s %q", tc.operation, name)
@@ -92,7 +95,9 @@ func TestBinopInplaceFailure(t *testing.T) {
 
 		initial := tc.lhs.Display()
 
-		vm.StoreNewVariable(name, tc.lhs)
+		if err := vm.StoreNewVariable(name, tc.lhs); err != nil {
+			t.Fatalf("Unexpected error storing variable: %v", err)
+		}
 		vm.stack.Push(tc.rhs)
 
 		instruction := fmt.Sprintf("BINOP_INPLACE %s %q", tc.operation, name)
@@ -108,7 +113,9 @@ func TestBinopInplaceArgsFailure(t *testing.T) {
 	name := "foo"
 
 	vm := NewVM()
-	vm.StoreNewVariable(name, types.MakeString("hello world!"))
+	if err := vm.StoreNewVariable(name, types.MakeString("hello world!")); err != nil {
+		t.Fatalf("Unexpected error storing variable: %v", err)
+	}
 	instruction := fmt.Sprintf("BINOP_INPLACE concat %q", name)
 
 	if err := RequireParse(t, instruction).Perform(&vm); err == nil {

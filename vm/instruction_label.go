@@ -29,7 +29,6 @@ func (instruction *Instruction_LABEL) Perform(vm *VirtualMachine) error {
 	return nil
 }
 
-func (instruction *Instruction_LABEL) AddTo(vm *VirtualMachine) error {
+func (instruction *Instruction_LABEL) AddTo(vm *VirtualMachine) {
 	vm.labels[instruction.address] = len(vm.program)
-	return nil
 }

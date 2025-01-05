@@ -30,12 +30,18 @@ A stack based Virtual Machine for executing eggshell
 
 ### Todo Instructions
 
-* NEGATE
-* NOT
+* DECLARE_NAME_TYPED
+* .DEFINE
+* .DEFINE_TYPED
+* SUB_SCOPE
+* CALL
+* CALL_NAME
 
-* SLICE
+
 * BUILD_LIST
+* SLICE
 * BUILD_MAP
+* SELECT
 * BUILD_SET
 * BUILD_CALLABLE
 * DEFINE_STRUCT

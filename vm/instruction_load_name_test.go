@@ -19,7 +19,10 @@ func TestLoadNamePerform(t *testing.T) {
 	name := "foo"
 
 	vm := NewVM()
-	vm.StoreNewVariable(name, types.MakeString(message))
+
+	if err := vm.StoreNewVariable(name, types.MakeString(message)); err != nil {
+		t.Fatalf("Unexpected error storing variable: %v", err)
+	}
 
 	if instruction, err := ParseInstruction(fmt.Sprintf("LOAD_NAME %s", name)); err != nil {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)

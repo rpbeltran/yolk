@@ -19,7 +19,10 @@ func TestAssignNamePerform(t *testing.T) {
 	name := "foo"
 
 	vm := NewVM()
-	vm.StoreNewVariable(name, types.MakeString(""))
+
+	if err := vm.StoreNewVariable(name, types.MakeString("")); err != nil {
+		t.Fatalf("Unexpected error storing variable: %v", err)
+	}
 	vm.stack.Push(types.MakeString(message))
 
 	if instruction, err := ParseInstruction(fmt.Sprintf("ASSIGN_NAME %s", name)); err != nil {
