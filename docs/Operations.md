@@ -73,7 +73,7 @@ If `left` is negative and `right` is not a whole number, execution will terminat
 Pushes `left ** right` to the stack. 
 `left` and `right` must both be Numbers otherwise execution will terminate with an error.
 
-## Math Operators
+## String Operators
 
 ### concat
 
@@ -83,7 +83,7 @@ Pushes `left ++ right`, the result of concatenating left and right together as s
 the stack. If `right`  is not a string, it will be converted to a string with it's ToString() method
 before concatenating it.
 
-## Math Operators
+## Logical Operators
 
 ### and
 

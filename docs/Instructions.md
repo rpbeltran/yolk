@@ -3,23 +3,24 @@
 
 ## List of Implemented Instructions
 
-|  Instruction  |            Argument(s)          |
-| ------------- | ------------------------------- |
-| ASSIGN_NAME   | name: *Name*                    |
-| BINOP         | operation: *[add, and, ...]*    |
-| COMPARE       | test_mode: *[equal, less, ...]* |
-| DECLARE_NAME  | name: *Name*                    |
-| EXEC          | arg_count: *uint*               |
-| JUMP          | label: *uint*                   |
-| JUMP_IF_TRUE  | label: *uint*                   |
-| JUMP_IF_FALSE | label: *uint*                   |
-| .LABEL        | label: *uint*                   |
-| LOAD_NAME     | name: *Name*                    |
-| PIPELINE      | mode: *[begin, next, end]*      |
-| PRINT         |                                 |
-| PUSH_BOOL     | value: *[true, false]*          |
-| PUSH_NUM      | value: *Number*                 |
-| PUSH_STR      | value: *Quoted*                 |
+|  Instruction  |             Argument(s)            |
+| ------------- | ---------------------------------- |
+| ASSIGN_NAME   | name: *Name*                       |
+| BINOP         | operation: *[add, and, ...]*       |
+| BINOP_INPLACE | operation: Operation, name: *Name* |
+| COMPARE       | test_mode: *[equal, less, ...]*    |
+| DECLARE_NAME  | name: *Name*                       |
+| EXEC          | arg_count: *uint*                  |
+| JUMP          | label: *uint*                      |
+| JUMP_IF_TRUE  | label: *uint*                      |
+| JUMP_IF_FALSE | label: *uint*                      |
+| .LABEL        | label: *uint*                      |
+| LOAD_NAME     | name: *Name*                       |
+| PIPELINE      | mode: *[begin, next, end]*         |
+| PRINT         |                                    |
+| PUSH_BOOL     | value: *[true, false]*             |
+| PUSH_NUM      | value: *Number*                    |
+| PUSH_STR      | value: *Quoted*                    |
 
 ## ASSIGN_NAME ${name}
 
@@ -47,8 +48,8 @@ DECLARE_NAME foo
 
 Pops two values off the stack and attempts to perform an operation with both values, and then push
 the resulting value onto the stack. The first popped value is the right operand, and the second
-popped value becomes the left operand. If the operations fails, execution will terminate with an
-error state.
+popped value becomes the left operand. If the operations fails, or if the stack has less than two
+elements execution will terminate with an error state.
 
 Arguments:
 * operation: enum, specifies a binary operation to perform (see ./Operations.md for options)
@@ -64,6 +65,33 @@ PUSH_NUM 10
 # -- vm.stack:[5 10]
 BINOP divide
 # -- vm.stack:[2]
+```
+
+## BINOP_INPLACE ${operation} ${name}
+
+Attempts to update the value of a variable in memory based on the result of a binary operation with
+its current value as the left hand side. Pops a value from the stack to use as the right hand side.
+The same operations are supported as for BINOP.
+
+If the operations fails or there is no variable with the given name, or if the stack is empty
+execution will terminate with an error state.
+
+Arguments:
+* operation: enum, specifies a binary operation to perform (see ./Operations.md for options)
+* name: name of the variable to update, quoted
+
+Example:
+
+```
+# egg: foo /= 3
+# -- vm.stack:[]
+# -- vm.globals{"foo":15,}
+PUSH_NUM 3
+# -- vm.stack:[3]
+# -- vm.globals{"foo":15,}
+BINOP_INPLACE divide "foo"
+# -- vm.stack:[]
+# -- vm.globals{"foo":3,}
 ```
 
 ## COMPARE ${test_mode}
