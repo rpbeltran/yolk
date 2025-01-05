@@ -149,6 +149,14 @@ func TestStrNonstringOps(t *testing.T) {
 	if err := MakeString("foo").OrInplace(MakeBool(true)); err == nil {
 		t.Fatal(`"foo" ||= true succeeded but should have failed`)
 	}
+
+	if _, err := MakeString("foo").Not(); err == nil {
+		t.Fatal(`!("foo") succeeded but should have failed`)
+	}
+
+	if _, err := MakeString("foo").Negate(); err == nil {
+		t.Fatal(`!("foo") succeeded but should have failed`)
+	}
 }
 
 // Casting

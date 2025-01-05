@@ -43,6 +43,10 @@ func (str *PrimitiveStr) Concatenate(other Primitive) (Primitive, error) {
 
 // Arithmetic Operators
 
+func (str *PrimitiveStr) Negate() (Primitive, error) {
+	return nil, fmt.Errorf("string type does not support numeral arithmetic")
+}
+
 func (str *PrimitiveStr) Add(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("string type does not support numeral arithmetic")
 }
@@ -115,6 +119,10 @@ func (str *PrimitiveStr) Or(other Primitive) (Primitive, error) {
 
 func (str *PrimitiveStr) OrInplace(other Primitive) error {
 	return fmt.Errorf("string type does not support boolean logic")
+}
+
+func (str *PrimitiveStr) Not() (Primitive, error) {
+	return nil, fmt.Errorf("string type does not support boolean logic")
 }
 
 // Casting

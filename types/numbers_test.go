@@ -39,6 +39,10 @@ func TestNumNonArithmetic(t *testing.T) {
 	if err := makeNumOrFail("100", t).OrInplace(MakeBool(true)); err == nil {
 		t.Fatalf("100 ||= true should have errored but instead succeeded")
 	}
+
+	if _, err := makeNumOrFail("100", t).Not(); err == nil {
+		t.Fatal("!(100) should have errored but instead succeeded")
+	}
 }
 
 type binop_num_test_case struct {

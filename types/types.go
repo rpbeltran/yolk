@@ -1,9 +1,6 @@
 package types
 
 type Primitive interface {
-
-	// Binary Operators
-
 	// - Math
 	Add(other Primitive) (Primitive, error)
 	AddInplace(other Primitive) error
@@ -20,6 +17,8 @@ type Primitive interface {
 	RaisePower(other Primitive) (Primitive, error)
 	RaisePowerInplace(other Primitive) error
 
+	Negate() (Primitive, error)
+
 	// - String Operators
 	Concatenate(other Primitive) (Primitive, error)
 	ConcatenateInPlace(other Primitive) error
@@ -29,6 +28,8 @@ type Primitive interface {
 	Or(other Primitive) (Primitive, error)
 	AndInplace(other Primitive) error
 	OrInplace(other Primitive) error
+
+	Not() (Primitive, error)
 
 	// - Comparisons
 	Equal(other Primitive) bool

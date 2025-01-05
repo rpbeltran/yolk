@@ -28,8 +28,9 @@ A stack based Virtual Machine for executing eggshell
 
 ### Todo Instructions
 
-* UNOP
-* UNOP_INPLACE
+* NEGATE
+* NOT
+
 * SLICE
 * BUILD_LIST
 * BUILD_MAP

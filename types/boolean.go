@@ -32,6 +32,10 @@ func (boolean *PrimitiveBool) LessThan(other Primitive) (bool, error) {
 
 // Logical Operators
 
+func (boolean *PrimitiveBool) Not() (Primitive, error) {
+	return &PrimitiveBool{!boolean.value}, nil
+}
+
 func (boolean *PrimitiveBool) And(other Primitive) (Primitive, error) {
 	return &PrimitiveBool{boolean.value && other.Truthy()}, nil
 }
@@ -51,6 +55,10 @@ func (boolean *PrimitiveBool) OrInplace(other Primitive) error {
 }
 
 // Non logical Operators
+
+func (boolean *PrimitiveBool) Negate() (Primitive, error) {
+	return nil, fmt.Errorf("bool type does not support numeral arithmetic")
+}
 
 func (boolean *PrimitiveBool) Add(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("bool type does not support numeral arithmetic")

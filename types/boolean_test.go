@@ -12,6 +12,23 @@ type binop_bool_test_case struct {
 	c bool
 }
 
+func TestBooleanNot(t *testing.T) {
+	yes := MakeBool(true)
+	no := MakeBool(false)
+
+	if value, err := yes.Not(); err != nil {
+		t.Fatalf("Unexpected error computing !(true): %v", err)
+	} else if !value.Equal(no) {
+		t.Fatalf("Expected !(true) == false, got %v", value)
+	}
+
+	if value, err := no.Not(); err != nil {
+		t.Fatalf("Unexpected error computing !(false): %v", err)
+	} else if !value.Equal(yes) {
+		t.Fatalf("Expected !(false) == true, got %v", value)
+	}
+}
+
 func TestBooleanAnd(t *testing.T) {
 	test_cases := []binop_bool_test_case{
 		{false, false, false},
@@ -67,6 +84,10 @@ func TestBooleanOr(t *testing.T) {
 // Non logical operators
 
 func TestBoolNonlogicalOps(t *testing.T) {
+	if _, err := MakeBool(true).Negate(); err == nil {
+		t.Fatal(`-(true) succeeded but should have failed`)
+	}
+
 	if _, err := MakeBool(true).Add(MakeBool(false)); err == nil {
 		t.Fatal(`true + false succeeded but should have failed`)
 	}

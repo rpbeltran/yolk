@@ -88,6 +88,18 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
+	case "NEGATE":
+		var instruction Instruction_NEGATE
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
+	case "NOT":
+		var instruction Instruction_NOT
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
 	case "PIPELINE":
 		var instruction Instruction_PIPELINE
 		if err := instruction.Parse(&args); err != nil {

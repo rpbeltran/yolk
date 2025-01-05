@@ -41,6 +41,12 @@ func (num *PrimitiveNum) LessThan(other Primitive) (bool, error) {
 
 // Operators
 
+func (num *PrimitiveNum) Negate() (Primitive, error) {
+	var neg big.Rat
+	neg.Neg(&num.value)
+	return &PrimitiveNum{neg}, nil
+}
+
 func (num *PrimitiveNum) Add(other Primitive) (Primitive, error) {
 	other_num, err := other.CastImplicitNum()
 	if err != nil {
@@ -192,7 +198,7 @@ func (num *PrimitiveNum) RaisePowerInplace(other Primitive) error {
 	}
 }
 
-// Nonnumeric operations
+// String operations
 
 func (str *PrimitiveNum) Concatenate(other Primitive) (Primitive, error) {
 	return nil, fmt.Errorf("num type does not support concatenation")
@@ -218,6 +224,10 @@ func (num *PrimitiveNum) Or(other Primitive) (Primitive, error) {
 
 func (num *PrimitiveNum) OrInplace(other Primitive) error {
 	return fmt.Errorf("num type does not support boolean logic")
+}
+
+func (num *PrimitiveNum) Not() (Primitive, error) {
+	return nil, fmt.Errorf("num type does not support boolean logic")
 }
 
 // Casting
