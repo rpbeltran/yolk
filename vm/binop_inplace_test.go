@@ -19,6 +19,8 @@ func TestBinopInplaceParsing(t *testing.T) {
 	ExpectParseSame(t, `BINOP_INPLACE power "foo"`, expected_type)
 	ExpectParseSame(t, `BINOP_INPLACE modulus "foo"`, expected_type)
 	ExpectParseSame(t, `BINOP_INPLACE concat "foo"`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE and "foo"`, expected_type)
+	ExpectParseSame(t, `BINOP_INPLACE or "foo"`, expected_type)
 	ExpectParseFailure(t, "BINOP_INPLACE", "needs operator and name")
 	ExpectParseFailure(t, "BINOP_INPLACE foo", `needs operator and name`)
 	ExpectParseFailure(t, `BINOP_INPLACE foo bar`, `unexpected operator "foo"`)
@@ -43,6 +45,8 @@ func TestBinopInplace(t *testing.T) {
 		{"power", RequireNum(t, "12"), RequireNum(t, "5"), RequireNum(t, "248832")},
 		{"modulus", RequireNum(t, "12"), RequireNum(t, "5"), RequireNum(t, "2")},
 		{"concat", types.MakeString("foo"), types.MakeString("bar"), types.MakeString("foobar")},
+		{"and", types.MakeBool(true), types.MakeBool(false), types.MakeBool(false)},
+		{"or", types.MakeBool(true), types.MakeBool(false), types.MakeBool(true)},
 	}
 
 	for _, tc := range tests {
@@ -79,6 +83,8 @@ func TestBinopInplaceFailure(t *testing.T) {
 		{"power", RequireNum(t, "-12"), RequireNum(t, "1.2"), nil},
 		{"modulus", RequireNum(t, "12"), RequireNum(t, "0"), nil},
 		{"concat", RequireNum(t, "12"), types.MakeString("bar"), nil},
+		{"and", RequireNum(t, "12"), RequireNum(t, "0"), nil},
+		{"or", RequireNum(t, "12"), types.MakeString("bar"), nil},
 	}
 
 	for _, tc := range tests {

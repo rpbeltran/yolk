@@ -18,6 +18,8 @@ const (
 	binop_power_inplace      inplace_binop = iota
 	binop_modulus_inplace    inplace_binop = iota
 	binop_concat_inplace     inplace_binop = iota
+	binop_and_inplace        inplace_binop = iota
+	binop_or_inplace         inplace_binop = iota
 )
 
 type Instruction_BINOP_INPLACE struct {
@@ -52,6 +54,10 @@ func (instruction *Instruction_BINOP_INPLACE) Parse(args *string) error {
 		instruction.operation = binop_modulus_inplace
 	case "concat":
 		instruction.operation = binop_concat_inplace
+	case "and":
+		instruction.operation = binop_and_inplace
+	case "or":
+		instruction.operation = binop_or_inplace
 	default:
 		return fmt.Errorf("BINOP_INPLACE instruction specifies unexpected operator %q", operator)
 	}
@@ -84,6 +90,10 @@ func (instruction *Instruction_BINOP_INPLACE) String() string {
 		return fmt.Sprintf("BINOP_INPLACE modulus %q", instruction.name)
 	case binop_concat_inplace:
 		return fmt.Sprintf("BINOP_INPLACE concat %q", instruction.name)
+	case binop_and_inplace:
+		return fmt.Sprintf("BINOP_INPLACE and %q", instruction.name)
+	case binop_or_inplace:
+		return fmt.Sprintf("BINOP_INPLACE or %q", instruction.name)
 	default:
 		panic(fmt.Sprintf("Unimplemented BINOP_INPLACE serialization for mode %d", instruction.operation))
 	}
@@ -132,6 +142,14 @@ func (instruction *Instruction_BINOP_INPLACE) Perform(vm *VirtualMachine) error 
 		}
 	case binop_concat_inplace:
 		if err := lhs.ConcatenateInPlace(right); err != nil {
+			return err
+		}
+	case binop_and_inplace:
+		if err := lhs.AndInplace(right); err != nil {
+			return err
+		}
+	case binop_or_inplace:
+		if err := lhs.OrInplace(right); err != nil {
 			return err
 		}
 	default:
