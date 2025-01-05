@@ -17,6 +17,8 @@ A stack based Virtual Machine for executing eggshell
 | JUMP_IF_FALSE | label: *uint*                      |
 | .LABEL        | label: *uint*                      |
 | LOAD_NAME     | name: *Name*                       |
+| NEGATE        |                                    |
+| NOT           |                                    |
 | PIPELINE      | mode: *[begin, next, end]*         |
 | PRINT         |                                    |
 | PUSH_BOOL     | value: *[true, false]*             |

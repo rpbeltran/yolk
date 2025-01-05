@@ -16,6 +16,8 @@
 | JUMP_IF_FALSE | label: *uint*                      |
 | .LABEL        | label: *uint*                      |
 | LOAD_NAME     | name: *Name*                       |
+| NEGATE        |                                    |
+| NOT           |                                    |
 | PIPELINE      | mode: *[begin, next, end]*         |
 | PRINT         |                                    |
 | PUSH_BOOL     | value: *[true, false]*             |
@@ -99,7 +101,9 @@ BINOP_INPLACE divide "foo"
 Pops two values off the stack and attempts to perform a comparison of the two values then push
 the resulting value onto the stack. The first popped value is the right operand, and the second
 popped value becomes the left operand. If the operations fails, execution will terminate with an
-error state. The resulting value depends on the test_mode provided, which can be any of the following:
+error state.
+
+The resulting value depends on the test_mode provided, which can be any of the following:
 * equal: check if left == right
 * unequal: check if left != right
 * less: check if left < right
@@ -126,7 +130,9 @@ COMPARE equal
 
 ## DECLARE_NAME ${name}
 
-Pops the value from the top of the stack and stores it in a new variable in the current scope. If a variable with the given name already exists in the current scope, or if the stack is empty execution will terminate with an error state.
+Pops the value from the top of the stack and stores it in a new variable in the current scope.
+If a variable with the given name already exists in the current scope, or if the stack is empty
+execution will terminate with an error state.
 
 Arguments:
 * name: name of a variable to create (unquoted)
@@ -270,7 +276,10 @@ Arguments:
 ## LOAD_NAME ${name}
 
 Loads a variable from memory and pushes it onto the top of the stack.
-The variable will be searched for in local scope first and then in global scope if it cannot be found in the local scope. If a variable with the given name cannot be found in either the local scope or the global scope execution will terminate with an error state.
+The variable will be searched for in local scope first and then in global scope if it cannot be
+found in the local scope.
+If a variable with the given name cannot be found in either the local scope or the global scope
+execution will terminate with an error state.
 
 Arguments:
 * name: name of a variable to load onto the stack (unquoted)
@@ -286,6 +295,42 @@ LOAD_NAME foo
 # -- vm.stack:[7]
 # -- vm.global_names{"foo":i,}
 # -- vm.globals{i:7,}
+```
+
+## NEGATE 
+
+Pops a value off the stack and attempts to push its negated value to the stack.
+If the value is not a number or if the stack is empty, execution will terminate with an error state.
+
+Arguments: None
+
+Example:
+
+```
+# egg: -(10)
+# -- vm.stack:[]
+PUSH_NUM 10
+# -- vm.stack:[10]
+NEGATE
+# -- vm.stack:[-10]
+```
+
+## NOT
+
+Pops a value `val` off the stack and attempts to push `not(val)` to the stack.
+If the value is not a number or if the stack is empty, execution will terminate with an error state.
+
+Arguments: None
+
+Example:
+
+```
+# egg: !(true)
+# -- vm.stack:[]
+PUSH_BOOL true
+# -- vm.stack:[true]
+NOT
+# -- vm.stack:[false]
 ```
 
 ## PIPELINE ${mode}
