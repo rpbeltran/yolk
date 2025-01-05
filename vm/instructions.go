@@ -52,6 +52,12 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
+	case "DUPLICATE":
+		var instruction Instruction_DUPLICATE
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
 	case "EXEC":
 		var instruction Instruction_EXEC
 		if err := instruction.Parse(&args); err != nil {
