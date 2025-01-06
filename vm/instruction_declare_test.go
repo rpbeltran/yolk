@@ -9,12 +9,15 @@ import (
 func TestDeclareNameParsing(t *testing.T) {
 	expected_type := "*vm.Instruction_DECLARE"
 
-	ExpectParse(t, `DECLARE <foo>`, expected_type, `DECLARE <foo>`)
-	ExpectParse(t, `DECLARE <foo_bar>`, expected_type, `DECLARE <foo_bar>`)
-	ExpectParseWrappedFailure(t, "DECLARE", ErrParsingDECLARE)
-	ExpectParseWrappedFailure(t, "DECLARE foo", ErrParsingDECLARE)
-	ExpectParseWrappedFailure(t, `DECLARE "foo"`, ErrParsingDECLARE)
-	ExpectParseWrappedFailure(t, `DECLARE "<foo> hello"`, ErrParsingDECLARE)
+	ExpectParseSame(t, `DECLARE <foo>`, expected_type)
+	ExpectParseSame(t, `DECLARE <foo> <bar>`, expected_type)
+	ExpectParseWrappedFailure(t, "DECLARE", ErrDeclareParsingName)
+	ExpectParseWrappedFailure(t, "DECLARE foo", ErrDeclareParsingName)
+	ExpectParseWrappedFailure(t, `DECLARE "foo"`, ErrDeclareParsingName)
+	ExpectParseWrappedFailure(t, `DECLARE 1`, ErrDeclareParsingName)
+	ExpectParseWrappedFailure(t, `DECLARE "<foo> bar"`, ErrDeclareParsingType)
+	ExpectParseWrappedFailure(t, `DECLARE "<foo> "bar""`, ErrDeclareParsingType)
+	ExpectParseWrappedFailure(t, `DECLARE "<foo> 1"`, ErrDeclareParsingType)
 }
 
 func TestDeclareNamePerform(t *testing.T) {

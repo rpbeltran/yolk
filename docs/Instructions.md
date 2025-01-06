@@ -3,32 +3,37 @@
 
 ## List of Implemented Instructions
 
-|  Instruction  |             Argument(s)            |
-| ------------- | ---------------------------------- |
-| ASSIGN        | name: *Name*                       |
-| BINOP         | operation: *[add, and, ...]*       |
-| BINOP_INPLACE | operation: Operation, name: *Name* |
-| COMPARE       | test_mode: *[equal, less, ...]*    |
-| DECLARE       | name: *Name*                       |
-| EXEC          | arg_count: *uint*                  |
-| JUMP          | label: *uint*                      |
-| JUMP_IF_TRUE  | label: *uint*                      |
-| JUMP_IF_FALSE | label: *uint*                      |
-| .LABEL        | label: *uint*                      |
-| LOAD          | name: *Name*                       |
-| NEGATE        |                                    |
-| NOT           |                                    |
-| PIPELINE      | mode: *[begin, next, end]*         |
-| PRINT         |                                    |
-| PUSH_BOOL     | value: *[true, false]*             |
-| PUSH_NUM      | value: *Number*                    |
-| PUSH_STR      | value: *Quoted*                    |
+|  Instruction  |             First Argument         |     Second Argument     |
+| ------------- | ---------------------------------- | ----------------------- |
+| ASSIGN        | name: *Name*                       |                         |
+| BINOP         | operation: *[add, and, ...]*       |                         |
+| BINOP_INPLACE | operation: Operation               | name: *Name*            |
+| COMPARE       | test_mode: *[equal, less, ...]*    |                         |
+| DECLARE       | name: *Name*                       | type: *Name* (optional) |
+| EXEC          | arg_count: *uint*                  |                         |
+| JUMP          | label: *uint*                      |                         |
+| JUMP_IF_TRUE  | label: *uint*                      |                         |
+| JUMP_IF_FALSE | label: *uint*                      |                         |
+| .LABEL        | label: *uint*                      |                         |
+| LOAD          | name: *Name*                       |                         |
+| NEGATE        |                                    |                         |
+| NOT           |                                    |                         |
+| PIPELINE      | mode: *[begin, next, end]*         |                         |
+| PRINT         |                                    |                         |
+| PUSH_BOOL     | value: *[true, false]*             |                         |
+| PUSH_NUM      | value: *Number*                    |                         |
+| PUSH_STR      | value: *Quoted*                    |                         |
 
-## ASSIGN ${name}
+## `ASSIGN ${name}`
 
 Pops the value from the top of the stack and stores it in an existing variable.
 If a variable with the given name does not exist in any of the current scopes,
 or if the stack is empty execution will terminate with an error state.
+
+If the variable was declared with a type constraint and the value popped from the stack does not
+have the specified type, the value will be implicitly cast to the type if possible.
+If the implicit cast is not possible, execution will terminate with
+an error state.
 
 Arguments:
 * name: name of a variable to update the value of (angle quoted)
@@ -44,7 +49,7 @@ DECLARE <foo>
 # -- vm.globals: {foo=7,}
 ```
 
-## BINOP ${operation}
+## `BINOP ${operation}`
 
 Pops two values off the stack and attempts to perform an operation with both values, and then push
 the resulting value onto the stack. The first popped value is the right operand, and the second
@@ -67,7 +72,7 @@ BINOP divide
 # -- vm.stack:[2]
 ```
 
-## BINOP_INPLACE ${operation} ${name}
+## `BINOP_INPLACE ${operation} ${name}`
 
 Attempts to update the value of a variable in memory based on the result of a binary operation with
 its current value as the left hand side. Pops a value from the stack to use as the right hand side.
@@ -94,7 +99,7 @@ BINOP_INPLACE divide <foo>
 # -- vm.globals{foo=3,}
 ```
 
-## COMPARE ${test_mode}
+## `COMPARE ${test_mode}`
 
 Pops two values off the stack and attempts to perform a comparison of the two values then push
 the resulting value onto the stack. The first popped value is the right operand, and the second
@@ -126,28 +131,38 @@ COMPARE equal
 # -- vm.stack:[false]
 ```
 
-## DECLARE ${name}
+## `DECLARE ${name} ${type}`
 
 Pops the value from the top of the stack and stores it in a new variable in the current scope.
 If a variable with the given name already exists in the current scope, or if the stack is empty
 execution will terminate with an error state.
 
+An optional second argument specifies a type constraint for the new variable. If this argument is
+provided, the variable created will be required to have the given type for the life of the variable.
+
+If the initial value popped from the stack does not have the specified type, the value will be
+implicitly cast to the type if possible. If the implicit cast is not possible, execution will
+terminate with an error state.
+
 Arguments:
 * name: name of a variable to create (angle quoted)
+* type (optional): name of the type that this variable is restricted to (angle quoted)
 
 Example:
 
 ```
 # egg: (foo)
-# -- vm.stack:[7]
-# -- vm.global_names{}
+# -- vm.stack:[10 7]
 # -- vm.globals{}
 DECLARE <foo>
-# -- vm.stack:[]
+# -- vm.stack:[10]
 # -- vm.globals{foo=7,}
+DECLARE <foo2> <int>
+# -- vm.stack:[]
+# -- vm.globals{foo=7, foo2=10}
 ```
 
-## EXEC ${arg_count}
+## `EXEC ${arg_count}`
 
 Calls an executable in a new process. Pops the stack for the path to the executable then pops the
 stack again *arg_count* times to get additional arguments. Arguments will be added in the order
@@ -188,7 +203,7 @@ EXEC 3
 ```
 
 
-## JUMP ${label_id}
+## `JUMP ${label_id}`
 
 Unconditionally sets the instruction pointer to the label with the given id.
 
@@ -209,7 +224,7 @@ PRINT
 JUMP 123
 ```
 
-## JUMP_IF_FALSE ${label_id}
+## `JUMP_IF_FALSE ${label_id}`
 
 Pops the top value from the stack, and if that value is false, sets the instruction pointer to the
 label with the given id. If the data stack is empty, or if the top value if not Boolean, execution
@@ -239,7 +254,7 @@ PUSH_STR "goodbye"
 PRINT
 ```
 
-## JUMP_IF_TRUE ${label_id}
+## `JUMP_IF_TRUE ${label_id}`
 
 Pops the top value from the stack, and if that value is true, sets the instruction pointer to the
 label with the given id. 
@@ -260,7 +275,7 @@ LOAD  b
 .LABEL 123
 ```
 
-## .LABEL ${label_id}
+## `.LABEL ${label_id}`
 
 Designates a point in program execution for JUMP statements to go to.
 Executing a label instruction is a no-op.
@@ -270,7 +285,7 @@ Arguments:
  * label_id: uint, a unique id associated with this label
 
 
-## LOAD ${name}
+## `LOAD ${name}`
 
 Loads a variable from memory and pushes it onto the top of the stack.
 The variable will be searched for in local scope first and then in global scope if it cannot be
@@ -292,7 +307,7 @@ LOAD foo
 # -- vm.globals{foo=7,}
 ```
 
-## NEGATE 
+## `NEGATE`
 
 Pops a value off the stack and attempts to push its negated value to the stack.
 If the value is not a number or if the stack is empty, execution will terminate with an error state.
@@ -310,7 +325,7 @@ NEGATE
 # -- vm.stack:[-10]
 ```
 
-## NOT
+## `NOT`
 
 Pops a value `val` off the stack and attempts to push `not(val)` to the stack.
 If the value is not a number or if the stack is empty, execution will terminate with an error state.
@@ -328,7 +343,7 @@ NOT
 # -- vm.stack:[false]
 ```
 
-## PIPELINE ${mode}
+## `PIPELINE ${mode}`
 
 Modifies the VMs pipeline_state stack to facilitate data pipelines. Behavior depends on *mode*:
 * begin: Adds a new entry to the pipeline_state stack. The entry will have a value of nil.
@@ -376,7 +391,7 @@ PIPELINE end
 # -- vm.pipeline_states:[]
 ```
 
-## PRINT
+## `PRINT`
 
 Pops the top value and writes it to the buffer specified by vm.stdout.
 If the data stack is empty, execution will terminate with an error state.
@@ -397,7 +412,7 @@ BINOP divide
 # -- vm.stack:[2]
 ```
 
-## PUSH_BOOL ${value}
+## `PUSH_BOOL ${value}`
 
 Pushes a boolean value to the top of the stack.
 
@@ -413,7 +428,7 @@ PUSH_BOOL true
 # -- vm.stack:[true]
 ```
 
-## PUSH_NUM ${value}
+## `PUSH_NUM ${value}`
 
 Pushes a numeric value to the top of the stack.
 
@@ -430,7 +445,7 @@ PUSH_NUM 10
 # -- vm.stack:[10]
 ```
 
-## PUSH_STR ${value}
+## `PUSH_STR ${value}`
 
 Pushes a string value to the top of the stack. The value should be double quoted and UTF-8.
 

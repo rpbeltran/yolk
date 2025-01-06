@@ -3,36 +3,57 @@ package vm
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"yolk/utils"
 )
 
 type Instruction_DECLARE struct {
-	name string
+	name                string
+	type_annotation     string
+	has_type_annotation bool
 }
 
-var ErrParsingDECLARE = errors.New("failed to parse DECLARE")
+var ErrDeclareParsing = errors.New("failed to parse DECLARE")
+var ErrDeclareParsingName = fmt.Errorf("%w: invalid name arg", ErrParsingBinopInplace)
+var ErrDeclareParsingType = fmt.Errorf("%w: invalid type arg", ErrParsingBinopInplace)
+
+var ErrDeclarePerform = errors.New("failed to perform DECLARE")
 
 func (instruction *Instruction_DECLARE) Parse(args *string) error {
-	if name, err := utils.DeserializeName(*args); err != nil {
-		return fmt.Errorf("%w: bad name arg: %w", ErrParsingDECLARE, err)
-	} else {
-		instruction.name = name
-		return nil
+	name, type_annotation, has_type := strings.Cut(*args, " ")
+	if has_type {
+		if unquoted_type, err := utils.DeserializeName(type_annotation); err != nil {
+			return fmt.Errorf("%w: bad type arg: %w", ErrDeclareParsingType, err)
+		} else {
+			instruction.type_annotation = unquoted_type
+			instruction.has_type_annotation = true
+		}
 	}
+	if unquoted_name, err := utils.DeserializeName(name); err != nil {
+		return fmt.Errorf("%w: bad name arg: %w", ErrDeclareParsingName, err)
+	} else {
+		instruction.name = unquoted_name
+	}
+	return nil
 }
 
 func (instruction *Instruction_DECLARE) String() string {
-	return fmt.Sprintf("DECLARE %s", utils.SerializeName(instruction.name))
+	if instruction.has_type_annotation {
+		return fmt.Sprintf("DECLARE %s %s", utils.SerializeName(instruction.name), utils.SerializeName(instruction.type_annotation))
+	} else {
+		return fmt.Sprintf("DECLARE %s", utils.SerializeName(instruction.name))
+	}
 }
 
 func (instruction *Instruction_DECLARE) Perform(vm *VirtualMachine) error {
-	value, err := vm.stack.Pop()
-	if err != nil {
-		return fmt.Errorf("unexpected error popping value for assignment: %w", err)
-	}
-
-	if err := vm.StoreNewVariable(instruction.name, value); err != nil {
-		return err
+	if value, err := vm.stack.Pop(); err != nil {
+		return fmt.Errorf("%q: %w", ErrDeclarePerform, err)
+	} else if instruction.has_type_annotation {
+		if err := vm.StoreNewVariableWithType(instruction.name, instruction.type_annotation, value); err != nil {
+			return fmt.Errorf("%q: %w", ErrDeclarePerform, err)
+		}
+	} else if err := vm.StoreNewVariable(instruction.name, value); err != nil {
+		return fmt.Errorf("%q: %w", ErrDeclarePerform, err)
 	}
 	return nil
 }

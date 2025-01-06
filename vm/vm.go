@@ -19,6 +19,7 @@ type VirtualMachine struct {
 	MockExecutions      bool
 	stdout              io.Writer
 	globals             map[string]types.Primitive
+	globals_types       map[string]string
 }
 
 func NewVM() VirtualMachine {
@@ -29,6 +30,7 @@ func NewVM() VirtualMachine {
 		instruction_pointer: 0,
 		labels:              make(map[uint64]int),
 		globals:             make(map[string]types.Primitive),
+		globals_types:       make(map[string]string),
 	}
 }
 
@@ -41,6 +43,7 @@ func NewDebugVM(stdout io.Writer) VirtualMachine {
 		MockExecutions:      true,
 		labels:              make(map[uint64]int),
 		globals:             make(map[string]types.Primitive),
+		globals_types:       make(map[string]string),
 	}
 }
 
