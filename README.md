@@ -22,6 +22,7 @@ A stack based Virtual Machine for executing eggshell
 | PIPELINE      | mode: *[begin, next, end]*         |                         |
 | PRINT         |                                    |                         |
 | PUSH_BOOL     | value: *[true, false]*             |                         |
+| PUSH_INT      | value: *int*                       |                         |
 | PUSH_NUM      | value: *Number*                    |                         |
 | PUSH_STR      | value: *Quoted*                    |                         |
 

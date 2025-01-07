@@ -21,6 +21,7 @@
 | PIPELINE      | mode: *[begin, next, end]*         |                         |
 | PRINT         |                                    |                         |
 | PUSH_BOOL     | value: *[true, false]*             |                         |
+| PUSH_INT      | value: *int*                       |                         |
 | PUSH_NUM      | value: *Number*                    |                         |
 | PUSH_STR      | value: *Quoted*                    |                         |
 
@@ -426,6 +427,22 @@ Example:
 # -- vm.stack:[]
 PUSH_BOOL true
 # -- vm.stack:[true]
+```
+
+## `PUSH_INT ${value}`
+
+Pushes an integer value to the top of the stack.
+
+Arguments:
+* value: int, specifies an int to be pushed to the stack
+
+Example:
+
+```
+# egg: (10)
+# -- vm.stack:[]
+PUSH_INT 10
+# -- vm.stack:[10]
 ```
 
 ## `PUSH_NUM ${value}`

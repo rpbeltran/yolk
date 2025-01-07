@@ -118,14 +118,20 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
-	case "PUSH_STR":
-		var instruction Instruction_PUSH_STR
+	case "PUSH_INT":
+		var instruction Instruction_PUSH_INT
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}
 		return &instruction, nil
 	case "PUSH_NUM":
 		var instruction Instruction_PUSH_NUM
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
+	case "PUSH_STR":
+		var instruction Instruction_PUSH_STR
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}
