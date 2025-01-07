@@ -52,10 +52,25 @@ func TestNumNonArithmetic(t *testing.T) {
 	}
 }
 
+func TestNumNegate(t *testing.T) {
+	pos := makeNumOrFail("10.5", t)
+	neg := makeNumOrFail("-10.5", t)
+	if actual, err := pos.Negate(); err != nil {
+		t.Fatalf("(10.5).Negate() returned the error %v but should have succeeded", err)
+	} else if !actual.Equal(neg) {
+		t.Fatalf("(10.5).Negate() returned %s, expected %s", actual.Display(), neg.Display())
+	}
+	if actual, err := neg.Negate(); err != nil {
+		t.Fatalf("(-10.5).Negate() returned the error %v but should have succeeded", err)
+	} else if !actual.Equal(pos) {
+		t.Fatalf("(-10.5).Negate() returned %s, expected %s", actual.Display(), pos.Display())
+	}
+}
+
 type binop_num_test_case struct {
-	a            string
-	b            string
-	c            string
+	a            *PrimitiveNum
+	b            Primitive
+	c            Primitive
 	should_error bool
 }
 
@@ -63,288 +78,274 @@ type binop_num_test_case struct {
 
 func TestNumAdd(t *testing.T) {
 	test_cases := []binop_num_test_case{
-		{"123", "456", "579", false},
-		{"12.03", "45.06", "57.09", false},
-		{"12", "45.06", "57.06", false},
+		{makeNumOrFail("123", t), makeNumOrFail("456", t), makeNumOrFail("579", t), false},
+		{makeNumOrFail("12.03", t), makeNumOrFail("45.06", t), makeNumOrFail("57.09", t), false},
+		{makeNumOrFail("12", t), makeNumOrFail("45.06", t), makeNumOrFail("57.06", t), false},
+		{makeNumOrFail("123", t), MakeInt(450), makeNumOrFail("573", t), false},
+		{makeNumOrFail("123", t), MakeBool(true), nil, true},
+		{makeNumOrFail("123", t), MakeString("hello"), nil, true},
 	}
 	for _, test := range test_cases {
-		a_num := makeNumOrFail(test.a, t)
-		b_num := makeNumOrFail(test.b, t)
 		if test.should_error {
-			if actual, err := a_num.Add(b_num); err == nil {
-				t.Fatalf("%s + %s should have errored but instead succeeded and returned %s", test.a, test.b, actual.Display())
+			if _, err := test.a.Add(test.b); err == nil {
+				t.Fatalf("Got %v + %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if actual, err := a_num.Add(b_num); err != nil {
-			t.Fatalf("Got %s + %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := actual.Display(); actual_str != test.c {
-			t.Fatalf("Got %s + %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if val, err := test.a.Add(test.b); err != nil {
+			t.Fatalf("Got %v + %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !val.Equal(test.c) {
+			t.Fatalf("Got %v + %v == %v, expected %v", test.a.Display(), test.b.Display(), val.Display(), test.c.Display())
 		}
 
 		if test.should_error {
-			if err := a_num.AddInplace(b_num); err == nil {
-				t.Fatalf("%s + %s should have errored but instead succeeded and returned %s", test.a, test.b, &a_num.value)
+			if err := test.a.AddInplace(test.b); err == nil {
+				t.Fatalf("Got %v += %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if err := a_num.AddInplace(b_num); err != nil {
-			t.Fatalf("Got %s + %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := a_num.Display(); actual_str != test.c {
-			t.Fatalf("Got %s + %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if err := test.a.AddInplace(test.b); err != nil {
+			t.Fatalf("Got %v += %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !test.a.Equal(test.c) {
+			t.Fatalf("Got %v += %v => %v, expected %v", test.a.Display(), test.b.Display(), test.a.Display(), test.c.Display())
 		}
-	}
-
-	if _, err := makeNumOrFail("100", t).Add(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 + "foo" succeeded where it should have failed`)
-	}
-	if err := makeNumOrFail("100", t).AddInplace(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 + "foo" succeeded inplace where it should have failed`)
 	}
 }
 
 func TestNumSubtract(t *testing.T) {
 	test_cases := []binop_num_test_case{
-		{"456", "123", "333", false},
-		{"123", "456", "-333", false},
-		{"10", "4.5", "5.5", false},
-		{"12.1", "1.2", "10.9", false},
+		{makeNumOrFail("123", t), makeNumOrFail("456", t), makeNumOrFail("-333", t), false},
+		{makeNumOrFail("45.06", t), makeNumOrFail("12.03", t), makeNumOrFail("33.03", t), false},
+		{makeNumOrFail("12", t), makeNumOrFail("45.06", t), makeNumOrFail("-33.06", t), false},
+		{makeNumOrFail("123", t), MakeInt(450), makeNumOrFail("-327", t), false},
+		{makeNumOrFail("123", t), MakeBool(true), nil, true},
+		{makeNumOrFail("123", t), MakeString("hello"), nil, true},
 	}
 	for _, test := range test_cases {
-		a_num := makeNumOrFail(test.a, t)
-		b_num := makeNumOrFail(test.b, t)
 		if test.should_error {
-			if actual, err := a_num.Subtract(b_num); err == nil {
-				t.Fatalf("%s - %s should have errored but instead succeeded and returned %s", test.a, test.b, actual.Display())
+			if _, err := test.a.Subtract(test.b); err == nil {
+				t.Fatalf("Got %v - %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if actual, err := a_num.Subtract(b_num); err != nil {
-			t.Fatalf("Got %s - %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := actual.Display(); actual_str != test.c {
-			t.Fatalf("Got %s - %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if val, err := test.a.Subtract(test.b); err != nil {
+			t.Fatalf("Got %v - %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !val.Equal(test.c) {
+			t.Fatalf("Got %v - %v == %v, expected %v", test.a.Display(), test.b.Display(), val.Display(), test.c.Display())
 		}
 
 		if test.should_error {
-			if err := a_num.SubtractInplace(b_num); err == nil {
-				t.Fatalf("%s - %s should have errored but instead succeeded and returned %s", test.a, test.b, &a_num.value)
+			if err := test.a.SubtractInplace(test.b); err == nil {
+				t.Fatalf("Got %v -= %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if err := a_num.SubtractInplace(b_num); err != nil {
-			t.Fatalf("Got %s - %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := a_num.Display(); actual_str != test.c {
-			t.Fatalf("Got %s - %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if err := test.a.SubtractInplace(test.b); err != nil {
+			t.Fatalf("Got %v -= %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !test.a.Equal(test.c) {
+			t.Fatalf("Got %v -= %v => %v, expected %v", test.a.Display(), test.b.Display(), test.a.Display(), test.c.Display())
 		}
 	}
 
-	if _, err := makeNumOrFail("100", t).Subtract(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 - "foo" succeeded where it should have failed`)
-	}
-	if err := makeNumOrFail("100", t).SubtractInplace(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 - "foo" succeeded inplace where it should have failed`)
-	}
 }
 
 func TestNumMultiply(t *testing.T) {
 	test_cases := []binop_num_test_case{
-		{"456", "123", "56088", false},
-		{"10", "4.5", "45", false},
-		{"12.1", "1.2", "14.52", false},
-		{"12.1", "0", "0", false},
+		{makeNumOrFail("10", t), MakeInt(50), makeNumOrFail("500", t), false},
+		{makeNumOrFail(".1", t), MakeInt(50), makeNumOrFail("5", t), false},
+		{makeNumOrFail("10", t), MakeInt(-50), makeNumOrFail("-500", t), false},
+		{makeNumOrFail("10", t), MakeInt(-250), makeNumOrFail("-2500", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("50", t), makeNumOrFail("500", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("-50", t), makeNumOrFail("-500", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("-250", t), makeNumOrFail("-2500", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("50.5", t), makeNumOrFail("505", t), false},
+		{makeNumOrFail(".001", t), makeNumOrFail("50.5", t), makeNumOrFail(".0505", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("-50.5", t), makeNumOrFail("-505", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("-250.5", t), makeNumOrFail("-2505", t), false},
+		{makeNumOrFail("1", t), MakeString("1"), nil, true},
+		{makeNumOrFail("1", t), MakeBool(true), nil, true},
 	}
 	for _, test := range test_cases {
-		a_num := makeNumOrFail(test.a, t)
-		b_num := makeNumOrFail(test.b, t)
 		if test.should_error {
-			if actual, err := a_num.Multiply(b_num); err == nil {
-				t.Fatalf("%s * %s should have errored but instead succeeded and returned %s", test.a, test.b, actual.Display())
+			if _, err := test.a.Multiply(test.b); err == nil {
+				t.Fatalf("Got %v * %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if actual, err := a_num.Multiply(b_num); err != nil {
-			t.Fatalf("Got %s * %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := actual.Display(); actual_str != test.c {
-			t.Fatalf("Got %s * %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if val, err := test.a.Multiply(test.b); err != nil {
+			t.Fatalf("Got %v * %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !val.Equal(test.c) {
+			t.Fatalf("Got %v * %v == %v, expected %v", test.a.Display(), test.b.Display(), val.Display(), test.c.Display())
 		}
 
 		if test.should_error {
-			if err := a_num.MultiplyInplace(b_num); err == nil {
-				t.Fatalf("%s * %s should have errored but instead succeeded and returned %s", test.a, test.b, &a_num.value)
+			if err := test.a.MultiplyInplace(test.b); err == nil {
+				t.Fatalf("Got %v *= %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if err := a_num.MultiplyInplace(b_num); err != nil {
-			t.Fatalf("Got %s * %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := a_num.Display(); actual_str != test.c {
-			t.Fatalf("Got %s * %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if err := test.a.MultiplyInplace(test.b); err != nil {
+			t.Fatalf("Got %v *= %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !test.a.Equal(test.c) {
+			t.Fatalf("Got %v *= %v => %v, expected %v", test.a.Display(), test.b.Display(), test.a.Display(), test.c.Display())
 		}
-	}
-
-	if _, err := makeNumOrFail("100", t).Multiply(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 * "foo" succeeded where it should have failed`)
-	}
-	if err := makeNumOrFail("100", t).MultiplyInplace(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 * "foo" succeeded inplace where it should have failed`)
 	}
 }
 
 func TestNumDivide(t *testing.T) {
 	test_cases := []binop_num_test_case{
-		{"1", "100", "0.01", false},
-		{"75", "3", "25", false},
-		{"75.3", "3", "25.1", false},
-		{"100", "2.5", "40", false},
-		{"100", "0", "", true},
-		{"0", "0", "", true},
+		{makeNumOrFail("50.5", t), MakeInt(5), makeNumOrFail("10.1", t), false},
+		{makeNumOrFail("50", t), MakeInt(5), makeNumOrFail("10", t), false},
+		{makeNumOrFail("0", t), MakeInt(10), makeNumOrFail("0", t), false},
+		{makeNumOrFail("50", t), MakeInt(1000), makeNumOrFail(".05", t), false},
+		{makeNumOrFail("10", t), MakeInt(0), nil, true},
+		{makeNumOrFail("10.5", t), MakeInt(0), nil, true},
+		{makeNumOrFail("0", t), MakeInt(0), nil, true},
+		{makeNumOrFail("50", t), makeNumOrFail("5", t), makeNumOrFail("10", t), false},
+		{makeNumOrFail("0", t), makeNumOrFail("10", t), makeNumOrFail("0", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("0", t), nil, true},
+		{makeNumOrFail("0", t), makeNumOrFail("0", t), nil, true},
+		{makeNumOrFail("50", t), makeNumOrFail(".5", t), makeNumOrFail("100", t), false},
+		{makeNumOrFail("50", t), makeNumOrFail("2.5", t), makeNumOrFail("20", t), false},
+		{makeNumOrFail("50", t), makeNumOrFail("1000", t), makeNumOrFail(".05", t), false},
+		{makeNumOrFail("1", t), MakeString("1"), nil, true},
+		{makeNumOrFail("1", t), MakeBool(true), nil, true},
 	}
 	for _, test := range test_cases {
-		a_num := makeNumOrFail(test.a, t)
-		b_num := makeNumOrFail(test.b, t)
 		if test.should_error {
-			if actual, err := a_num.Divide(b_num); err == nil {
-				t.Fatalf("%s / %s should have errored but instead succeeded and returned %s", test.a, test.b, actual.Display())
+			if _, err := test.a.Divide(test.b); err == nil {
+				t.Fatalf("Got %v / %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if actual, err := a_num.Divide(b_num); err != nil {
-			t.Fatalf("Got %s / %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := actual.Display(); actual_str != test.c {
-			t.Fatalf("Got %s / %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if val, err := test.a.Divide(test.b); err != nil {
+			t.Fatalf("Got %v / %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !val.Equal(test.c) {
+			t.Fatalf("Got %v / %v == %v, expected %v", test.a.Display(), test.b.Display(), val.Display(), test.c.Display())
 		}
 
 		if test.should_error {
-			if err := a_num.DivideInplace(b_num); err == nil {
-				t.Fatalf("%s / %s should have errored but instead succeeded and returned %s", test.a, test.b, &a_num.value)
+			if err := test.a.DivideInplace(test.b); err == nil {
+				t.Fatalf("Got %v /= %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if err := a_num.DivideInplace(b_num); err != nil {
-			t.Fatalf("Got %s / %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := a_num.Display(); actual_str != test.c {
-			t.Fatalf("Got %s / %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if err := test.a.DivideInplace(test.b); err != nil {
+			t.Fatalf("Got %v /= %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !test.a.Equal(test.c) {
+			t.Fatalf("Got %v /= %v => %v, expected %v", test.a.Display(), test.b.Display(), test.a.Display(), test.c.Display())
 		}
-	}
-
-	if _, err := makeNumOrFail("100", t).Divide(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 / "foo" succeeded where it should have failed`)
-	}
-	if err := makeNumOrFail("100", t).DivideInplace(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 / "foo" succeeded inplace where it should have failed`)
 	}
 }
 
-func TestNumIntDivide(t *testing.T) {
+func TestNumIntegerDivide(t *testing.T) {
 	test_cases := []binop_num_test_case{
-		{"3", "2", "1", false},
-		{"5", "6", "0", false},
-		{"1", "100", "0", false},
-		{"75", "3", "25", false},
-		{"75.3", "3", "25", false},
-		{"100", "0", "", true},
-		{"0", "0", "", true},
+		{makeNumOrFail("50.5132", t), MakeInt(1), makeNumOrFail("50", t), false},
+		{makeNumOrFail("50", t), MakeInt(5), makeNumOrFail("10", t), false},
+		{makeNumOrFail("0", t), MakeInt(10), makeNumOrFail("0", t), false},
+		{makeNumOrFail("50", t), MakeInt(1000), makeNumOrFail("0", t), false},
+		{makeNumOrFail("10", t), MakeInt(0), nil, true},
+		{makeNumOrFail("0", t), MakeInt(0), nil, true},
+		{makeNumOrFail("50", t), makeNumOrFail("5", t), makeNumOrFail("10", t), false},
+		{makeNumOrFail("0", t), makeNumOrFail("10", t), makeNumOrFail("0", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("0", t), nil, true},
+		{makeNumOrFail("0", t), makeNumOrFail("0", t), nil, true},
+		{makeNumOrFail("50", t), makeNumOrFail(".5", t), makeNumOrFail("100", t), false},
+		{makeNumOrFail("50", t), makeNumOrFail("2.5", t), makeNumOrFail("20", t), false},
+		{makeNumOrFail("50", t), makeNumOrFail("1000", t), makeNumOrFail("0", t), false},
+		{makeNumOrFail("1", t), MakeString("1"), nil, true},
+		{makeNumOrFail("1", t), MakeBool(true), nil, true},
 	}
 	for _, test := range test_cases {
-		a_num := makeNumOrFail(test.a, t)
-		b_num := makeNumOrFail(test.b, t)
 		if test.should_error {
-			if actual, err := a_num.IntDivide(b_num); err == nil {
-				t.Fatalf("%s // %s should have errored but instead succeeded and returned %s", test.a, test.b, actual.Display())
+			if _, err := test.a.IntDivide(test.b); err == nil {
+				t.Fatalf("Got %v // %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if actual, err := a_num.IntDivide(b_num); err != nil {
-			t.Fatalf("Got %s // %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := actual.Display(); actual_str != test.c {
-			t.Fatalf("Got %s // %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if val, err := test.a.IntDivide(test.b); err != nil {
+			t.Fatalf("Got %v // %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !val.Equal(test.c) {
+			t.Fatalf("Got %v // %v == %v, expected %v", test.a.Display(), test.b.Display(), val.Display(), test.c.Display())
 		}
 
 		if test.should_error {
-			if err := a_num.IntDivideInplace(b_num); err == nil {
-				t.Fatalf("%s // %s should have errored but instead succeeded and returned %s", test.a, test.b, &a_num.value)
+			if err := test.a.IntDivideInplace(test.b); err == nil {
+				t.Fatalf("Got %v //= %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if err := a_num.IntDivideInplace(b_num); err != nil {
-			t.Fatalf("Got %s // %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := a_num.Display(); actual_str != test.c {
-			t.Fatalf("Got %s // %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if err := test.a.IntDivideInplace(test.b); err != nil {
+			t.Fatalf("Got %v //= %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !test.a.Equal(test.c) {
+			t.Fatalf("Got %v //= %v => %v, expected %v", test.a.Display(), test.b.Display(), test.a.Display(), test.c.Display())
 		}
-	}
-
-	if _, err := makeNumOrFail("100", t).IntDivide(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 // "foo" succeeded where it should have failed`)
-	}
-	if err := makeNumOrFail("100", t).IntDivideInplace(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 // "foo" succeeded inplace where it should have failed`)
 	}
 }
 
 func TestNumModulo(t *testing.T) {
 	test_cases := []binop_num_test_case{
-		{"3", "2", "1", false},
-		{"5", "6", "5", false},
-		{"1", "100", "1", false},
-		{"100", "1", "0", false},
-		{"100.456", "1", "0.456", false},
-		{"3", "2.5", "0.5", false},
-		{"5.1", "1.5", "0.6", false},
-		{"100", "0", "", true},
-		{"0", "0", "", true},
+		{makeNumOrFail("50", t), MakeInt(5), makeNumOrFail("0", t), false},
+		{makeNumOrFail("0", t), MakeInt(10), makeNumOrFail("0", t), false},
+		{makeNumOrFail("12", t), MakeInt(5), makeNumOrFail("2", t), false},
+		{makeNumOrFail("-10", t), MakeInt(4), makeNumOrFail("2", t), false},
+		{makeNumOrFail("-10", t), MakeInt(3), makeNumOrFail("2", t), false},
+		{makeNumOrFail("50", t), MakeInt(0), nil, true},
+		{makeNumOrFail("50", t), makeNumOrFail("5", t), makeNumOrFail("0", t), false},
+		{makeNumOrFail("0", t), makeNumOrFail("10", t), makeNumOrFail("0", t), false},
+		{makeNumOrFail("12", t), makeNumOrFail("5", t), makeNumOrFail("2", t), false},
+		{makeNumOrFail("-10", t), makeNumOrFail("4", t), makeNumOrFail("2", t), false},
+		{makeNumOrFail("-10", t), makeNumOrFail("3", t), makeNumOrFail("2", t), false},
+		{makeNumOrFail("50", t), makeNumOrFail("0", t), nil, true},
+		{makeNumOrFail("10", t), makeNumOrFail("3.3", t), makeNumOrFail("0.1", t), false},
+		{makeNumOrFail("-10", t), makeNumOrFail("3.3", t), makeNumOrFail("3.2", t), false},
+		{makeNumOrFail("10", t), makeNumOrFail("-3.3", t), makeNumOrFail("-3.2", t), false},
+		{makeNumOrFail("-10", t), makeNumOrFail("-3.3", t), makeNumOrFail("-0.1", t), false},
+		{makeNumOrFail("50.123", t), MakeInt(5), makeNumOrFail("0.123", t), false},
+		{makeNumOrFail("-50.123", t), MakeInt(5), makeNumOrFail("4.877", t), false},
+		{makeNumOrFail("1", t), MakeString("1"), nil, true},
+		{makeNumOrFail("1", t), MakeBool(true), nil, true},
 	}
 	for _, test := range test_cases {
-		a_num := makeNumOrFail(test.a, t)
-		b_num := makeNumOrFail(test.b, t)
 		if test.should_error {
-			if actual, err := a_num.Modulo(b_num); err == nil {
-				t.Fatalf("%s mod %s should have errored but instead succeeded and returned %s", test.a, test.b, actual.Display())
+			if _, err := test.a.Modulo(test.b); err == nil {
+				t.Fatalf("Got %v mod %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if actual, err := a_num.Modulo(b_num); err != nil {
-			t.Fatalf("Got %s mod %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := actual.Display(); actual_str != test.c {
-			t.Fatalf("Got %s mod %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if val, err := test.a.Modulo(test.b); err != nil {
+			t.Fatalf("Got %v mod %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !val.Equal(test.c) {
+			t.Fatalf("Got %v mod %v == %v, expected %v", test.a.Display(), test.b.Display(), val.Display(), test.c.Display())
 		}
 
 		if test.should_error {
-			if err := a_num.ModuloInplace(b_num); err == nil {
-				t.Fatalf("%s mod %s should have errored but instead succeeded and returned %s", test.a, test.b, &a_num.value)
+			if err := test.a.ModuloInplace(test.b); err == nil {
+				t.Fatalf("Got %v mod %v (inplace) succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if err := a_num.ModuloInplace(b_num); err != nil {
-			t.Fatalf("Got %s mod %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := a_num.Display(); actual_str != test.c {
-			t.Fatalf("Got %s mod %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if err := test.a.ModuloInplace(test.b); err != nil {
+			t.Fatalf("Got %v mod %v (in place) returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !test.a.Equal(test.c) {
+			t.Fatalf("Got %v mod %v (inplace) => %v, expected %v", test.a.Display(), test.b.Display(), test.a.Display(), test.c.Display())
 		}
-	}
-
-	if _, err := makeNumOrFail("100", t).Modulo(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 mod "foo" succeeded where it should have failed`)
-	}
-	if err := makeNumOrFail("100", t).ModuloInplace(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 mod "foo" succeeded inplace where it should have failed`)
 	}
 }
 
-func TestNumRaisePower(t *testing.T) {
+func TestNumPower(t *testing.T) {
 	test_cases := []binop_num_test_case{
-		{"3", "2", "9", false},
-		{"5", "6", "15625", false},
-		{"9", "0.5", "3", false},
-		{"4", "-0.5", "0.5", false},
-		{"4", "-2", "0.0625", false},
-		{"-4", "-2", "0.0625", false},
-		{"-4", "2", "16", false},
-		{"-4", "3", "-64", false},
-		{"-4", "-2.5", "", true},
+		{makeNumOrFail("2", t), MakeInt(3), makeNumOrFail("8", t), false},
+		{makeNumOrFail("2.5", t), MakeInt(3), makeNumOrFail("15.625", t), false},
+		{makeNumOrFail("101", t), MakeInt(0), makeNumOrFail("1", t), false},
+		{makeNumOrFail("100", t), MakeInt(2), makeNumOrFail("10000", t), false},
+		{makeNumOrFail("2", t), makeNumOrFail("3", t), makeNumOrFail("8", t), false},
+		{makeNumOrFail("101", t), makeNumOrFail("0", t), makeNumOrFail("1", t), false},
+		{makeNumOrFail("100", t), makeNumOrFail("2", t), MakeInt(10000), false},
+		{makeNumOrFail("100", t), makeNumOrFail("-2", t), makeNumOrFail(".0001", t), false},
+		{makeNumOrFail("100", t), makeNumOrFail("0.5", t), makeNumOrFail("10", t), false},
+		{makeNumOrFail("-100", t), makeNumOrFail("0.5", t), nil, true},
+		{makeNumOrFail("-100", t), makeNumOrFail("2.5", t), nil, true},
+		{makeNumOrFail("-100", t), makeNumOrFail("-2.5", t), nil, true},
+		{makeNumOrFail("1", t), MakeString("1"), nil, true},
+		{makeNumOrFail("1", t), MakeBool(true), nil, true},
 	}
 	for _, test := range test_cases {
-		a_num := makeNumOrFail(test.a, t)
-		b_num := makeNumOrFail(test.b, t)
 		if test.should_error {
-			if actual, err := a_num.RaisePower(b_num); err == nil {
-				t.Fatalf("%s ** %s should have errored but instead succeeded and returned %s", test.a, test.b, actual.Display())
+			if _, err := test.a.RaisePower(test.b); err == nil {
+				t.Fatalf("Got %v + %v succeeded, expected an error", test.a.Display(), test.b.Display())
 			}
-		} else if actual, err := a_num.RaisePower(b_num); err != nil {
-			t.Fatalf("Got %s ** %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := actual.Display(); actual_str != test.c {
-			t.Fatalf("Got %s ** %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if val, err := test.a.RaisePower(test.b); err != nil {
+			t.Fatalf("Got %v ** %v returned error %v, expected %v", test.a.Display(), test.b.Display(), err, test.c.Display())
+		} else if !val.Equal(test.c) {
+			t.Fatalf("Got %v ** %v == %v, expected %v", test.a.Display(), test.b.Display(), val.Display(), test.c.Display())
 		}
 
 		if test.should_error {
-			if err := a_num.RaisePowerInplace(b_num); err == nil {
-				t.Fatalf("%s ** %s should have errored but instead succeeded and returned %s", test.a, test.b, &a_num.value)
+			if err := test.a.RaisePowerInplace(test.b); err == nil {
+				t.Fatalf("Got %v **= %v succeeded, expected an error", test.a, test.b)
 			}
-		} else if err := a_num.RaisePowerInplace(b_num); err != nil {
-			t.Fatalf("Got %s ** %s returned error %v, expected %s", test.a, test.b, err, test.c)
-		} else if actual_str := a_num.Display(); actual_str != test.c {
-			t.Fatalf("Got %s ** %s = %s, expected %s", test.a, test.b, actual_str, test.c)
+		} else if err := test.a.RaisePowerInplace(test.b); err != nil {
+			t.Fatalf("Got %v **= %v returned error %v, expected %v", test.a, test.b, err, test.c)
+		} else if !test.a.Equal(test.c) {
+			t.Fatalf("Got %v **= %v => %v, expected %v", test.a, test.b, test.a, test.c)
 		}
-	}
-
-	if _, err := makeNumOrFail("100", t).RaisePower(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 ** "foo" succeeded where it should have failed`)
-	}
-	if err := makeNumOrFail("100", t).RaisePowerInplace(&PrimitiveStr{"foo"}); err == nil {
-		t.Fatal(`Got 100 ** "foo" succeeded inplace where it should have failed`)
 	}
 }
 
@@ -372,7 +373,7 @@ func TestNumRequireBool(t *testing.T) {
 	}
 }
 
-func TestNumCastImplicit(t *testing.T) {
+func TestNumCastImplicitNum(t *testing.T) {
 	n := "100"
 	if val, err := makeNumOrFail(n, t).CastImplicitNum(); err != nil {
 		t.Fatalf("PrimitiveNum().CastNum() returned the error %v but should have succeeded", err)
@@ -381,12 +382,62 @@ func TestNumCastImplicit(t *testing.T) {
 	}
 }
 
-func TestNumCastExplicit(t *testing.T) {
+func TestNumCastExplicitNum(t *testing.T) {
 	n := "100"
 	if val, err := makeNumOrFail(n, t).CastExplicitNum(); err != nil {
 		t.Fatalf("PrimitiveNum().CastNum() returned the error %v but should have succeeded", err)
 	} else if actual := val.Display(); actual != n {
 		t.Fatalf("PrimitiveNum().CastNum() returned %s, expected %s", actual, n)
+	}
+}
+
+func TestNumRequireInt(t *testing.T) {
+	n := "100"
+	if _, err := makeNumOrFail(n, t).RequireInt(); err == nil {
+		t.Fatalf("PrimitiveNum(%s).RequireInt() succeeded but should have failed", n)
+	}
+}
+
+func TestNumCastImplicitInt(t *testing.T) {
+	n := "100"
+	if val, err := makeNumOrFail(n, t).CastImplicitInt(); err != nil {
+		t.Fatalf("PrimitiveNum().CastNum() returned the error %v but should have succeeded", err)
+	} else if actual := val.Display(); actual != n {
+		t.Fatalf("PrimitiveNum().CastNum() returned %s, expected %s", actual, n)
+	}
+
+	n = "100.5"
+	if _, err := makeNumOrFail(n, t).CastImplicitInt(); err == nil {
+		t.Fatalf("PrimitiveNum(%s).RequireInt() succeeded but should have failed", n)
+	}
+
+	n = "999999999999999999999999999999999999999999999999999999999999999999999999"
+	if _, err := makeNumOrFail(n, t).CastImplicitInt(); err == nil {
+		t.Fatalf("PrimitiveNum(%s).RequireInt() succeeded but should have failed", n)
+	}
+}
+
+func TestNumCastExplicitInt(t *testing.T) {
+
+	test_cases := map[*PrimitiveNum]*PrimitiveInt{
+		makeNumOrFail("100", t):    MakeInt(100),
+		makeNumOrFail("100.2", t):  MakeInt(100),
+		makeNumOrFail("99.8", t):   MakeInt(99),
+		makeNumOrFail("-100", t):   MakeInt(-100),
+		makeNumOrFail("-100.9", t): MakeInt(-100),
+		makeNumOrFail("-100.1", t): MakeInt(-100),
+	}
+	for num, expected := range test_cases {
+		if val, err := num.CastExplicitInt(); err != nil {
+			t.Fatalf("PrimitiveNum().CastNum() returned the error %v but should have succeeded", err)
+		} else if !val.Equal(expected) {
+			t.Fatalf("PrimitiveNum().CastNum() returned %s, expected %s", val.Display(), expected.Display())
+		}
+	}
+
+	n := "999999999999999999999999999999999999999999999999999999999999999999999999"
+	if _, err := makeNumOrFail(n, t).CastExplicitInt(); err == nil {
+		t.Fatalf("PrimitiveNum(%s).RequireInt() succeeded but should have failed", n)
 	}
 }
 

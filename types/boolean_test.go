@@ -229,13 +229,13 @@ func TestBoolRequireBool(t *testing.T) {
 	}
 }
 
-func TestBoolCastImplicit(t *testing.T) {
+func TestBoolCastImplicitNum(t *testing.T) {
 	if value, err := MakeBool(true).CastImplicitNum(); err == nil {
 		t.Fatalf("MakeBool(true).CastNum() gave %v, expected to fail with an error:", value)
 	}
 }
 
-func TestBoolCastExplicit(t *testing.T) {
+func TestBoolCastExplicitNum(t *testing.T) {
 	if value, err := MakeBool(true).CastExplicitNum(); err != nil {
 		t.Fatalf("MakeBool(true).CastNum() returned the error %v but should have succeeded", err)
 	} else if actual := value.Display(); actual != "1" {
@@ -246,6 +246,32 @@ func TestBoolCastExplicit(t *testing.T) {
 		t.Fatalf("MakeBool(false).CastNum() returned the error %v but should have succeeded", err)
 	} else if actual := value.Display(); actual != "0" {
 		t.Fatalf("MakeBool(false).CastNum() returned %s, expected 0", actual)
+	}
+}
+
+func TestBoolRequireInt(t *testing.T) {
+	if value, err := MakeBool(false).RequireInt(); err == nil {
+		t.Fatalf("MakeBool(false).RequireInt() gave %v, expected to fail with an error:", value)
+	}
+}
+
+func TestBoolCastImplicitInt(t *testing.T) {
+	if value, err := MakeBool(true).CastImplicitInt(); err == nil {
+		t.Fatalf("MakeBool(true).CastNum() gave %v, expected to fail with an error:", value)
+	}
+}
+
+func TestBoolCastExplicitInt(t *testing.T) {
+	if value, err := MakeBool(true).CastExplicitInt(); err != nil {
+		t.Fatalf("MakeBool(true).CastInt() returned the error %v but should have succeeded", err)
+	} else if actual := value.Display(); actual != "1" {
+		t.Fatalf("MakeBool(true).CastInt() returned %s, expected 1", actual)
+	}
+
+	if value, err := MakeBool(false).CastExplicitInt(); err != nil {
+		t.Fatalf("MakeBool(false).CastInt() returned the error %v but should have succeeded", err)
+	} else if actual := value.Display(); actual != "0" {
+		t.Fatalf("MakeBool(false).CastInt() returned %s, expected 0", actual)
 	}
 }
 

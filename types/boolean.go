@@ -134,6 +134,10 @@ func (boolean *PrimitiveBool) RequireNum() (*PrimitiveNum, error) {
 	return nil, fmt.Errorf("bool %q used where number was required", boolean.Display())
 }
 
+func (boolean *PrimitiveBool) RequireInt() (*PrimitiveInt, error) {
+	return nil, fmt.Errorf("bool %q used where integer was required", boolean.Display())
+}
+
 func (boolean *PrimitiveBool) RequireStr() (*PrimitiveStr, error) {
 	return nil, fmt.Errorf("bool %q used where number was required", boolean.Display())
 }
@@ -151,6 +155,17 @@ func (boolean *PrimitiveBool) CastExplicitNum() (*PrimitiveNum, error) {
 		return &PrimitiveNum{*big.NewRat(1, 1)}, nil
 	}
 	return &PrimitiveNum{*big.NewRat(0, 1)}, nil
+}
+
+func (boolean *PrimitiveBool) CastImplicitInt() (*PrimitiveInt, error) {
+	return nil, fmt.Errorf("bool %q used where number-like required", boolean.Display())
+}
+
+func (boolean *PrimitiveBool) CastExplicitInt() (*PrimitiveInt, error) {
+	if boolean.value {
+		return MakeInt(1), nil
+	}
+	return MakeInt(0), nil
 }
 
 func (boolean *PrimitiveBool) Display() string {

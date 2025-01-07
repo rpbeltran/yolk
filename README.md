@@ -63,12 +63,12 @@ A stack based Virtual Machine for executing eggshell
 ## Implemented Types
 
 * Number: *Arbitrary precision rational numbers*
+* Int: *64-bit signed integers*
 * String: *UTF-8 encoded strings*
+* Bool: *boolean value; true or false*
 
 ### TODO Types
 
-* Boolean
-* Integer
 * Struct
 * List
 * Map

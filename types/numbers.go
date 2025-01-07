@@ -29,14 +29,14 @@ func (num *PrimitiveNum) Type() string {
 // Comparisons
 
 func (num *PrimitiveNum) Equal(other Primitive) bool {
-	if as_num, err := other.RequireNum(); err == nil {
+	if as_num, err := other.CastImplicitNum(); err == nil {
 		return num.value.Cmp(&as_num.value) == 0
 	}
 	return false
 }
 
 func (num *PrimitiveNum) LessThan(other Primitive) (bool, error) {
-	if as_num, err := other.RequireNum(); err != nil {
+	if as_num, err := other.CastImplicitNum(); err != nil {
 		return false, fmt.Errorf("cannot compare num %s to %v", num.Display(), other.Display())
 	} else {
 		return num.value.Cmp(&as_num.value) == -1, nil
@@ -192,7 +192,7 @@ func (num *PrimitiveNum) RaisePower(other Primitive) (Primitive, error) {
 }
 
 func (num *PrimitiveNum) RaisePowerInplace(other Primitive) error {
-	if other_num, err := other.RequireNum(); err != nil {
+	if other_num, err := other.CastImplicitNum(); err != nil {
 		return fmt.Errorf("attempting to raise power: %w", err)
 	} else if pow, err := utils.RaisePower(&num.value, &other_num.value); err != nil {
 		return fmt.Errorf("attempting to raise power: %w", err)
@@ -240,6 +240,10 @@ func (num *PrimitiveNum) RequireNum() (*PrimitiveNum, error) {
 	return num, nil
 }
 
+func (num *PrimitiveNum) RequireInt() (*PrimitiveInt, error) {
+	return nil, fmt.Errorf("num %s used where an integer was required", num.Display())
+}
+
 func (num *PrimitiveNum) RequireStr() (*PrimitiveStr, error) {
 	return nil, fmt.Errorf("num %s used where a string was required", num.Display())
 }
@@ -254,6 +258,26 @@ func (num *PrimitiveNum) CastImplicitNum() (*PrimitiveNum, error) {
 
 func (num *PrimitiveNum) CastExplicitNum() (*PrimitiveNum, error) {
 	return num, nil
+}
+
+func (num *PrimitiveNum) CastImplicitInt() (*PrimitiveInt, error) {
+	if !num.value.IsInt() {
+		return nil, fmt.Errorf("cannot cast num with fractional part to int")
+	}
+
+	if !num.value.Num().IsInt64() {
+		return nil, fmt.Errorf("cannot cast number wider than 64-bits to int")
+	}
+
+	return MakeInt(num.value.Num().Int64()), nil
+}
+
+func (num *PrimitiveNum) CastExplicitInt() (*PrimitiveInt, error) {
+	rounded := utils.Truncate(&num.value)
+	if !rounded.Num().IsInt64() {
+		return nil, fmt.Errorf("cannot cast number wider than 64-bits to int")
+	}
+	return MakeInt(rounded.Num().Int64()), nil
 }
 
 func (num *PrimitiveNum) Display() string {

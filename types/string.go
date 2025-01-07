@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"math/big"
+	"strconv"
 )
 
 type PrimitiveStr struct {
@@ -135,6 +136,10 @@ func (str *PrimitiveStr) RequireNum() (*PrimitiveNum, error) {
 	return nil, fmt.Errorf("string value %q used where number was required", str.value)
 }
 
+func (str *PrimitiveStr) RequireInt() (*PrimitiveInt, error) {
+	return nil, fmt.Errorf("string value %q used where integer was required", str.value)
+}
+
 func (str *PrimitiveStr) RequireStr() (*PrimitiveStr, error) {
 	return str, nil
 }
@@ -153,6 +158,18 @@ func (str *PrimitiveStr) CastExplicitNum() (*PrimitiveNum, error) {
 		return &PrimitiveNum{num}, nil
 	}
 	return nil, fmt.Errorf("cannot interpret the string %q as a number", str.value)
+}
+
+func (str *PrimitiveStr) CastImplicitInt() (*PrimitiveInt, error) {
+	return nil, fmt.Errorf("string value %q used where implicit integer was required", str.value)
+}
+
+func (str *PrimitiveStr) CastExplicitInt() (*PrimitiveInt, error) {
+	if integer_value, err := strconv.ParseInt(str.value, 10, 64); err != nil {
+		return nil, fmt.Errorf("cannot interpret the string %q as int: %w", str.value, err)
+	} else {
+		return MakeInt(integer_value), nil
+	}
 }
 
 func (str *PrimitiveStr) Display() string {

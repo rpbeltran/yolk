@@ -39,11 +39,15 @@ type Primitive interface {
 
 	// Casting
 	RequireNum() (*PrimitiveNum, error)
+	RequireInt() (*PrimitiveInt, error)
 	RequireStr() (*PrimitiveStr, error)
 	RequireBool() (*PrimitiveBool, error)
 
 	CastImplicitNum() (*PrimitiveNum, error)
 	CastExplicitNum() (*PrimitiveNum, error)
+
+	CastImplicitInt() (*PrimitiveInt, error)
+	CastExplicitInt() (*PrimitiveInt, error)
 
 	Display() string
 	Truthy() bool

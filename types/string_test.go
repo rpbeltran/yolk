@@ -207,6 +207,31 @@ func TestStrCastNumExplicit(t *testing.T) {
 	}
 }
 
+func TestStrRequireInt(t *testing.T) {
+	if _, err := MakeString("5").RequireInt(); err == nil {
+		t.Fatalf("PrimitiveStr().RequireInt() succeeded but should have failed")
+	}
+}
+
+func TestStrCastIntImplicit(t *testing.T) {
+	if value, err := MakeString("100").CastImplicitInt(); err == nil {
+		t.Fatalf("PrimitiveStr(%q).CastImplicitInt() gave %v, expected to fail with an error", "100", value)
+	}
+}
+
+func TestStrCastIntExplicit(t *testing.T) {
+	s := "100"
+	if value, err := MakeString(s).CastExplicitInt(); err != nil {
+		t.Fatalf("PrimitiveStr(%q).CastInt() returned the error %v but should have succeeded", s, err)
+	} else if actual := value.Display(); actual != "100" {
+		t.Fatalf("PrimitiveStr(%q).CastInt() returned %s, expected %s", s, actual, s)
+	}
+
+	if _, err := MakeString("foo").CastExplicitInt(); err == nil {
+		t.Fatalf(`PrimitiveStr("foo").RequireStr() succeeded but should have failed`)
+	}
+}
+
 func TestStrDisplay(t *testing.T) {
 	test_cases := []string{"hello", "", "123", " @#()*", `""`}
 	for _, tc := range test_cases {
