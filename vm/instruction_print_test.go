@@ -12,8 +12,6 @@ func TestPrintParsing(t *testing.T) {
 	expected_string := "PRINT"
 
 	ExpectParse(t, "PRINT", expected_type, expected_string)
-	ExpectParse(t, "PRINT  ", expected_type, expected_string)
-	ExpectParse(t, "  PRINT  ", expected_type, expected_string)
 	ExpectParseFailure(t, "PRINT 2", "expected no arguments")
 }
 

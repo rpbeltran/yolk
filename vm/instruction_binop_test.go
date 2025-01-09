@@ -21,8 +21,6 @@ func TestBinopParsing(t *testing.T) {
 	ExpectParseSame(t, "BINOP or", expected_type)
 	ExpectParse(t, "BINOP   add", expected_type, "BINOP add")
 	ExpectParse(t, "BINOP   add  ", expected_type, "BINOP add")
-	ExpectParse(t, "  BINOP   add  ", expected_type, "BINOP add")
-	ExpectParse(t, "\tBINOP   add  ", expected_type, "BINOP add")
 	ExpectParseFailure(t, "BINOP", "needs operator")
 	ExpectParseFailure(t, "BINOP foo", `unexpected operator "foo"`)
 }

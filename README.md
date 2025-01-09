@@ -11,6 +11,8 @@ A stack based Virtual Machine for executing eggshell
 | BINOP_INPLACE | operation: Operation               | name: *Name*            |
 | COMPARE       | test_mode: *[equal, less, ...]*    |                         |
 | DECLARE       | name: *Name*                       | type: *Name* (optional) |
+| .DEFINE       | name: *Name*                       | type: *Name* (optional) |
+| .DEFINE_END   |                                    |                         |
 | EXEC          | arg_count: *uint*                  |                         |
 | JUMP          | label: *uint*                      |                         |
 | JUMP_IF_TRUE  | label: *uint*                      |                         |
@@ -32,9 +34,8 @@ A stack based Virtual Machine for executing eggshell
 ### Todo Instructions
 
 * .DEFINE
-* SUB_SCOPE
+* SCOPE_BLOCK push/pop
 * CALL
-* CALL_NAME
 * BUILD_LIST
 * SLICE
 * BUILD_MAP

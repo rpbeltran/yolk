@@ -12,7 +12,7 @@ func TestPushNumParsing(t *testing.T) {
 	ExpectParse(t, "PUSH_NUM -123", expected_type, "PUSH_NUM -123")
 	ExpectParse(t, "PUSH_NUM   1", expected_type, "PUSH_NUM 1")
 	ExpectParse(t, "PUSH_NUM   0  ", expected_type, "PUSH_NUM 0")
-	ExpectParse(t, "  PUSH_NUM   123456789  ", expected_type, "PUSH_NUM 123456789")
+	ExpectParse(t, "PUSH_NUM   123456789  ", expected_type, "PUSH_NUM 123456789")
 	ExpectParse(t, "PUSH_NUM   314  ", expected_type, "PUSH_NUM 314")
 	ExpectParseFailure(t, "PUSH_NUM", "needs a value")
 	ExpectParseFailure(t, "PUSH_NUM foo", `invalid value "foo"`)

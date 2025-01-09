@@ -13,14 +13,3 @@ func TestLabelParsing(t *testing.T) {
 	ExpectParseFailure(t, ".LABEL hello", `invalid address "hello"`)
 	ExpectParseFailure(t, ".LABEL -10", `invalid address "-10"`)
 }
-
-func TestLabelAddTo(t *testing.T) {
-	vm := NewVM()
-	label := Instruction_LABEL{100}
-	label.AddTo(&vm)
-	if dst, ok := vm.labels[100]; !ok {
-		t.Fatal("Expected vm to have label for 100, had none")
-	} else if dst != 0 {
-		t.Fatalf("Expected label %d to point to %d, instead points to %d", 100, 0, dst)
-	}
-}

@@ -12,8 +12,6 @@ type Instruction interface {
 }
 
 func ParseInstruction(yolk_line string) (Instruction, error) {
-
-	yolk_line = strings.TrimSpace(yolk_line)
 	if len(yolk_line) == 0 || yolk_line[0] == '#' {
 		return nil, nil
 	}
@@ -48,6 +46,18 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 		return &instruction, nil
 	case "DECLARE":
 		var instruction Instruction_DECLARE
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
+	case ".DEFINE":
+		var instruction Instruction_DEFINE
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
+	case ".DEFINE_END":
+		var instruction Instruction_DEFINE_END
 		if err := instruction.Parse(&args); err != nil {
 			return nil, err
 		}

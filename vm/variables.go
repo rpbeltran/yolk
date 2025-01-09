@@ -7,6 +7,7 @@ import (
 	"yolk/utils"
 )
 
+// FIXME: Make sure primitive values are not being passed as references (i.e {a = 1; b = a; b += 1; should not make a = 2})
 // FIXME: Currently only global variables are supported, support local variables soon
 // FIXME: Currently types are checked by name alone, but implicitly castable types should be permitted
 

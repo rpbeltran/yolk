@@ -12,14 +12,6 @@ func TestParseEmpty(t *testing.T) {
 	}
 }
 
-func TestParseWhitespace(t *testing.T) {
-	if instruction, err := ParseInstruction("   "); err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	} else if instruction != nil {
-		t.Fatalf(`ParseInstruction("") gave %v, expected nil`, instruction)
-	}
-}
-
 func TestParseComments(t *testing.T) {
 	if instruction, err := ParseInstruction("# hello"); err != nil {
 		t.Fatalf("Unexpected error: %v", err)

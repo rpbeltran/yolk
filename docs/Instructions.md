@@ -10,6 +10,8 @@
 | BINOP_INPLACE | operation: Operation               | name: *Name*            |
 | COMPARE       | test_mode: *[equal, less, ...]*    |                         |
 | DECLARE       | name: *Name*                       | type: *Name* (optional) |
+| .DEFINE       | name: *Name*                       | type: *Name* (optional) |
+| .DEFINE_END   |                                    |                         |
 | EXEC          | arg_count: *uint*                  |                         |
 | JUMP          | label: *uint*                      |                         |
 | JUMP_IF_TRUE  | label: *uint*                      |                         |
@@ -132,7 +134,7 @@ COMPARE equal
 # -- vm.stack:[false]
 ```
 
-## `DECLARE ${name} ${type}`
+## `DECLARE ${name} ${type???}`
 
 Pops the value from the top of the stack and stores it in a new variable in the current scope.
 If a variable with the given name already exists in the current scope, or if the stack is empty
@@ -162,6 +164,29 @@ DECLARE <foo2> <int>
 # -- vm.stack:[]
 # -- vm.globals{foo=7, foo2=10}
 ```
+
+## `.DEFINE ${name} ${type???}`
+
+Designates that instructions between this point and the next `.DEFINE_END` instruction are part of a
+defined function with the given name.
+
+Arguments:
+ * name: name of the function being defined
+ * type (optional): name of a type to return (angle quoted)
+
+```
+.DEFINE <say_hello>
+PUSH_STRING "hello world!!!"
+PRINT
+.DEFINE_END
+```
+
+## `.DEFINE_END`
+
+Designates an end to a defined function and return to the global scope.
+
+Arguments: None
+
 
 ## `EXEC ${arg_count}`
 

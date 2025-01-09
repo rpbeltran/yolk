@@ -14,8 +14,8 @@ type Instruction_DECLARE struct {
 }
 
 var ErrDeclareParsing = errors.New("failed to parse DECLARE")
-var ErrDeclareParsingName = fmt.Errorf("%w: invalid name arg", ErrParsingBinopInplace)
-var ErrDeclareParsingType = fmt.Errorf("%w: invalid type arg", ErrParsingBinopInplace)
+var ErrDeclareParsingName = fmt.Errorf("%w: invalid name arg", ErrDeclareParsing)
+var ErrDeclareParsingType = fmt.Errorf("%w: invalid type arg", ErrDeclareParsing)
 
 var ErrDeclarePerform = errors.New("failed to perform DECLARE")
 
