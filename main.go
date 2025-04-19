@@ -10,6 +10,8 @@ import (
 )
 
 var runFlag = flag.String("run", "", ".yolk file to exec")
+var interactiveFlag = flag.Bool("interactive", false, "execute instructions interactively via stdin.")
+
 var profilerFlag = flag.String("profiler", "", "start profiler and write the profile to the given path")
 var debugFlag = flag.Bool("debug", false, "Show vm state after each instruction")
 
@@ -27,11 +29,13 @@ func main() {
 	machine := vm.NewVM()
 	machine.MockExecutions = true
 
-	if len(*runFlag) == 0 {
-		log.Fatal("--run flag not spcified")
-	}
-
-	if err := cli.ExecuteYolkFile(&machine, *runFlag, *debugFlag); err != nil {
+	if *interactiveFlag {
+		if err := cli.ExecuteInteractive(&machine, *debugFlag); err != nil {
+			log.Fatal(err)
+		}
+	} else if len(*runFlag) == 0 {
+		log.Fatal("either --interactive or --run must be specified")
+	} else if err := cli.ExecuteYolkFile(&machine, *runFlag, *debugFlag); err != nil {
 		log.Fatal(err)
 	}
 

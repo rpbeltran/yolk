@@ -28,3 +28,10 @@ func ExecuteYolkFile(machine *vm.VirtualMachine, path string, verbose_debug bool
 
 	return nil
 }
+
+func ExecuteInteractive(machine *vm.VirtualMachine, verbose_debug bool) error {
+	if err := machine.RunInteractive(verbose_debug); err != nil {
+		return fmt.Errorf("executing program: %v", err)
+	}
+	return nil
+}

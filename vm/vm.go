@@ -11,11 +11,21 @@ import (
 	"yolk/utils"
 )
 
+type ScannerState struct {
+	line_num uint
+
+	function_name           string
+	has_function_definition bool
+
+	function_buffer []Instruction
+}
+
 type VirtualMachine struct {
 	// Instructions
 	program              []Instruction
 	functions            map[string][]Instruction
 	function_definitions map[string]Instruction_DEFINE
+	scanner_state        ScannerState
 
 	labels              map[uint64]int
 	instruction_pointer int
@@ -103,76 +113,113 @@ func (vm *VirtualMachine) GetDebugState() VirtualMachineDebugState {
 	}
 }
 
+func (vm *VirtualMachine) executeStep(verbose_debug bool) error {
+	instruction := vm.program[vm.instruction_pointer]
+	if verbose_debug {
+		fmt.Printf("-- executing %d: %v\n", vm.instruction_pointer, instruction)
+	}
+	if err := instruction.Perform(vm); err != nil {
+		return fmt.Errorf("executing instruction %d: %w", vm.instruction_pointer, err)
+	}
+	if verbose_debug {
+		dbg_state := vm.GetDebugState()
+		fmt.Printf("   -- stack size: %d\n", dbg_state.StackSize)
+		if dbg_state.StackSize != 0 {
+			fmt.Printf("   -- top of stack: %q\n", dbg_state.TopOfStack)
+		}
+	}
+	vm.instruction_pointer += 1
+	return nil
+}
+
 func (vm *VirtualMachine) RunProgram(verbose_debug bool) error {
 	vm.instruction_pointer = 0
 	for vm.instruction_pointer < len(vm.program) {
-		instruction := vm.program[vm.instruction_pointer]
-		if verbose_debug {
-			fmt.Printf("-- executing %d: %v\n", vm.instruction_pointer, instruction)
+		if err := vm.executeStep(verbose_debug); err != nil {
+			return err
 		}
-		if err := instruction.Perform(vm); err != nil {
-			return fmt.Errorf("executing instruction %d: %w", vm.instruction_pointer, err)
+	}
+	return nil
+}
+
+func (vm *VirtualMachine) RunInteractive(verbose_debug bool) error {
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		if err := vm.PutStdinInVM(scanner); err != nil {
+			return err
 		}
-		if verbose_debug {
-			dbg_state := vm.GetDebugState()
-			fmt.Printf("   -- stack size: %d\n", dbg_state.StackSize)
-			if dbg_state.StackSize != 0 {
-				fmt.Printf("   -- top of stack: %q\n", dbg_state.TopOfStack)
+		for vm.instruction_pointer < len(vm.program) {
+			if err := vm.executeStep(verbose_debug); err != nil {
+				return err
 			}
 		}
-		vm.instruction_pointer += 1
+	}
+}
+
+// Puts a single line of input from stdin into the vm
+func (vm *VirtualMachine) PutStdinInVM(scanner *bufio.Scanner) error {
+	for {
+		scanner.Scan()
+		line := scanner.Text()
+		if len(line) == 0 {
+			if err := scanner.Err(); err != nil {
+				return err
+			}
+			continue
+		}
+		vm.putLineInVM(line)
+		break
 	}
 	return nil
 }
 
 func (vm *VirtualMachine) PutProgramInVM(scanner *bufio.Scanner) error {
-
-	var function_name string
-	var function_buffer []Instruction
-	has_function_definition := false
-
-	line_num := 0
 	for scanner.Scan() {
-		line_num += 1
 		line := strings.TrimSpace(scanner.Text())
-		if strings.HasPrefix(line, ".LABEL") {
-			_, args, _ := strings.Cut(line, " ")
-			args = strings.TrimSpace(args)
-			var instruction Instruction_LABEL
-			if err := instruction.Parse(&args); err != nil {
-				return err
-			}
-			vm.labels[instruction.address] = len(vm.program)
-			vm.program = append(vm.program, &instruction)
-		} else if strings.HasPrefix(line, ".DEFINE_END") {
-			has_function_definition = false
-			vm.functions[function_name] = function_buffer
-			function_buffer = []Instruction{}
-		} else if strings.HasPrefix(line, ".DEFINE") {
-			if has_function_definition {
-				return fmt.Errorf("parsing line %d %q: cannot nest function definitions", line_num, line)
-			}
-			_, args, _ := strings.Cut(line, " ")
-			args = strings.TrimSpace(args)
-			var function_definition Instruction_DEFINE
-			if err := function_definition.Parse(&args); err != nil {
-				return err
-			}
-			has_function_definition = true
-			function_name = function_definition.name
-			vm.function_definitions[function_name] = function_definition
-		} else if instruction, err := ParseInstruction(line); err != nil {
-			return fmt.Errorf("parsing line %d %q: %w", line_num, line, err)
-		} else if instruction != nil {
-			if has_function_definition {
-				function_buffer = append(function_buffer, instruction)
-			} else {
-				vm.program = append(vm.program, instruction)
-			}
-		}
+		vm.putLineInVM(line)
 	}
 	if err := scanner.Err(); err != nil {
 		return fmt.Errorf("scanning yolk: %v", err)
+	}
+	return nil
+}
+
+func (vm *VirtualMachine) putLineInVM(line string) error {
+	vm.scanner_state.line_num += 1
+	if strings.HasPrefix(line, ".LABEL") {
+		_, args, _ := strings.Cut(line, " ")
+		args = strings.TrimSpace(args)
+		var instruction Instruction_LABEL
+		if err := instruction.Parse(&args); err != nil {
+			return err
+		}
+		vm.labels[instruction.address] = len(vm.program)
+		vm.program = append(vm.program, &instruction)
+	} else if strings.HasPrefix(line, ".DEFINE_END") {
+		vm.scanner_state.has_function_definition = false
+		vm.functions[vm.scanner_state.function_name] = vm.scanner_state.function_buffer
+		vm.scanner_state.function_buffer = []Instruction{}
+	} else if strings.HasPrefix(line, ".DEFINE") {
+		if vm.scanner_state.has_function_definition {
+			return fmt.Errorf("parsing line %d %q: cannot nest function definitions", vm.scanner_state.line_num, line)
+		}
+		_, args, _ := strings.Cut(line, " ")
+		args = strings.TrimSpace(args)
+		var function_definition Instruction_DEFINE
+		if err := function_definition.Parse(&args); err != nil {
+			return err
+		}
+		vm.scanner_state.has_function_definition = true
+		vm.scanner_state.function_name = function_definition.name
+		vm.function_definitions[vm.scanner_state.function_name] = function_definition
+	} else if instruction, err := ParseInstruction(line); err != nil {
+		return fmt.Errorf("parsing line %d %q: %w", vm.scanner_state.line_num, line, err)
+	} else if instruction != nil {
+		if vm.scanner_state.has_function_definition {
+			vm.scanner_state.function_buffer = append(vm.scanner_state.function_buffer, instruction)
+		} else {
+			vm.program = append(vm.program, instruction)
+		}
 	}
 	return nil
 }
