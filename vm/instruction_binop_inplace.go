@@ -102,7 +102,7 @@ func (instruction *Instruction_BINOP_INPLACE) String() string {
 
 func (instruction *Instruction_BINOP_INPLACE) Perform(vm *VirtualMachine) error {
 
-	lhs, err := vm.FetchVariable(instruction.name)
+	lhs, err := vm.memory.FetchVariableByName(instruction.name)
 	if err != nil {
 		return fmt.Errorf("getting variable for lhs: %v", err)
 	}

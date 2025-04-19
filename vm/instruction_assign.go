@@ -30,8 +30,8 @@ func (instruction *Instruction_ASSIGN) Perform(vm *VirtualMachine) error {
 	if err != nil {
 		return fmt.Errorf("unexpected error popping value for assignment: %w", err)
 	}
-
-	if err := vm.UpdateVariable(instruction.name, value); err != nil {
+	new_value_id := vm.memory.StorePrimitive(value)
+	if err := vm.memory.RebindVariable(instruction.name, new_value_id); err != nil {
 		return err
 	}
 	return nil

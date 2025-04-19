@@ -55,7 +55,8 @@ func TestBinopInplace(t *testing.T) {
 
 		initial := tc.lhs.Display()
 
-		if err := vm.StoreNewVariable(name, tc.lhs); err != nil {
+		lhs_id := vm.memory.StorePrimitive(tc.lhs)
+		if err := vm.memory.BindNewVariable(name, lhs_id); err != nil {
 			t.Fatalf("Unexpected error storing variable: %v", err)
 		}
 
@@ -67,7 +68,7 @@ func TestBinopInplace(t *testing.T) {
 			t.Fatalf("Unexpected error performing %q: %v", instruction, err)
 		}
 
-		if actual, err := vm.FetchVariable(name); err != nil {
+		if actual, err := vm.memory.FetchVariableByName(name); err != nil {
 			t.Fatalf("Unexpected error fetching variable %q: %v", name, err)
 		} else if !actual.Equal(tc.result) {
 			t.Fatalf("Expected %q with values %q and %q to give %q, instead got %q",
@@ -96,7 +97,8 @@ func TestBinopInplaceFailure(t *testing.T) {
 
 		initial := tc.lhs.Display()
 
-		if err := vm.StoreNewVariable(name, tc.lhs); err != nil {
+		lhs_id := vm.memory.StorePrimitive(tc.lhs)
+		if err := vm.memory.BindNewVariable(name, lhs_id); err != nil {
 			t.Fatalf("Unexpected error storing variable: %v", err)
 		}
 		vm.stack.Push(tc.rhs)
@@ -114,7 +116,9 @@ func TestBinopInplaceArgsFailure(t *testing.T) {
 	name := "foo"
 
 	vm := NewVM()
-	if err := vm.StoreNewVariable(name, types.MakeString("hello world!")); err != nil {
+
+	lhs_id := vm.memory.StorePrimitive(types.MakeString("hello world!"))
+	if err := vm.memory.BindNewVariable(name, lhs_id); err != nil {
 		t.Fatalf("Unexpected error storing variable: %v", err)
 	}
 	instruction := fmt.Sprintf("BINOP_INPLACE concat <%s>", name)

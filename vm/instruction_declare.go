@@ -46,13 +46,16 @@ func (instruction *Instruction_DECLARE) String() string {
 }
 
 func (instruction *Instruction_DECLARE) Perform(vm *VirtualMachine) error {
-	if value, err := vm.stack.Pop(); err != nil {
+	value, err := vm.stack.Pop()
+	if err != nil {
 		return fmt.Errorf("%q: %w", ErrDeclarePerform, err)
-	} else if instruction.has_type_annotation {
-		if err := vm.StoreNewVariableWithType(instruction.name, instruction.type_annotation, value); err != nil {
+	}
+	id := vm.memory.StorePrimitive(value)
+	if instruction.has_type_annotation {
+		if err := vm.memory.BindNewVariableWithType(instruction.name, instruction.type_annotation, id); err != nil {
 			return fmt.Errorf("%q: %w", ErrDeclarePerform, err)
 		}
-	} else if err := vm.StoreNewVariable(instruction.name, value); err != nil {
+	} else if err := vm.memory.BindNewVariable(instruction.name, id); err != nil {
 		return fmt.Errorf("%q: %w", ErrDeclarePerform, err)
 	}
 	return nil

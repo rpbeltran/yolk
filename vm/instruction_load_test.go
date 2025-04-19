@@ -23,7 +23,8 @@ func TestLoadNamePerform(t *testing.T) {
 
 	vm := NewVM()
 
-	if err := vm.StoreNewVariable(name, types.MakeString(message)); err != nil {
+	message_id := vm.memory.StorePrimitive(types.MakeString(message))
+	if err := vm.memory.BindNewVariable(name, message_id); err != nil {
 		t.Fatalf("Unexpected error storing variable: %v", err)
 	}
 

@@ -1,57 +1,73 @@
 package vm
 
-import (
-	"errors"
-	"fmt"
-	"yolk/types"
-	"yolk/utils"
-)
-
-// FIXME: Make sure primitive values are not being passed as references (i.e {a = 1; b = a; b += 1; should not make a = 2})
-// FIXME: Currently only global variables are supported, support local variables soon
-// FIXME: Currently types are checked by name alone, but implicitly castable types should be permitted
-
+/*
 var ErrVariableDoesNotExist = errors.New("could not find a variable with given name")
+var ErrVariableDoesNotHaveValidID = errors.New("variable has invalid id")
 var ErrVariableRedeclaration = errors.New("cannot redeclare a variable with given name")
 var ErrVariableTypeError = errors.New("type annotated variables cannot be declared with a value of an incompatible type")
 
+type MemoryManager struct {
+	globals map[string]Variable
+	memory  map[memID]types.Primitive
+}
+
+type Variable struct {
+	bound_memory   memID
+	constraint     string
+	has_constraint bool
+}
+
 func (vm *VirtualMachine) FetchVariable(name string) (types.Primitive, error) {
-	if object, ok := vm.globals[name]; !ok {
-		return nil, fmt.Errorf("attempting to fetch variable %q: %w", utils.SerializeName(name), ErrVariableDoesNotExist)
+	if variable, ok := vm.globals[name]; !ok {
+		return nil, fmt.Errorf("call to FetchVariable(%q): %w", name, ErrVariableDoesNotExist)
+	} else if value, ok := vm.memory[variable.bound_memory]; !ok {
+		return nil, fmt.Errorf("call to FetchVariable(%q): %w", name, ErrVariableDoesNotHaveValidID)
 	} else {
-		return object, nil
+		return value, nil
 	}
 }
 
-func (vm *VirtualMachine) StoreNewVariable(name string, value types.Primitive) error {
+func (vm *VirtualMachine) BindNewVariable(name string, id memID) error {
 	if _, ok := vm.globals[name]; ok {
-		return fmt.Errorf("failed to make new variable %s: %w", utils.SerializeName(name), ErrVariableDoesNotExist)
+		return fmt.Errorf("failed to make new variable %s: %w", utils.SerializeName(name), ErrVariableRedeclaration)
 	}
-	vm.globals[name] = value
+	if _, ok := vm.memory[id]; !ok {
+		return fmt.Errorf("call to BindNewVariable(%q, %d): %w", name, id, ErrVariableDoesNotHaveValidID)
+	}
+	vm.globals[name] = Variable{bound_memory: id}
 	return nil
 }
 
-func (vm *VirtualMachine) StoreNewVariableWithType(name string, type_annotation string, value types.Primitive) error {
+func (vm *VirtualMachine) BindNewVariableWithType(name string, type_annotation string, id memID) error {
 	if _, ok := vm.globals[name]; ok {
-		return fmt.Errorf("failed to make new variable %s: %w", utils.SerializeName(name), ErrVariableDoesNotExist)
+		return fmt.Errorf("failed to make new variable %s: %w", utils.SerializeName(name), ErrVariableRedeclaration)
+	} else if value, ok := vm.memory[id]; !ok {
+		return fmt.Errorf("call to BindNewVariable(%q, %d): %w", name, id, ErrVariableDoesNotHaveValidID)
+	} else if value_type := value.Type(); value_type != type_annotation {
+		return fmt.Errorf("%w: cannot bind data of type %s to %s, which expects %s", ErrVariableTypeError,
+			utils.SerializeName(value.Type()), utils.SerializeName(name), utils.SerializeName(type_annotation))
 	}
-	if value_type := value.Type(); value_type != type_annotation {
-		return fmt.Errorf("%w: got `%s` of type %s, expected %s (the type of %s)", ErrVariableTypeError,
-			value.Display(), utils.SerializeName(value.Type()), utils.SerializeName(type_annotation), utils.SerializeName(name))
+	vm.globals[name] = Variable{
+		bound_memory:   id,
+		constraint:     type_annotation,
+		has_constraint: true,
 	}
-	vm.globals[name] = value
-	vm.globals_types[name] = type_annotation
 	return nil
 }
 
-func (vm *VirtualMachine) UpdateVariable(name string, value types.Primitive) error {
-	if _, ok := vm.globals[name]; !ok {
-		return fmt.Errorf("attempting to update %q: %w", utils.SerializeName(name), ErrVariableDoesNotExist)
+func (vm *VirtualMachine) RebindVariable(name string, id memID) error {
+	variable, ok := vm.globals[name]
+	if !ok {
+		return fmt.Errorf("call to RebindVariable(%q): %w", utils.SerializeName(name), ErrVariableDoesNotExist)
 	}
-	if req_type, has_type := vm.globals_types[name]; has_type && value.Type() != req_type {
+	if value, ok := vm.memory[id]; !ok {
+		return fmt.Errorf("call to RebindVariable(%q, %d): %w", name, id, ErrVariableDoesNotHaveValidID)
+	} else if variable.has_constraint && value.Type() != variable.constraint {
 		return fmt.Errorf("%w: got `%s` of type %s, expected %s (the type of %s)", ErrVariableTypeError,
 			value.Display(), utils.SerializeName(value.Type()), utils.SerializeName(req_type), utils.SerializeName(name))
+	} else {
+		variable.bound_memory = id
 	}
-	vm.globals[name] = value
 	return nil
 }
+*/

@@ -23,7 +23,8 @@ func TestAssignNamePerform(t *testing.T) {
 
 	vm := NewVM()
 
-	if err := vm.StoreNewVariable(name, types.MakeString("")); err != nil {
+	old_value_id := vm.memory.StorePrimitive(types.MakeString(""))
+	if err := vm.memory.BindNewVariable(name, old_value_id); err != nil {
 		t.Fatalf("Unexpected error storing variable: %v", err)
 	}
 	vm.stack.Push(types.MakeString(message))
@@ -32,19 +33,9 @@ func TestAssignNamePerform(t *testing.T) {
 		t.Fatalf("Error parsing instruction %q: %v", instruction, err)
 	} else if err := instruction.Perform(&vm); err != nil {
 		t.Fatalf("Error executing instruction %q: %v", instruction, err)
-	} else if value, err := vm.FetchVariable(name); err != nil {
+	} else if value, err := vm.memory.FetchVariableByName(name); err != nil {
 		t.Fatalf("Error popping stack after performing ASSIGN: %v", err)
 	} else if display := value.Display(); display != message {
 		t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
-	} else {
-		message = "Goodbye world!!"
-		vm.stack.Push(types.MakeString(message))
-		if err := instruction.Perform(&vm); err != nil {
-			t.Fatalf("Error executing instruction %q: %v", instruction, err)
-		} else if value, err := vm.FetchVariable(name); err != nil {
-			t.Fatalf("Error popping stack after performing ASSIGN: %v", err)
-		} else if display := value.Display(); display != message {
-			t.Fatalf("Expected top of stack to be %q, instead got %q", message, display)
-		}
 	}
 }

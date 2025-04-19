@@ -42,6 +42,7 @@ A stack based Virtual Machine for executing eggshell
 * SELECT
 * BUILD_SET
 * ASSERT
+* COMPARE_CHAIN (performs a comparison but keeps RHS on top of stack for another comparison)
 * ...
 
 ## Implemented Binary Operators

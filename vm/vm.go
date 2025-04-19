@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"yolk/memory"
 	"yolk/types"
 	"yolk/utils"
 )
@@ -20,12 +21,9 @@ type VirtualMachine struct {
 	instruction_pointer int
 
 	// Runtime data
-	stack           utils.Stack[types.Primitive] //todo: benchmark this being a pointer
+	stack           utils.Stack[types.Primitive]
 	pipeline_states utils.Stack[*types.Primitive]
-
-	// Memory
-	globals       map[string]types.Primitive
-	globals_types map[string]string
+	memory          memory.Memory
 
 	// Configuration
 	stdout         io.Writer
@@ -44,10 +42,7 @@ func NewVM() VirtualMachine {
 		// Runtime Data
 		stack:           *utils.CreateStack[types.Primitive](),
 		pipeline_states: *utils.CreateStack[*types.Primitive](),
-
-		// Memory
-		globals:       make(map[string]types.Primitive),
-		globals_types: make(map[string]string),
+		memory:          memory.NewVMMemory(),
 
 		// Configuration
 		stdout: os.Stdout,
@@ -66,10 +61,7 @@ func NewDebugVM(stdout io.Writer) VirtualMachine {
 		// Runtime Data
 		stack:           *utils.CreateStack[types.Primitive](),
 		pipeline_states: *utils.CreateStack[*types.Primitive](),
-
-		// Memory
-		globals:       make(map[string]types.Primitive),
-		globals_types: make(map[string]string),
+		memory:          memory.NewVMMemory(),
 
 		// Configuration
 		stdout:         stdout,

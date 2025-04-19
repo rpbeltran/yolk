@@ -26,7 +26,7 @@ func (instruction *Instruction_LOAD) String() string {
 }
 
 func (instruction *Instruction_LOAD) Perform(vm *VirtualMachine) error {
-	if value, err := vm.FetchVariable(instruction.name); err != nil {
+	if value, err := vm.memory.FetchVariableByName(instruction.name); err != nil {
 		return err
 	} else {
 		vm.stack.Push(value)
