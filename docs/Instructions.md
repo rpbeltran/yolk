@@ -9,6 +9,7 @@
 | BINOP         | operation: *[add, and, ...]*       |                         |
 | BINOP_INPLACE | operation: Operation               | name: *Name*            |
 | COMPARE       | test_mode: *[equal, less, ...]*    |                         |
+| COMPARE_CHAIN | test_mode: *[equal, less, ...]*    |                         |
 | DECLARE       | name: *Name*                       | type: *Name* (optional) |
 | .DEFINE       | name: *Name*                       | type: *Name* (optional) |
 | .DEFINE_END   |                                    |                         |
@@ -132,6 +133,33 @@ PUSH_NUM 10
 # -- vm.stack:[10 5]
 COMPARE equal
 # -- vm.stack:[false]
+```
+
+## `COMPARE_CHAIN ${test_mode}`
+
+Pops two values off the stack and attempts to perform a comparison of the two values then push
+the resulting value onto the stack, then pushes the righthand operand back to the stack.
+This is useful for implementing chained comparisons such as `a < b < c` where `b` is an operand in
+two comparisons. The first popped value is the right operand, and the second
+popped value becomes the left operand. If the operations fails, execution will terminate with an
+error state.
+
+The values of testmode are the same as for the `COMPARE` command.
+
+Arguments:
+* test_mode: enum, specifies the comparison operation to use.
+
+Example:
+
+```
+# egg: (10 == 5)
+# -- vm.stack:[]
+PUSH_NUM 5
+# -- vm.stack:[10]
+PUSH_NUM 10
+# -- vm.stack:[5 10]
+COMPARE equal
+# -- vm.stack:[false 10]
 ```
 
 ## `DECLARE ${name} ${type???}`

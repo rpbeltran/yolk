@@ -60,18 +60,8 @@ func (instruction *Instruction_COMPARE) String() string {
 	}
 }
 
-func (instruction *Instruction_COMPARE) Perform(vm *VirtualMachine) error {
-	left, err := vm.stack.Pop()
-	if err != nil {
-		return fmt.Errorf("popping lhs for COMPARE: %v", err)
-	}
-
-	right, err := vm.stack.Pop()
-	if err != nil {
-		return fmt.Errorf("popping rhs for COMPARE: %v", err)
-	}
-
-	switch instruction.mode {
+func push_compare(vm *VirtualMachine, mode uint8, left types.Primitive, right types.Primitive) error {
+	switch mode {
 	case comparison_equal:
 		vm.stack.Push(types.MakeBool(left.Equal(right)))
 	case comparison_unequal:
@@ -107,8 +97,23 @@ func (instruction *Instruction_COMPARE) Perform(vm *VirtualMachine) error {
 			vm.stack.Push(types.MakeBool(!lt))
 		}
 	default:
-		panic(fmt.Sprintf("Unimplemented COMPARE for test mode %d", instruction.mode))
+		panic(fmt.Sprintf("Unimplemented COMPARE for test mode %d", mode))
 	}
+	return nil
+}
+
+func (instruction *Instruction_COMPARE) Perform(vm *VirtualMachine) error {
+	right, err := vm.stack.Pop()
+	if err != nil {
+		return fmt.Errorf("popping rhs for COMPARE: %v", err)
+	}
+
+	left, err := vm.stack.Pop()
+	if err != nil {
+		return fmt.Errorf("popping lhs for COMPARE: %v", err)
+	}
+
+	push_compare(vm, instruction.mode, left, right)
 
 	return nil
 }

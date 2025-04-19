@@ -10,6 +10,7 @@ A stack based Virtual Machine for executing eggshell
 | BINOP         | operation: *[add, and, ...]*       |                         |
 | BINOP_INPLACE | operation: Operation               | name: *Name*            |
 | COMPARE       | test_mode: *[equal, less, ...]*    |                         |
+| COMPARE_CHAIN | test_mode: *[equal, less, ...]*    |                         |
 | DECLARE       | name: *Name*                       | type: *Name* (optional) |
 | .DEFINE       | name: *Name*                       | type: *Name* (optional) |
 | .DEFINE_END   |                                    |                         |
@@ -42,7 +43,6 @@ A stack based Virtual Machine for executing eggshell
 * SELECT
 * BUILD_SET
 * ASSERT
-* COMPARE_CHAIN (performs a comparison but keeps RHS on top of stack for another comparison)
 * ...
 
 ## Implemented Binary Operators
