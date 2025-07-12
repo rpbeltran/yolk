@@ -80,6 +80,12 @@ func ParseInstruction(yolk_line string) (Instruction, error) {
 			return nil, err
 		}
 		return &instruction, nil
+	case "FINISHED_INTERACTIVE_COMMAND":
+		var instruction Instruction_FINISHED_INTERACTIVE_COMMAND
+		if err := instruction.Parse(&args); err != nil {
+			return nil, err
+		}
+		return &instruction, nil
 	case "JUMP":
 		var instruction Instruction_JUMP
 		if err := instruction.Parse(&args); err != nil {

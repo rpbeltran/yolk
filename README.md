@@ -15,6 +15,7 @@ A stack based Virtual Machine for executing eggshell
 | .DEFINE       | name: *Name*                       | type: *Name* (optional) |
 | .DEFINE_END   |                                    |                         |
 | EXEC          | arg_count: *uint*                  |                         |
+| FINISHED_INTERACTIVE_COMMAND   |                   |                         |
 | JUMP          | label: *uint*                      |                         |
 | JUMP_IF_TRUE  | label: *uint*                      |                         |
 | JUMP_IF_FALSE | label: *uint*                      |                         |

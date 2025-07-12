@@ -14,6 +14,7 @@
 | .DEFINE       | name: *Name*                       | type: *Name* (optional) |
 | .DEFINE_END   |                                    |                         |
 | EXEC          | arg_count: *uint*                  |                         |
+| FINISHED_INTERACTIVE_COMMAND   |                   |                         |
 | JUMP          | label: *uint*                      |                         |
 | JUMP_IF_TRUE  | label: *uint*                      |                         |
 | JUMP_IF_FALSE | label: *uint*                      |                         |
@@ -256,6 +257,12 @@ EXEC 3
 # -- vm.stack:["a b c"]
 ```
 
+## `FINISHED_INTERACTIVE_COMMAND`
+
+Displays a special message and asserts that the stack is empty.
+This should be called after each line of input when operating in interactive mode.
+
+Implementation note: this is not required once we merge the frontend and backend into a single executable
 
 ## `JUMP ${label_id}`
 
